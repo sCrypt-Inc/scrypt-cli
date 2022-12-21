@@ -4,6 +4,7 @@ const ora = require('ora');
 const sh = require('shelljs');
 const util = require('util');
 const gittar = require('gittar');
+const { green, red } = require('chalk');
 
 const shExec = util.promisify(sh.exec);
 
@@ -33,7 +34,6 @@ async function project({ name }) {
 
   sh.mkdir('-p', name); // Create path/to/dir with their desired name
   sh.cd(name); // Set dir for shell commands. Doesn't change user's dir in their CLI.
-
 
   // Initialize .git in the root, whether monorepo or not.
   await step('Initialize Git repo', 'git init -q');
@@ -76,13 +76,13 @@ async function project({ name }) {
  * @returns {Promise<boolean>} - True if successful; false if not.
  */
 async function fetchProjectTemplate() {
-  const projectName = 'project-ts';
+  const projectName = 'demo-contract';
 
   const step = 'Set up project';
   const spin = ora({ text: `${step}...`, discardStdin: true }).start();
 
   try {
-    const src = 'github:sCrypt-Inc/scrypt-cli#main';
+    const src = 'github:sCrypt-Inc/scrypt-cli#master';
     await gittar.fetch(src, { force: true });
 
     // Note: Extract will overwrite any existing dir's contents. Ensure
@@ -93,7 +93,7 @@ async function fetchProjectTemplate() {
         return path.includes(`templates/${projectName}/`);
       },
     });
-
+    
     // Copy files into current working dir
     sh.cp(
       '-r',
@@ -127,6 +127,7 @@ async function step(step, cmd) {
     await shExec(cmd);
     spin.succeed(green(step));
   } catch (err) {
+    console.log(err);
     spin.fail(step);
     process.exit(1);
   }

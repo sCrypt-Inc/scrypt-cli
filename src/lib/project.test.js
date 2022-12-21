@@ -19,14 +19,14 @@ describe('project.js', () => {
   describe('setProjectName()', () => {
     it('README.md contains target text to replace', () => {
       const readmeTs = fs.readFileSync(
-        path.join('templates', 'project-ts', 'README.md')
+        path.join('templates', 'demo-contract', 'README.md')
       );
       expect(readmeTs.includes('sCrypt Project: PROJECT_NAME')).toBeTruthy();
     });
 
     it('package.json contains target text to replace', () => {
       const readmeTs = fs.readFileSync(
-        path.join('templates', 'project-ts', 'package.json')
+        path.join('templates', 'demo-contract', 'package.json')
       );
       expect(readmeTs.includes('package-name')).toBeTruthy();
     });

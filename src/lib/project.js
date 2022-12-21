@@ -54,20 +54,17 @@ async function project({ name }) {
 
   await setProjectName('.', name.split(path.sep).pop());
 
-  if (ui) sh.cd('..'); // back to project root
-
   // `-n` (no verify) skips Husky's pre-commit hooks.
   //await step(
   //  'Git init commit',
   //  'git add . && git commit -m "Init commit" -q -n && git branch -m main'
   //);
 
-  const str =
-    `\nProject ${name} was successfully created!\n` +
+  const resStr = `\nProject ${name} was successfully created!\n` +
     `\nAdd your Git repo URL and you're good to go:` +
-    `\ngit remote add origin <your-repo-url>` +
+    `\ncd ${name} && git remote add origin <your-repo-url>`;
 
-  console.log(green(str));
+  console.log(green(resStr));
   process.exit(0);
 }
 

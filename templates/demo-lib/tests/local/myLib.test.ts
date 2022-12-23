@@ -28,5 +28,5 @@ describe('Test SmartContractLib `Lib`', () => {
     let testLib = new TestLibContract();
     let result = testLib.verify(self => self.unlock(3n));
     expect(result.success, result.error).to.be.true;
-  }
+  })
 })

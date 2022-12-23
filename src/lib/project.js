@@ -10,14 +10,21 @@ const shExec = util.promisify(sh.exec);
 
 const isWindows = process.platform === 'win32';
 
+const ProjectType = {
+  Contract: 1,
+  Library: 2,
+  StatefullContract: 3
+}
+
 /**
  * Create a new sCrypt project with recommended dir structure, Prettier config,
  * testing lib, etc. Warns if already exists and does NOT overwrite.
+ * @param {string} projType - The user's desired project type.
  * @param {object} argv - The arguments object provided by yargs.
  * @param {string} argv.name - The user's desired project name.
  * @return {Promise<void>}
  */
-async function project({ name }) {
+async function project(projType, { name }) {
   if (fs.existsSync(name)) {
     console.error(red(`Directory already exists. Not proceeding`));
     return;
@@ -38,7 +45,15 @@ async function project({ name }) {
   // Initialize .git in the root, whether monorepo or not.
   await step('Initialize Git repo', 'git init -q');
 
-  if (!(await fetchProjectTemplate())) return;
+  if (projType == ProjectType.Contract) {
+    if (!(await fetchProjectTemplate("demo-contract"))) return;
+  } else if (projType == ProjectType.Library) {
+    if (!(await fetchProjectTemplate("demo-lib"))) return;
+  } else if (projType == ProjectType.StatefullContract) {
+    if (!(await fetchProjectTemplate("counter"))) return;
+  } else {
+    return;
+  }
 
   // `/dev/null` on Mac or Linux and 'NUL' on Windows is the only way to silence
   // Husky's install log msg. (Note: The contract project template commits
@@ -72,9 +87,7 @@ async function project({ name }) {
  * Fetch project template.
  * @returns {Promise<boolean>} - True if successful; false if not.
  */
-async function fetchProjectTemplate() {
-  const projectName = 'demo-contract';
-
+async function fetchProjectTemplate(projectName) {
   const step = 'Set up project';
   const spin = ora({ text: `${step}...`, discardStdin: true }).start();
 
@@ -167,7 +180,7 @@ function titleCase(str) {
   return str
     .split('-')
     .map((w) => w.charAt(0).toUpperCase() + w.substr(1).toLowerCase())
-    .join(' ');
+    .join(' ').replace("Scrypt", "sCrypt");
 }
 
 function kebabCase(str) {
@@ -176,6 +189,7 @@ function kebabCase(str) {
 
 module.exports = {
   project,
+  ProjectType,
   step,
   setProjectName,
   replaceInFile,

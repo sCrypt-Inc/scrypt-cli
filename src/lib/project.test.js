@@ -21,7 +21,7 @@ describe('project.js', () => {
       const readmeTs = fs.readFileSync(
         path.join('templates', 'demo-contract', 'README.md')
       );
-      expect(readmeTs.includes('sCrypt Project: PROJECT_NAME')).toBeTruthy();
+      expect(readmeTs.includes('PROJECT_NAME')).toBeTruthy();
     });
 
     it('package.json contains target text to replace', () => {

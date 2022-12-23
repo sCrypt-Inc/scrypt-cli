@@ -1,7 +1,7 @@
 {
   "name": "package-name",
   "version": "0.1.0",
-  "description": "A demo sCrypt smart contract.",
+  "description": "A demo sCrypt statefull smart contract.",
   "author": "",
   "scripts": {
     "prebuild": "npm run clean",

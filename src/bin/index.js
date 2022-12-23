@@ -2,7 +2,7 @@
 
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
-const { project } = require('../lib/project');
+const { project, ProjectType } = require('../lib/project');
 const { system } = require('../lib/system');
 const chalk = require('chalk');
 
@@ -37,11 +37,27 @@ yargs(hideBin(process.argv))
 
   .command(
     ['project [name]', 'proj [name]', 'p [name]'],
-    'Create a new project',
+    'Create a new smart contract project',
     {
       name: { demand: true, string: true, hidden: true }
     },
-    async (argv) => await project(argv)
+    async (argv) => await project(ProjectType.Contract, argv)
+  )
+  .command(
+    ['project-lib [name]', 'proj-lib [name]', 'lib [name]'],
+    'Create a new library project',
+    {
+      name: { demand: true, string: true, hidden: true }
+    },
+    async (argv) => await project(ProjectType.Library, argv)
+  )
+  .command(
+    ['project-statefull [name]', 'proj-state [name]', 'statefull [name]'],
+    'Create a new statefull smart contract project',
+    {
+      name: { demand: true, string: true, hidden: true }
+    },
+    async (argv) => await project(ProjectType.StatefullContract, argv)
   )
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
   .alias('h', 'help')

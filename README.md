@@ -29,23 +29,14 @@ Read the projects `README.md` for more info on how to test and deploy the genera
 You can also use the following command to generate a statefull smart contract project:
 
 ```sh
-scrypt project-statefull my-proj
+scrypt p --state my-proj
 ```
 
-### Create a new sCrypt library
+Lastly, you can create an sCrypt library project with the following option:
 
 ```sh
-scrypt project-lib my-lib
+scrypt p --lib my-lib
 ```
- 
- or simply
-
-```sh
-scrypt lib my-lib
-```
-
-Similar as the `project` command but the generated project will contain only sCrypt library code, without a smart contract.
-
 ### Compile sCrypt smart contracts
 
 ```sh

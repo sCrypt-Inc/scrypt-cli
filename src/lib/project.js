@@ -38,8 +38,10 @@ async function project(projType, { name }) {
     return;
   }
 
-
-  sh.mkdir('-p', name); // Create path/to/dir with their desired name
+  let resSh = sh.mkdir('-p', name); // Create path/to/dir with their desired name
+  if (resSh.code != 0) {
+    return;
+  }
   sh.cd(name); // Set dir for shell commands. Doesn't change user's dir in their CLI.
 
   // Initialize .git in the root, whether monorepo or not.

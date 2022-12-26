@@ -38,26 +38,33 @@ yargs(hideBin(process.argv))
   .command(
     ['project [name]', 'proj [name]', 'p [name]'],
     'Create a new smart contract project',
-    {
-      name: { demand: true, string: true, hidden: true }
+    //{
+    //  name: { demand: true, string: true, hidden: true }
+    //},
+    (y) => {
+        return y.option('statefull', {
+            description: 'Create statefull smart contract project.',
+            required: false,
+            type: 'boolean'
+        })
+        .alias('state', 'statefull')
+        .option('library', {
+            description: 'Create library project.',
+            required: false,
+            type: 'boolean'
+        })
+        .alias('lib', 'library')
+        .positional('name', { demand: true, string: true, hidden: true });
     },
-    async (argv) => await project(ProjectType.Contract, argv)
-  )
-  .command(
-    ['project-lib [name]', 'proj-lib [name]', 'lib [name]'],
-    'Create a new library project',
-    {
-      name: { demand: true, string: true, hidden: true }
-    },
-    async (argv) => await project(ProjectType.Library, argv)
-  )
-  .command(
-    ['project-statefull [name]', 'proj-state [name]', 'statefull [name]'],
-    'Create a new statefull smart contract project',
-    {
-      name: { demand: true, string: true, hidden: true }
-    },
-    async (argv) => await project(ProjectType.StatefullContract, argv)
+    async (argv) => {
+      if (argv.statefull) {
+        await project(ProjectType.StatefullContract, argv)
+      } else if (argv.library) {
+        await project(ProjectType.Library, argv)
+      } else {
+        await project(ProjectType.Contract, argv)
+      }
+    }
   )
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
   .alias('h', 'help')

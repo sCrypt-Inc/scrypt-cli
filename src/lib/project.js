@@ -38,8 +38,8 @@ async function project(projType, { name }) {
     return;
   }
 
-  let resSh = sh.mkdir('-p', name); // Create path/to/dir with their desired name
-  if (resSh.code != 0) {
+  // Create path/to/dir with their desired name
+  if (sh.mkdir('-p', name).code != 0) {
     return;
   }
   sh.cd(name); // Set dir for shell commands. Doesn't change user's dir in their CLI.
@@ -61,13 +61,13 @@ async function project(projType, { name }) {
   // Husky's install log msg. (Note: The contract project template commits
   // package-lock.json so we can use `npm ci` for faster installation.)
 
-  await step(
-    'NPM install',
-    `npm ci --silent > ${isWindows ? 'NUL' : '"/dev/null" 2>&1'}`
-  );
+  //await step(
+  //  'NPM install',
+  //  `npm ci --silent > ${isWindows ? 'NUL' : '"/dev/null" 2>&1'}`
+  //);
 
-  // Build the template contract so it can be imported into the ui scaffold
-  await step('NPM build contract', 'npm run build --silent');
+  //// Build the template contract so it can be imported into the ui scaffold
+  //await step('NPM build contract', 'npm run build --silent');
 
   await setProjectName('.', name.split(path.sep).pop());
 

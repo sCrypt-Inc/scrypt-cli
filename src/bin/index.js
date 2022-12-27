@@ -38,9 +38,6 @@ yargs(hideBin(process.argv))
   .command(
     ['project [name]', 'proj [name]', 'p [name]'],
     'Create a new smart contract project',
-    //{
-    //  name: { demand: true, string: true, hidden: true }
-    //},
     (y) => {
         return y.option('statefull', {
             description: 'Create statefull smart contract project.',
@@ -66,6 +63,8 @@ yargs(hideBin(process.argv))
       }
     }
   )
+  .command(['compile', 'comp', 'c'], 'Compile smart contracts in current project.', {}, () => compile())
+  .command(['publish', 'pub'], 'Check projects structure and publish the project.', {}, () => publish())
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
   .alias('h', 'help')
   .alias('v', 'version')

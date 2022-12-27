@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import { SigHashPreimage } from 'scrypt-ts';
 import { Counter } from '../../src/contracts/counter';
-import { dummyUTXO } from '../txHelper';
+import { randomBytes } from 'crypto';
+
 
 describe('Test SmartContract `Counter`', () => {
 
@@ -10,7 +11,12 @@ describe('Test SmartContract `Counter`', () => {
   })
 
   it('should pass the public method unit test successfully.', async () => {
-    const utxos = [dummyUTXO];
+    const utxos = [{
+      txId: randomBytes(32).toString('hex'),
+      outputIndex: 0,
+      script: '',   // placeholder
+      satoshis: 1000
+    }];
 
     // create a genesis instance
     const counter = new Counter(0n).markAsGenesis();
@@ -30,7 +36,7 @@ describe('Test SmartContract `Counter`', () => {
       const callTx = prevInstance.getCallTx(utxos, prevTx, newCounter);
       // 4. run `verify` method on `prevInstance`
       const result = prevInstance.verify( self => {
-        self.increment(new SigHashPreimage(callTx.getPreimage(1)));
+        self.increment(SigHashPreimage(callTx.getPreimage(1)));
       });
 
       expect(result.success, result.error).to.be.true;

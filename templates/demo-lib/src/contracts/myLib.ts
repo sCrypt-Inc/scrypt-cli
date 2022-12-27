@@ -4,16 +4,16 @@ import { method, prop, SmartContractLib, ByteString } from "scrypt-ts";
 export class MyLib extends SmartContractLib {
 
   @prop()
-  buf: ByteString;
+  x: bigint;
 
-  constructor(buf: ByteString) {
-    super(buf);
-    this.buf = buf;
+  constructor(x: bigint) {
+    super(x);
+    this.x = x;
   }
 
   @method
-  append(content: ByteString) {
-    this.buf += content;
+  diff(y: bigint) : bigint {
+    return this.x - y;
   }
 
   @method

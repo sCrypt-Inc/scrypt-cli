@@ -1,6 +1,6 @@
 import { Demo } from '../../src/contracts/demo';
-import { getUtxoManager } from '../utxoManager';
-import { signAndSend } from '../txHelper';
+import { getUtxoManager } from './util/utxoManager';
+import { signAndSend } from './util/txHelper';
 
 
 async function main() {
@@ -33,7 +33,7 @@ async function main() {
 }
 
 describe('Test SmartContract `Demo` on testnet', () => {
-    it('should success', async () => {
+    it('should succeed', async () => {
         await main();
     })
 })

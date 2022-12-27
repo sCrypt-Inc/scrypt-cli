@@ -1,5 +1,11 @@
 const ora = require('ora');
+const util = require('util');
+const sh = require('shelljs');
 const { green, red } = require('chalk');
+
+const shExec = util.promisify(sh.exec);
+const isWindows = process.platform === 'win32';
+
 
 /**
  * Helper for any steps for a consistent UX.
@@ -23,6 +29,26 @@ async function step(str, fn) {
   }
 }
 
+/**
+ * Helper for any steps that need to call a shell command.
+ * @param {string} step - Name of step to show user
+ * @param {string} cmd - Shell command to execute.
+ * @returns {Promise<void>}
+ */
+async function stepCmd(step, cmd) {
+  const spin = ora({ text: `${step}...`, discardStdin: true }).start();
+  try {
+    await shExec(cmd);
+    spin.succeed(green(step));
+  } catch (err) {
+    console.log(err);
+    spin.fail(step);
+    process.exit(1);
+  }
+}
+
+
 module.exports = {
   step,
+  stepCmd
 };

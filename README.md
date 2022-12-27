@@ -51,3 +51,7 @@ scrypt publish
 ```
 
 This will check the structure of the current project and publish it on NPM.
+
+
+## Troubleshooting
+

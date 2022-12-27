@@ -3,6 +3,8 @@
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { project, ProjectType } = require('../lib/project');
+const { compile } = require('../lib/compile');
+const { publish } = require('../lib/publish');
 const { system } = require('../lib/system');
 const chalk = require('chalk');
 

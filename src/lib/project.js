@@ -2,13 +2,10 @@ const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
 const sh = require('shelljs');
-const util = require('util');
 const gittar = require('gittar');
 const { green, red } = require('chalk');
+const { stepCmd } = require("./helpers");
 
-const shExec = util.promisify(sh.exec);
-
-const isWindows = process.platform === 'win32';
 
 const ProjectType = {
   Contract: 1,
@@ -45,7 +42,7 @@ async function project(projType, { name }) {
   sh.cd(name); // Set dir for shell commands. Doesn't change user's dir in their CLI.
 
   // Initialize .git in the root, whether monorepo or not.
-  await step('Initialize Git repo', 'git init -q');
+  await stepCmd('Initialize Git repo', 'git init -q');
 
   if (projType == ProjectType.Contract) {
     if (!(await fetchProjectTemplate("demo-contract"))) return;
@@ -61,18 +58,18 @@ async function project(projType, { name }) {
   // Husky's install log msg. (Note: The contract project template commits
   // package-lock.json so we can use `npm ci` for faster installation.)
 
-  //await step(
+  //await stepCmd(
   //  'NPM install',
   //  `npm ci --silent > ${isWindows ? 'NUL' : '"/dev/null" 2>&1'}`
   //);
 
   //// Build the template contract so it can be imported into the ui scaffold
-  //await step('NPM build contract', 'npm run build --silent');
+  //await stepCmd('NPM build contract', 'npm run build --silent');
 
   await setProjectName('.', name.split(path.sep).pop());
 
   // `-n` (no verify) skips Husky's pre-commit hooks.
-  //await step(
+  //await stepCmd(
   //  'Git init commit',
   //  'git add . && git commit -m "Init commit" -q -n && git branch -m main'
   //);
@@ -128,24 +125,6 @@ async function fetchProjectTemplate(projectName) {
 }
 
 /**
- * Helper for any steps that need to call a shell command.
- * @param {string} step - Name of step to show user
- * @param {string} cmd - Shell command to execute.
- * @returns {Promise<void>}
- */
-async function step(step, cmd) {
-  const spin = ora({ text: `${step}...`, discardStdin: true }).start();
-  try {
-    await shExec(cmd);
-    spin.succeed(green(step));
-  } catch (err) {
-    console.log(err);
-    spin.fail(step);
-    process.exit(1);
-  }
-}
-
-/**
  * Step to replace placeholder names in the project with the properly-formatted
  * version of the user-supplied name as specified via `zk project <name>`
  * @param {string} dir - Path to the dir containing target files to be changed.
@@ -192,7 +171,6 @@ function kebabCase(str) {
 module.exports = {
   project,
   ProjectType,
-  step,
   setProjectName,
   replaceInFile,
   titleCase,

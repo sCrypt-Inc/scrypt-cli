@@ -37,7 +37,7 @@ async function publish() {
     return;
   }
   
-  const resStr = `\nProject ${name} was successfully published!\n`;
+  const resStr = `\nProject was successfully published!\n`;
   console.log(green(resStr));
   process.exit(0);
 }

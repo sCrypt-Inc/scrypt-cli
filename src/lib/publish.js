@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const sh = require('shelljs');
+const json5 = require('json5');
 const { green, red } = require('chalk');
 
 
@@ -17,11 +18,29 @@ async function publish() {
     console.error(red(`Missing scrypt.index.json. Run: scrypt compile`));
     return;
   }
+  
+  const tsConfig = json5.parse(fs.readFileSync('tsconfig.json', 'utf8'));
+  let outDir = undefined;
+  if (tsConfig.hasOwnProperty('compilerOptions')) {
+    if (tsConfig.compilerOptions.hasOwnProperty('plugins')) {
+      tsConfig.compilerOptions.plugins.map((obj) => {
+        if (obj.hasOwnProperty("transform")) {
+          outDir = obj.outDir;
+          return;
+        }
+      });
+    }
+  }
+  if (!outDir) {
+    console.error(red(`scrypt-ts out dir not specified in TS config.\n` +
+    `Check out a working example of tsconfig.json:\n` +
+    `https://github.com/sCrypt-Inc/scryptTS-examples/blob/master/tsconfig.json`));
+  }
 
   const indexFile = JSON.parse(fs.readFileSync('scrypt.index.json'));
   let missingScryptFiles = [];
   indexFile.bindings.map((obj) => {
-    let srcPath = path.join('scrypts', obj.path);
+    let srcPath = path.join(outDir, obj.path);
     if (!fs.existsSync(srcPath)) {
       missingScryptFiles.push(srcPath);
     }

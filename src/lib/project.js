@@ -10,7 +10,7 @@ const { stepCmd } = require("./helpers");
 const ProjectType = {
   Contract: 1,
   Library: 2,
-  StatefullContract: 3
+  StatefulContract: 3
 }
 
 /**
@@ -48,7 +48,7 @@ async function project(projType, { name }) {
     if (!(await fetchProjectTemplate("demo-contract"))) return;
   } else if (projType == ProjectType.Library) {
     if (!(await fetchProjectTemplate("demo-lib"))) return;
-  } else if (projType == ProjectType.StatefullContract) {
+  } else if (projType == ProjectType.StatefulContract) {
     if (!(await fetchProjectTemplate("counter"))) return;
   } else {
     return;

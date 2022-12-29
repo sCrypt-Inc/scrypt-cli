@@ -41,12 +41,12 @@ yargs(hideBin(process.argv))
     ['project [name]', 'proj [name]', 'p [name]'],
     'Create a new smart contract project',
     (y) => {
-        return y.option('statefull', {
-            description: 'Create statefull smart contract project.',
+        return y.option('stateful', {
+            description: 'Create stateful smart contract project.',
             required: false,
             type: 'boolean'
         })
-        .alias('state', 'statefull')
+        .alias('state', 'stateful')
         .option('library', {
             description: 'Create library project.',
             required: false,
@@ -56,7 +56,7 @@ yargs(hideBin(process.argv))
         .positional('name', { demand: true, string: true, hidden: true });
     },
     async (argv) => {
-      if (argv.statefull) {
+      if (argv.stateful) {
         await project(ProjectType.StatefullContract, argv)
       } else if (argv.library) {
         await project(ProjectType.Library, argv)

@@ -26,7 +26,7 @@ The command creates a new directory `my-proj` which contains a demo sCrypt smart
 
 Read the projects `README.md` for more info on how to test and deploy the generated smart contract.
 
-You can also use the following command to generate a statefull smart contract project:
+You can also use the following command to generate a stateful smart contract project:
 
 ```sh
 scrypt p --state my-proj

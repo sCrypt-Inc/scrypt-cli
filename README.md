@@ -2,6 +2,7 @@
 
 A CLI tool to make development of sCrypt faster and easier.
 
+[![Build Status](https://travis-ci.com/sCrypt-Inc/scrypt-cli.svg?branch=master)](https://travis-ci.com/sCrypt-Inc/scrypt-cli)
 ## Installation
 
 ```sh

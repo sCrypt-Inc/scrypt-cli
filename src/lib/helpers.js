@@ -2,10 +2,26 @@ const ora = require('ora');
 const util = require('util');
 const sh = require('shelljs');
 const { green, red } = require('chalk');
+const { readdir } = require('fs/promises');
+const { join } = require('path');
 
 const shExec = util.promisify(sh.exec);
 const isWindows = process.platform === 'win32';
 
+
+async function readdirRecursive(dir) {
+  const files = await readdir( dir, { withFileTypes: true } );
+
+  const paths = files.map( async file => {
+    const p = join( dir, file.name );
+
+    if ( file.isDirectory() ) return await readdirRecursive( p );
+
+    return p;
+  } );
+
+  return ( await Promise.all( paths ) ).flat( Infinity );
+}
 
 /**
  * Helper for any steps for a consistent UX.
@@ -50,5 +66,6 @@ async function stepCmd(step, cmd) {
 
 module.exports = {
   step,
-  stepCmd
+  stepCmd,
+  readdirRecursive
 };

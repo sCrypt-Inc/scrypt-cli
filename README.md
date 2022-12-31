@@ -44,7 +44,7 @@ scrypt p --lib my-lib
 scrypt compile
 ```
 
-This will search current project for classes extending `SmartContract` and compile them. This will produce a [contract description file](https://github.com/sCrypt-Inc/scryptlib#contract-description-file) for each compiled class which . The files will be stored under the `scrypts` directory.
+This will search current project for classes extending `SmartContract` and compile them. This will produce a [contract artifact file](https://github.com/sCrypt-Inc/scryptlib#contract-description-file) for each compiled class. The files will be stored under the `scrypts` directory.
 
 ### Publish project
 ```sh

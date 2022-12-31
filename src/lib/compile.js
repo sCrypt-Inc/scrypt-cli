@@ -60,7 +60,6 @@ async function compile() {
   for (const f of distFiles) {
     fAbs = path.resolve(f);
     if (path.extname(fAbs) == '.js') {
-      console.log(fAbs.toString())
       try {
         const module = require(fAbs.toString());
         for (const key of Object.keys(module)) {

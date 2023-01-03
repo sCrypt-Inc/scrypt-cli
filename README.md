@@ -44,7 +44,9 @@ scrypt p --lib my-lib
 scrypt compile
 ```
 
-This will search current project for classes extending `SmartContract` and compile them. This will produce a [contract artifact file](https://github.com/sCrypt-Inc/scryptlib#contract-description-file) for each compiled class. The files will be stored under the `scrypts` directory.
+This will search current project for classes extending `SmartContract` and compile them. This will produce a [contract artifact file](https://github.com/sCrypt-Inc/scryptlib#contract-description-file) for each compiled class. The files will be stored under the `scrypts` directory. 
+
+The command needs to run in the root directory of the project.
 
 ### Publish project
 ```sh
@@ -53,6 +55,11 @@ scrypt publish
 
 This will check the structure of the current project and publish it on NPM.
 
+### Get system info
 
-## Troubleshooting
+When filing an issue a lot of time it's useful to provide information about your system. You can get this information with the following command:
+
+```sh
+scrypt system
+```
 

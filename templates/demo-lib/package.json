@@ -14,7 +14,7 @@
     "testnet": "npm run build && mocha 'dist/tests/testnet/**/*.js' --timeout 1200000"
   },
   "dependencies": {
-    "scrypt-ts": "^0.1.5-beta.1",
+    "scrypt-ts": "^0.1.5-beta.2",
     "dotenv": "^16.0.3",
     "axios": "^1.2.1"
   },

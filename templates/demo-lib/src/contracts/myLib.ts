@@ -1,4 +1,4 @@
-import { method, prop, SmartContractLib, ByteString } from "scrypt-ts";
+import { method, prop, SmartContractLib } from "scrypt-ts";
 
 
 export class MyLib extends SmartContractLib {
@@ -11,12 +11,12 @@ export class MyLib extends SmartContractLib {
     this.x = x;
   }
 
-  @method
+  @method()
   diff(y: bigint) : bigint {
     return this.x - y;
   }
 
-  @method
+  @method()
   static add(x: bigint, y: bigint): bigint {
     return x + y;
   }

@@ -4,7 +4,9 @@ out/
 test/out/
 test/dist
 test/scrypts
-.vscode/
 scrypts/
 **/.env
 **/scrypt.index.json
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json

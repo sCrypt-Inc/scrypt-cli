@@ -18,12 +18,12 @@ describe('Test SmartContractLib `MyLib`', () => {
 
 // Test via smart contract:
 class TestLibContract extends SmartContract {
-  @method
+  @method()
   public unlock1(x: bigint) {
     assert(MyLib.add(1n, 2n) === x);
   }
 
-  @method
+  @method()
   public unlock2(x: bigint) {
     let myLib = new MyLib(5n);
     assert(myLib.diff(2n) === x);

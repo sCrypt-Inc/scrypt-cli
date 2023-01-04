@@ -2,8 +2,8 @@
 node_modules
 coverage
 
-# Editor
-.vscode
+# Editor (only in root)
+/.vscode
 
 # System
 .DS_Store

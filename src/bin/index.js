@@ -57,7 +57,7 @@ yargs(hideBin(process.argv))
     },
     async (argv) => {
       if (argv.stateful) {
-        await project(ProjectType.StatefullContract, argv)
+        await project(ProjectType.StatefulContract, argv)
       } else if (argv.library) {
         await project(ProjectType.Library, argv)
       } else {

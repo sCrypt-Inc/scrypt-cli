@@ -9,7 +9,8 @@
         "useTabs": false,
         "singleQuote": true,
         "trailingComma": "es5",
-        "bracketSpacing": true
+        "bracketSpacing": true,
+        "endOfLine": "auto"
       }
     }
   ]

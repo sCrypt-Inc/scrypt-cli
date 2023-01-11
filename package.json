@@ -11,7 +11,8 @@
     "format": "prettier --write --ignore-unknown **/*",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --silent",
     "testw": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch --silent",
-    "test-templates": "sh test-templates.sh"
+    "test-templates": "sh test-templates.sh",
+    "prepare": "husky install"
   },
   "jest": {
     "testMatch": [

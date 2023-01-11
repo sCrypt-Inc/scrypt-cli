@@ -1,3 +1,12 @@
-node_modules
-dist
-scrypts
+node_modules/
+dist/
+out/
+test/out/
+test/dist
+test/scrypts
+scrypts/
+**/.env
+**/scrypt.index.json
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json

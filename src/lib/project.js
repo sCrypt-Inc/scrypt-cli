@@ -111,10 +111,6 @@ async function fetchProjectTemplate(projectName) {
     );
     sh.rm('-r', TEMP);
 
-    // Create a keys dir because it's not part of the project scaffolding given
-    // we have `keys` in our .gitignore.
-    sh.mkdir('keys');
-
     spin.succeed(green(step));
     return true;
   } catch (err) {

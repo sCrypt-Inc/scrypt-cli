@@ -25,7 +25,7 @@
     ]
   },
   "dependencies": {
-    "scrypt-ts": "^0.1.5-beta.4",
+    "scrypt-ts": "=0.1.5-beta.16",
     "dotenv": "^16.0.3",
     "axios": "^1.2.1"
   },

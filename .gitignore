@@ -8,3 +8,5 @@ coverage
 # System
 .DS_Store
 
+**/scrypts
+**/scrypt.index.json

@@ -25,6 +25,11 @@ const PROJECT_NAME_TEMPLATE_CAMEL_CAP = 'PROJECT_NAME_CAMEL_CAP'
  * @return {Promise<void>}
  */
 async function project(projType, { name }) {
+  if (name.search(/[^-0-9a-zA-Z]/g) != -1) {
+    console.error(red(`Invalid project name format`));
+    return;
+  }
+
   if (fs.existsSync(name)) {
     console.error(red(`Directory already exists. Not proceeding`));
     return;

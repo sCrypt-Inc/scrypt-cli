@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
+import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME_KEBAB'
 import { randomBytes } from 'crypto'
 
 describe('Test SmartContract `PROJECT_NAME`', () => {

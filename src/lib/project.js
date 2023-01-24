@@ -14,6 +14,7 @@ const ProjectType = {
 }
 
 const PROJECT_NAME_TEMPLATE = 'PROJECT_NAME'
+const PROJECT_NAME_TEMPLATE_KEBAB = 'PROJECT_NAME_KEBAB'
 
 /**
  * Create a new sCrypt project with recommended dir structure, Prettier config,
@@ -143,27 +144,30 @@ async function setProjectName(dir, name) {
   // Rename contract and test files w project name.
   // Also rename template inside these files.
   let dirContracts = path.join(dir, 'src', 'contracts')
-  let fContract = path.join(dirContracts, PROJECT_NAME_TEMPLATE + '.ts')
-  let fContractNew = fContract.replace(PROJECT_NAME_TEMPLATE, name)
+  let fContract = path.join(dirContracts, PROJECT_NAME_TEMPLATE_KEBAB + '.ts')
+  let fContractNew = fContract.replace(PROJECT_NAME_TEMPLATE_KEBAB, name)
   if (fs.existsSync(fContract)) {
     sh.mv(fContract, fContractNew)
     replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE, titleCase(name));
+    replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE_KEBAB, kebabCase(name));
   }
 
   let dirTestsLocal = path.join(dir, 'tests', 'local')
-  let fTestLocal = path.join(dirTestsLocal, PROJECT_NAME_TEMPLATE + '.test.ts')
-  let fTestLocalNew = fTestLocal.replace(PROJECT_NAME_TEMPLATE, name)
+  let fTestLocal = path.join(dirTestsLocal, PROJECT_NAME_TEMPLATE_KEBAB + '.test.ts')
+  let fTestLocalNew = fTestLocal.replace(PROJECT_NAME_TEMPLATE_KEBAB, name)
   if (fs.existsSync(fTestLocal)) {
     sh.mv(fTestLocal, fTestLocalNew)
     replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE, titleCase(name));
+    replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE_KEBAB, kebabCase(name));
   }
 
   let dirTestsTestnet = path.join(dir, 'tests', 'testnet')
-  let fTestTestnet = path.join(dirTestsTestnet, PROJECT_NAME_TEMPLATE + '.ts')
-  let fTestTestnetNew = fTestTestnet.replace(PROJECT_NAME_TEMPLATE, name)
+  let fTestTestnet = path.join(dirTestsTestnet, PROJECT_NAME_TEMPLATE_KEBAB + '.ts')
+  let fTestTestnetNew = fTestTestnet.replace(PROJECT_NAME_TEMPLATE_KEBAB, name)
   if (fs.existsSync(fTestTestnet)) {
     sh.mv(fTestTestnet, fTestTestnetNew)
     replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, titleCase(name));
+    replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE_KEBAB, kebabCase(name));
   }
 
   spin.succeed(green(step));
@@ -177,7 +181,7 @@ async function setProjectName(dir, name) {
  */
 function replaceInFile(file, a, b) {
   let content = fs.readFileSync(file, 'utf8');
-  content = content.replace(a, b);
+  content = content.replaceAll(a, b);
   fs.writeFileSync(file, content);
 }
 

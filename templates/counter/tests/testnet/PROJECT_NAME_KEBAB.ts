@@ -1,4 +1,4 @@
-import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
+import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME_KEBAB'
 import { signAndSend } from './util/txHelper'
 import { privateKey } from './util/privateKey'
 import { getUtxoManager } from './util/utxoManager'

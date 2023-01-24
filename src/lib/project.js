@@ -14,7 +14,7 @@ const ProjectType = {
 }
 
 const PROJECT_NAME_TEMPLATE = 'PROJECT_NAME'
-const PROJECT_NAME_TEMPLATE_KEBAB = 'PROJECT_NAME_KEBAB'
+const PROJECT_NAME_TEMPLATE_CAMEL_CAP = 'PROJECT_NAME_CAMEL_CAP'
 
 /**
  * Create a new sCrypt project with recommended dir structure, Prettier config,
@@ -143,31 +143,34 @@ async function setProjectName(dir, name) {
 
   // Rename contract and test files w project name.
   // Also rename template inside these files.
+  const importTemplate = `from '../../src/contracts/${PROJECT_NAME_TEMPLATE}'`
+  const importReplacement = importTemplate.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
+
   let dirContracts = path.join(dir, 'src', 'contracts')
-  let fContract = path.join(dirContracts, PROJECT_NAME_TEMPLATE_KEBAB + '.ts')
-  let fContractNew = fContract.replace(PROJECT_NAME_TEMPLATE_KEBAB, name)
+  let fContract = path.join(dirContracts, PROJECT_NAME_TEMPLATE + '.ts')
+  let fContractNew = fContract.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
   if (fs.existsSync(fContract)) {
     sh.mv(fContract, fContractNew)
-    replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE_KEBAB, kebabCase(name));
-    replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE, titleCase(name));
+    replaceInFile(fContractNew, importTemplate, importReplacement);
+    replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
   let dirTestsLocal = path.join(dir, 'tests', 'local')
-  let fTestLocal = path.join(dirTestsLocal, PROJECT_NAME_TEMPLATE_KEBAB + '.test.ts')
-  let fTestLocalNew = fTestLocal.replace(PROJECT_NAME_TEMPLATE_KEBAB, name)
+  let fTestLocal = path.join(dirTestsLocal, PROJECT_NAME_TEMPLATE + '.test.ts')
+  let fTestLocalNew = fTestLocal.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
   if (fs.existsSync(fTestLocal)) {
     sh.mv(fTestLocal, fTestLocalNew)
-    replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE_KEBAB, kebabCase(name));
-    replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE, titleCase(name));
+    replaceInFile(fTestLocalNew, importTemplate, importReplacement);
+    replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
   let dirTestsTestnet = path.join(dir, 'tests', 'testnet')
-  let fTestTestnet = path.join(dirTestsTestnet, PROJECT_NAME_TEMPLATE_KEBAB + '.ts')
-  let fTestTestnetNew = fTestTestnet.replace(PROJECT_NAME_TEMPLATE_KEBAB, name)
+  let fTestTestnet = path.join(dirTestsTestnet, PROJECT_NAME_TEMPLATE + '.ts')
+  let fTestTestnetNew = fTestTestnet.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
   if (fs.existsSync(fTestTestnet)) {
     sh.mv(fTestTestnet, fTestTestnetNew)
-    replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE_KEBAB, kebabCase(name));
-    replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, titleCase(name));
+    replaceInFile(fTestTestnetNew, importTemplate, importReplacement);
+    replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
   spin.succeed(green(step));
@@ -196,6 +199,17 @@ function kebabCase(str) {
   return str.toLowerCase().replace(' ', '-');
 }
 
+function camelCase(str) {
+  const a = str.toLowerCase()
+      .replace(/[-_\s.]+(.)?/g, (_, c) => c ? c.toUpperCase() : '');
+  return a.substring(0, 1).toLowerCase() + a.substring(1);
+}
+
+function camelCaseCapitalized(str) {
+  const a = camelCase(str)
+  return a.substring(0, 1).toUpperCase() + a.substring(1);
+}
+
 module.exports = {
   project,
   ProjectType,
@@ -203,4 +217,5 @@ module.exports = {
   replaceInFile,
   titleCase,
   kebabCase,
+  camelCaseCapitalized
 };

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME_KEBAB'
+import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
 
 describe('Test SmartContract `PROJECT_NAME`', () => {
     before(async () => {

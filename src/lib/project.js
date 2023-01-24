@@ -148,8 +148,8 @@ async function setProjectName(dir, name) {
   let fContractNew = fContract.replace(PROJECT_NAME_TEMPLATE_KEBAB, name)
   if (fs.existsSync(fContract)) {
     sh.mv(fContract, fContractNew)
-    replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE, titleCase(name));
     replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE_KEBAB, kebabCase(name));
+    replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE, titleCase(name));
   }
 
   let dirTestsLocal = path.join(dir, 'tests', 'local')
@@ -157,8 +157,8 @@ async function setProjectName(dir, name) {
   let fTestLocalNew = fTestLocal.replace(PROJECT_NAME_TEMPLATE_KEBAB, name)
   if (fs.existsSync(fTestLocal)) {
     sh.mv(fTestLocal, fTestLocalNew)
-    replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE, titleCase(name));
     replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE_KEBAB, kebabCase(name));
+    replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE, titleCase(name));
   }
 
   let dirTestsTestnet = path.join(dir, 'tests', 'testnet')
@@ -166,8 +166,8 @@ async function setProjectName(dir, name) {
   let fTestTestnetNew = fTestTestnet.replace(PROJECT_NAME_TEMPLATE_KEBAB, name)
   if (fs.existsSync(fTestTestnet)) {
     sh.mv(fTestTestnet, fTestTestnetNew)
-    replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, titleCase(name));
     replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE_KEBAB, kebabCase(name));
+    replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, titleCase(name));
   }
 
   spin.succeed(green(step));

@@ -13,6 +13,8 @@ const ProjectType = {
   StatefulContract: 3
 }
 
+const PROJECT_NAME_TEMPLATE = 'PROJECT_NAME'
+
 /**
  * Create a new sCrypt project with recommended dir structure, Prettier config,
  * testing lib, etc. Warns if already exists and does NOT overwrite.
@@ -102,7 +104,7 @@ async function fetchProjectTemplate(projectName) {
         return path.includes(`templates/${projectName}/`);
       },
     });
-    
+
     // Copy files into current working dir
     sh.cp(
       '-r',
@@ -131,12 +133,38 @@ async function setProjectName(dir, name) {
   const step = 'Set project name';
   const spin = ora(`${step}...`).start();
 
-  replaceInFile(path.join(dir, 'README.md'), 'PROJECT_NAME', titleCase(name));
+  replaceInFile(path.join(dir, 'README.md'), PROJECT_NAME_TEMPLATE, titleCase(name));
   replaceInFile(
     path.join(dir, 'package.json'),
     'package-name',
     kebabCase(name)
   );
+
+  // Rename contract and test files w project name.
+  // Also rename template inside these files.
+  let dirContracts = path.join(dir, 'src', 'contracts')
+  let fContract = path.join(dirContracts, PROJECT_NAME_TEMPLATE + '.ts')
+  let fContractNew = fContract.replace(PROJECT_NAME_TEMPLATE, name)
+  if (fs.existsSync(fContract)) {
+    sh.mv(fContract, fContractNew)
+    replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE, titleCase(name));
+  }
+
+  let dirTestsLocal = path.join(dir, 'tests', 'local')
+  let fTestLocal = path.join(dirTestsLocal, PROJECT_NAME_TEMPLATE + '.test.ts')
+  let fTestLocalNew = fTestLocal.replace(PROJECT_NAME_TEMPLATE, name)
+  if (fs.existsSync(fTestLocal)) {
+    sh.mv(fTestLocal, fTestLocalNew)
+    replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE, titleCase(name));
+  }
+
+  let dirTestsTestnet = path.join(dir, 'tests', 'testnet')
+  let fTestTestnet = path.join(dirTestsTestnet, PROJECT_NAME_TEMPLATE + '.ts')
+  let fTestTestnetNew = fTestTestnet.replace(PROJECT_NAME_TEMPLATE, name)
+  if (fs.existsSync(fTestTestnet)) {
+    sh.mv(fTestTestnet, fTestTestnetNew)
+    replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, titleCase(name));
+  }
 
   spin.succeed(green(step));
 }

@@ -1,22 +1,22 @@
-import { Counter } from '../../src/contracts/counter'
+import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
 import { signAndSend } from './util/txHelper'
 import { privateKey } from './util/privateKey'
 import { getUtxoManager } from './util/utxoManager'
 
 async function main() {
-    await Counter.compile()
+    await PROJECT_NAME.compile()
     const utxoMgr = await getUtxoManager()
 
     // contract deployment
     // 1. create a genesis instance
-    const counter = new Counter(0n).markAsGenesis()
+    const counter = new PROJECT_NAME(0n).markAsGenesis()
     // 2. get the available utxos for the private key
     const utxos = await utxoMgr.getUtxos()
     // 3. construct a transaction for deployment
     const unsignedDeployTx = counter.getDeployTx(utxos, 1)
     // 4. sign and broadcast the transaction
     const deployTx = await signAndSend(unsignedDeployTx)
-    console.log('Counter deploy tx:', deployTx.id)
+    console.log('PROJECT_NAME deploy tx:', deployTx.id)
 
     // collect the new p2pkh utxo if it exists in `deployTx`
     utxoMgr.collectUtxoFrom(deployTx)
@@ -29,29 +29,33 @@ async function main() {
     // calling contract multiple times
     for (let i = 0; i < 3; i++) {
         // 1. build a new contract instance
-        const newCounter = prevInstance.next()
+        const newPROJECT_NAME = prevInstance.next()
         // 2. apply the updates on the new instance.
-        newCounter.count++
+        newPROJECT_NAME.count++
         // 3. get the available utxos for the private key
         const utxos = await utxoMgr.getUtxos(fee)
         // 4. construct a transaction for contract call
-        const unsignedCallTx = prevInstance.getCallTx(utxos, prevTx, newCounter)
+        const unsignedCallTx = prevInstance.getCallTx(
+            utxos,
+            prevTx,
+            newPROJECT_NAME
+        )
         // 5. sign and broadcast the transaction
         const callTx = await signAndSend(unsignedCallTx, privateKey, false)
         console.log(
-            'Counter call tx: ',
+            'PROJECT_NAME call tx: ',
             callTx.id,
             ', count updated to: ',
-            newCounter.count
+            newPROJECT_NAME.count
         )
 
         // prepare for the next iteration
         prevTx = callTx
-        prevInstance = newCounter
+        prevInstance = newPROJECT_NAME
     }
 }
 
-describe('Test SmartContract `Counter` on testnet', () => {
+describe('Test SmartContract `PROJECT_NAME` on testnet', () => {
     it('should success', async () => {
         await main()
     })

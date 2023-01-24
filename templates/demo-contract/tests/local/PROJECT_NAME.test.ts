@@ -1,13 +1,13 @@
 import { expect } from 'chai'
-import { Demo } from '../../src/contracts/demo'
+import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
 
-describe('Test SmartContract `Demo`', () => {
+describe('Test SmartContract `PROJECT_NAME`', () => {
     before(async () => {
-        await Demo.compile()
+        await PROJECT_NAME.compile()
     })
 
     it('should pass the public method unit test successfully.', async () => {
-        const demo = new Demo(1n, 2n)
+        const demo = new PROJECT_NAME(1n, 2n)
 
         let result = demo.verify(() => demo.add(3n))
         expect(result.success, result.error).to.eq(true)
@@ -17,7 +17,7 @@ describe('Test SmartContract `Demo`', () => {
     })
 
     it('should pass with negative', async () => {
-        const demo = new Demo(-1n, -2n)
+        const demo = new PROJECT_NAME(-1n, -2n)
 
         let result = demo.verify(() => demo.add(-3n))
         expect(result.success, result.error).to.eq(true)
@@ -27,18 +27,18 @@ describe('Test SmartContract `Demo`', () => {
     })
 
     it('should pass the non-public method unit test', () => {
-        const demo = new Demo(1n, 2n)
+        const demo = new PROJECT_NAME(1n, 2n)
         expect(demo.sum(3n, 4n)).to.be.eq(7n)
     })
 
     it('should throw error', () => {
         expect(() => {
-            const demo = new Demo(1n, 2n)
+            const demo = new PROJECT_NAME(1n, 2n)
             demo.add(4n)
         }).to.throw(/Execution failed/)
 
         expect(() => {
-            const demo = new Demo(-1n, -2n)
+            const demo = new PROJECT_NAME(-1n, -2n)
             demo.add(-4n)
         }).to.throw(/Execution failed/)
     })

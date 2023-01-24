@@ -8,7 +8,7 @@ import {
     UTXO,
 } from 'scrypt-ts'
 
-export class Counter extends SmartContract {
+export class PROJECT_NAME extends SmartContract {
     @prop(true)
     count: bigint
 
@@ -43,7 +43,7 @@ export class Counter extends SmartContract {
     getCallTx(
         utxos: UTXO[],
         prevTx: bsv.Transaction,
-        nextInst: Counter
+        nextInst: PROJECT_NAME
     ): bsv.Transaction {
         const inputIndex = 1
         return new bsv.Transaction()

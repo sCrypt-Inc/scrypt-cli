@@ -1,15 +1,15 @@
 import { expect } from 'chai'
 import { assert, method, SmartContract } from 'scrypt-ts'
-import { MyLib } from '../../src/contracts/myLib'
+import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
 
 // Test lib directly:
-describe('Test SmartContractLib `MyLib`', () => {
+describe('Test SmartContractLib `PROJECT_NAME`', () => {
     it('static function call', () => {
-        expect(MyLib.add(1n, 2n)).to.eq(3n)
+        expect(PROJECT_NAME.add(1n, 2n)).to.eq(3n)
     })
 
     it('method call', () => {
-        const myLib = new MyLib(5n)
+        const myLib = new PROJECT_NAME(5n)
         expect(myLib.diff(2n)).to.eq(3n)
     })
 })
@@ -18,12 +18,12 @@ describe('Test SmartContractLib `MyLib`', () => {
 class TestLibContract extends SmartContract {
     @method()
     public unlock1(x: bigint) {
-        assert(MyLib.add(1n, 2n) === x)
+        assert(PROJECT_NAME.add(1n, 2n) === x)
     }
 
     @method()
     public unlock2(x: bigint) {
-        const myLib = new MyLib(5n)
+        const myLib = new PROJECT_NAME(5n)
         assert(myLib.diff(2n) === x)
     }
 }

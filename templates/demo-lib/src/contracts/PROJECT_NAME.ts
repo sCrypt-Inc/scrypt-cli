@@ -1,6 +1,6 @@
 import { method, prop, SmartContractLib } from 'scrypt-ts'
 
-export class MyLib extends SmartContractLib {
+export class PROJECT_NAME extends SmartContractLib {
     @prop()
     x: bigint
 

@@ -1,10 +1,10 @@
 import { expect } from 'chai'
-import { Counter } from '../../src/contracts/counter'
+import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
 import { randomBytes } from 'crypto'
 
-describe('Test SmartContract `Counter`', () => {
+describe('Test SmartContract `PROJECT_NAME`', () => {
     before(async () => {
-        await Counter.compile()
+        await PROJECT_NAME.compile()
     })
 
     it('should pass the public method unit test successfully.', async () => {
@@ -18,7 +18,7 @@ describe('Test SmartContract `Counter`', () => {
         ]
 
         // create a genesis instance
-        const counter = new Counter(0n).markAsGenesis()
+        const counter = new PROJECT_NAME(0n).markAsGenesis()
         // construct a transaction for deployment
         const deployTx = counter.getDeployTx(utxos, 1)
 
@@ -28,11 +28,15 @@ describe('Test SmartContract `Counter`', () => {
         // multiple calls
         for (let i = 0; i < 3; i++) {
             // 1. build a new contract instance
-            const newCounter = prevInstance.next()
+            const newPROJECT_NAME = prevInstance.next()
             // 2. apply the updates on the new instance.
-            newCounter.count++
+            newPROJECT_NAME.count++
             // 3. construct a transaction for contract call
-            const callTx = prevInstance.getCallTx(utxos, prevTx, newCounter)
+            const callTx = prevInstance.getCallTx(
+                utxos,
+                prevTx,
+                newPROJECT_NAME
+            )
             // 4. run `verify` method on `prevInstance`
             const result = prevInstance.verify((self) => {
                 self.increment()
@@ -42,7 +46,7 @@ describe('Test SmartContract `Counter`', () => {
 
             // prepare for the next iteration
             prevTx = callTx
-            prevInstance = newCounter
+            prevInstance = newPROJECT_NAME
         }
     })
 })

@@ -1,6 +1,6 @@
 import { method, prop, SmartContract, assert, bsv, UTXO } from 'scrypt-ts'
 
-export class Demo extends SmartContract {
+export class PROJECT_NAME extends SmartContract {
     @prop()
     x: bigint
 

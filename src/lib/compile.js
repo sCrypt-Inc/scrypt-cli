@@ -6,6 +6,7 @@ const { green, red } = require('chalk');
 const { stepCmd, readdirRecursive } = require('./helpers');
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
+const { compileContract } = require('scryptlib');
 
 
 async function* getFiles(dir) {
@@ -21,15 +22,17 @@ async function* getFiles(dir) {
 }
 
 async function compile() {
-  
+
   // Check TS config
+  let outDir = "";
   const tsConfig = json5.parse(fs.readFileSync('tsconfig.json', 'utf8'));
   let scryptTransFound = false;
   if (tsConfig.hasOwnProperty('compilerOptions')) {
     if (tsConfig.compilerOptions.hasOwnProperty('plugins')) {
       tsConfig.compilerOptions.plugins.map((obj) => {
         if (obj.hasOwnProperty("transform")) {
-          scryptTransFound = obj.transform == 'scrypt-ts/dist/transformer';
+          scryptTransFound = obj.transform.startsWith('scrypt-ts') && obj.transform.endsWith('transformer');
+          outDir = obj.outDir;
           return;
         }
       });
@@ -37,10 +40,10 @@ async function compile() {
   }
   if (!scryptTransFound) {
     console.error(red(`TS config missing sCrypt transformer plugin.\n` +
-    `Check out a working example of tsconfig.json:\n` +
-    `https://github.com/sCrypt-Inc/scryptTS-examples/blob/master/tsconfig.json`));
+      `Check out a working example of tsconfig.json:\n` +
+      `https://github.com/sCrypt-Inc/scryptTS-examples/blob/master/tsconfig.json`));
   }
-  
+
   await stepCmd(
     'NPM install',
     'npm i'
@@ -51,25 +54,43 @@ async function compile() {
     'Building TS',
     'npx tsc'
   );
-  
-  // Recursively iterate over dist/ dir and find all classes extending 
+
+    // Recursively iterate over dist/ dir and find all classes extending 
   // SmartContract class. For each found class, all it's compile() function.
   // This will generate the artifact file of the contract.
   // TODO: This is a hacky approach but works for now. Is there a more elegant solution?
-  const distFiles = await readdirRecursive('./dist/src');
+
+  var currentPath = process.cwd();
+  const distFiles = await readdirRecursive(outDir);
+
+
   for (const f of distFiles) {
     fAbs = path.resolve(f);
-    if (path.extname(fAbs) == '.js') {
+    if (path.extname(fAbs) == '.scrypt') {
       try {
-        const module = require(fAbs.toString());
-        for (const key of Object.keys(module)) {
-          const found = module[key].prototype.constructor.toString().match('^class .* extends .*\.SmartContract.*');
-          if (found.length == 1) {
-            await module[key].compile();
-          }
-        }
-      } catch(e) {
-        console.error(e);
+        const outDir = path.join(currentPath, path.dirname(f));
+        compileContract(f, {
+          out: outDir,
+          artifact: true
+        });
+
+        const transformerPath = path.join(outDir, `${path.basename(f, '.scrypt')}.transformer.json`);
+
+        const transformer = json5.parse(fs.readFileSync(transformerPath, 'utf8'));
+
+        const artifactPath = path.join(outDir, `${path.basename(f, '.scrypt')}.json`);
+
+        const artifact = json5.parse(fs.readFileSync(artifactPath, 'utf8'));
+
+        artifact.transformer = transformer;
+
+        fs.writeFileSync(artifactPath, JSON.stringify(artifact, null, 1))
+
+      } catch (e) {
+        const resStr = `\nProject wasn't successfully compiled!\n`;
+        console.log(red(resStr));
+        console.log(red(`ERROR: ${e.message}`));
+        process.exit(-1);
       }
     }
   };
@@ -80,6 +101,6 @@ async function compile() {
 }
 
 
-module.exports = {
-  compile,
-};
+  module.exports = {
+    compile,
+  };

@@ -3,11 +3,10 @@ const path = require('path');
 const sh = require('shelljs');
 const json5 = require('json5');
 const { green, red } = require('chalk');
-const { stepCmd, readdirRecursive } = require('./helpers');
+const { stepCmd, readdirRecursive, changeExtension } = require('./helpers');
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 const { compileContract } = require('scryptlib');
-
 
 async function* getFiles(dir) {
   const dirents = await readdir(dir, { withFileTypes: true });
@@ -44,18 +43,13 @@ async function compile() {
       `https://github.com/sCrypt-Inc/scryptTS-examples/blob/master/tsconfig.json`));
   }
 
-  await stepCmd(
-    'NPM install',
-    'npm i'
-  );
-
   // Run tsc which in turn also transpiles to sCrypt
   await stepCmd(
     'Building TS',
     'npx tsc'
   );
 
-    // Recursively iterate over dist/ dir and find all classes extending 
+  // Recursively iterate over dist/ dir and find all classes extending 
   // SmartContract class. For each found class, all it's compile() function.
   // This will generate the artifact file of the contract.
   // TODO: This is a hacky approach but works for now. Is there a more elegant solution?
@@ -84,8 +78,10 @@ async function compile() {
 
         artifact.transformer = transformer;
 
-        fs.writeFileSync(artifactPath, JSON.stringify(artifact, null, 1))
+        const artifactFile = changeExtension(path.join(currentPath, transformer.scryptfile), "json");
 
+        fs.writeFileSync(artifactFile, JSON.stringify(artifact, null, 1))
+        console.log(green(`Compiled successfully, artifact file: ${artifactFile}`));
       } catch (e) {
         const resStr = `\nProject wasn't successfully compiled!\n`;
         console.log(red(resStr));
@@ -101,6 +97,6 @@ async function compile() {
 }
 
 
-  module.exports = {
-    compile,
-  };
+module.exports = {
+  compile,
+};

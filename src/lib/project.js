@@ -4,7 +4,7 @@ const ora = require('ora');
 const sh = require('shelljs');
 const gittar = require('gittar');
 const { green, red } = require('chalk');
-const { stepCmd } = require("./helpers");
+const { stepCmd, replaceInFile } = require("./helpers");
 
 
 const ProjectType = {
@@ -14,6 +14,7 @@ const ProjectType = {
 }
 
 const PROJECT_NAME_TEMPLATE = 'PROJECT_NAME'
+const PROJECT_FILENAME_TEMPLATE = 'PROJECT_FILENAME'
 const PROJECT_NAME_TEMPLATE_CAMEL_CAP = 'PROJECT_NAME_CAMEL_CAP'
 
 /**
@@ -181,18 +182,6 @@ async function setProjectName(dir, name) {
   spin.succeed(green(step));
 }
 
-/**
- * Helper to replace text in a file.
- * @param {string} file - Path to file
- * @param {string} a - Old text.
- * @param {string} b - New text.
- */
-function replaceInFile(file, a, b) {
-  let content = fs.readFileSync(file, 'utf8');
-  content = content.replaceAll(a, b);
-  fs.writeFileSync(file, content);
-}
-
 function titleCase(str) {
   return str
     .split('-')
@@ -216,11 +205,14 @@ function camelCaseCapitalized(str) {
 }
 
 module.exports = {
+  PROJECT_NAME_TEMPLATE,
+  PROJECT_FILENAME_TEMPLATE,
   project,
   ProjectType,
   setProjectName,
   replaceInFile,
   titleCase,
   kebabCase,
+  camelCase,
   camelCaseCapitalized
 };

@@ -4,7 +4,6 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { project, ProjectType } = require('../lib/project');
 const { compile } = require('../lib/compile');
-const { publish } = require('../lib/publish');
 const { system } = require('../lib/system');
 const { init } = require('../lib/init');
 const chalk = require('chalk');
@@ -67,7 +66,6 @@ yargs(hideBin(process.argv))
     }
   )
   .command(['compile', 'comp', 'c'], 'Compile smart contracts in current project.', {}, () => compile())
-  .command(['publish', 'pub'], 'Check projects structure and publish the project.', {}, () => publish())
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
   .command(['init'], 'Initialize sCrypt in an existing project', {}, () => init())
   .alias('h', 'help')

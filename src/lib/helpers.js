@@ -5,6 +5,7 @@ const fs = require('fs');
 const { green, red } = require('chalk');
 const { readdir } = require('fs/promises');
 const { join, basename, dirname, extname } = require('path');
+const { exit } = require('process');
 
 const shExec = util.promisify(sh.exec);
 const isWindows = process.platform === 'win32';

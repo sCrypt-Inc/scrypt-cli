@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const sh = require('shelljs');
 const json5 = require('json5');
+const { exit } = require('process');
 const { green, red } = require('chalk');
 const { stepCmd, readdirRecursive, changeExtension } = require('./helpers');
 const { resolve } = require('path');

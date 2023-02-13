@@ -4,6 +4,7 @@ const ora = require('ora');
 const sh = require('shelljs');
 const gittar = require('gittar');
 const { green, red } = require('chalk');
+const { exit } = require('process');
 const { stepCmd, replaceInFile } = require("./helpers");
 
 

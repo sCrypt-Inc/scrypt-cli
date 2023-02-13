@@ -55,13 +55,6 @@ This will search current project for classes extending `SmartContract` and compi
 
 The command needs to run in the root directory of the project.
 
-### Publish project
-```sh
-npx scrypt-cli publish
-```
-
-This will check the structure of the current project and publish it on NPM.
-
 ### Get system info
 
 When filing an issue a lot of time it's useful to provide information about your system. You can get this information with the following command:

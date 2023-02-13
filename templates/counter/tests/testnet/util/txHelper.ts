@@ -1,6 +1,6 @@
-import { bsv, UTXO } from 'scrypt-ts'
+import { bsv, TestWallet, UTXO, WhatsonchainProvider } from 'scrypt-ts'
 import { randomBytes } from 'crypto'
-import { privateKey } from './privateKey'
+import { myPrivateKey } from './privateKey'
 import axios from 'axios'
 
 const API_PREFIX = 'https://api.whatsonchain.com/v1/bsv/test'
@@ -8,6 +8,7 @@ const API_PREFIX = 'https://api.whatsonchain.com/v1/bsv/test'
 export const inputSatoshis = 10000
 
 export const inputIndex = 0
+export const outputIndex = 0
 
 export const dummyUTXO = {
     txId: randomBytes(32).toString('hex'),
@@ -17,7 +18,7 @@ export const dummyUTXO = {
 }
 
 export async function fetchUtxos(
-    address: string = privateKey.toAddress().toString()
+    address: string = myPrivateKey.toAddress().toString()
 ): Promise<UTXO[]> {
     const url = `${API_PREFIX}/address/${address}/unspent`
     const { data: utxos } = await axios.get(url)
@@ -44,7 +45,7 @@ export async function sendTx(tx: bsv.Transaction): Promise<string> {
         return txid
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.log('sendTx error', JSON.stringify(error.response))
+            console.log('sendTx error', error.response.data)
         }
 
         throw error
@@ -61,7 +62,7 @@ export const sleep = async (seconds: number) => {
 
 export async function signAndSend(
     tx: bsv.Transaction,
-    privKey: bsv.PrivateKey = privateKey,
+    privKey: bsv.PrivateKey = myPrivateKey,
     autoChange = true
 ): Promise<bsv.Transaction> {
     if (autoChange) {
@@ -81,3 +82,21 @@ export async function signAndSend(
 
     return tx
 }
+
+export function randomPrivateKey() {
+    const privateKey = bsv.PrivateKey.fromRandom('testnet')
+    const publicKey = bsv.PublicKey.fromPrivateKey(privateKey)
+    const publicKeyHash = bsv.crypto.Hash.sha256ripemd160(publicKey.toBuffer())
+    const address = publicKey.toAddress()
+    return [privateKey, publicKey, publicKeyHash, address] as const
+}
+
+export async function getTestnetSigner(
+    privateKey?: bsv.PrivateKey | bsv.PrivateKey[]
+) {
+    return new TestWallet(privateKey || myPrivateKey).connect(
+        new WhatsonchainProvider(bsv.Networks.testnet)
+    )
+}
+
+export const testnetDefaultSigner = getTestnetSigner()

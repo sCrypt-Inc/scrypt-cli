@@ -5,7 +5,7 @@ export class PROJECT_NAME extends SmartContractLib {
     x: bigint
 
     constructor(x: bigint) {
-        super(x)
+        super(...arguments)
         this.x = x
     }
 

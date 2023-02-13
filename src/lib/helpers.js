@@ -42,7 +42,7 @@ async function step(str, fn) {
   } catch (err) {
     spin.fail(str);
     console.error('  ' + red(err)); // maintain expected indentation
-    process.exit(1);
+    exit(-1);
   }
 }
 
@@ -61,7 +61,7 @@ async function stepCmd(step, cmd) {
   } catch (err) {
     console.log(err);
     spin.fail(step);
-    process.exit(1);
+    exit(-1);
   }
 }
 

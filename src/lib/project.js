@@ -28,12 +28,12 @@ const PROJECT_NAME_TEMPLATE_CAMEL_CAP = 'PROJECT_NAME_CAMEL_CAP'
 async function project(projType, { name }) {
   if (name.search(/[^-0-9a-zA-Z]/g) != -1) {
     console.error(red(`Invalid project name format`));
-    return;
+    exit(-1);
   }
 
   if (fs.existsSync(name)) {
     console.error(red(`Directory already exists. Not proceeding`));
-    return;
+    exit(-1);
   }
 
   // Git must be initialized before running `npm install` b/c Husky runs an
@@ -41,12 +41,12 @@ async function project(projType, { name }) {
   // Check before fetching project template, to not leave crud on user's system.
   if (!sh.which('git')) {
     console.error(red('Please ensure Git is installed, then try again.'));
-    return;
+    exit(-1);
   }
 
   // Create path/to/dir with their desired name
   if (sh.mkdir('-p', name).code != 0) {
-    return;
+    exit(-1);
   }
   sh.cd(name); // Set dir for shell commands. Doesn't change user's dir in their CLI.
 
@@ -60,7 +60,7 @@ async function project(projType, { name }) {
   } else if (projType == ProjectType.StatefulContract) {
     if (!(await fetchProjectTemplate("counter"))) return;
   } else {
-    return;
+    exit(-1);
   }
 
   // `/dev/null` on Mac or Linux and 'NUL' on Windows is the only way to silence
@@ -88,7 +88,7 @@ async function project(projType, { name }) {
     `\ncd ${name} && git remote add origin <your-repo-url>`;
 
   console.log(green(resStr));
-  process.exit(0);
+  exit(0);
 }
 
 /**

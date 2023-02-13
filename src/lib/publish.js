@@ -10,13 +10,13 @@ async function publish() {
   // Check if project has a dist folder
   if (!fs.existsSync("dist")) {
     console.error(red(`Missing dist/ directory. Run: scrypt compile`));
-    return;
+    exit(-1);
   }
 
   // Check scrypt.index.json
   if (!fs.existsSync("scrypt.index.json")) {
     console.error(red(`Missing scrypt.index.json. Run: scrypt compile`));
-    return;
+    exit(-1);
   }
   
   const tsConfig = json5.parse(fs.readFileSync('tsconfig.json', 'utf8'));
@@ -35,6 +35,7 @@ async function publish() {
     console.error(red(`scrypt-ts out dir not specified in TS config.\n` +
     `Check out a working example of tsconfig.json:\n` +
     `https://github.com/sCrypt-Inc/scryptTS-examples/blob/master/tsconfig.json`));
+    exit(-1);
   }
 
   const indexFile = JSON.parse(fs.readFileSync('scrypt.index.json'));
@@ -48,7 +49,7 @@ async function publish() {
   if (missingScryptFiles.length > 0) {
     console.error(red(`Missing sCrypt source files:`));
     console.error(red(missingScryptFiles));
-    return;
+    exit(-1);
   }
   
   // Run npm publish
@@ -58,7 +59,7 @@ async function publish() {
   
   const resStr = `\nProject was successfully published!\n`;
   console.log(green(resStr));
-  process.exit(0);
+  exit(0);
 }
 
 

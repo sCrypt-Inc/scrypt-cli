@@ -41,6 +41,7 @@ async function compile() {
     console.error(red(`TS config missing sCrypt transformer plugin.\n` +
       `Check out a working example of tsconfig.json:\n` +
       `https://github.com/sCrypt-Inc/scryptTS-examples/blob/master/tsconfig.json`));
+    exit(-1)
   }
 
   // Run tsc which in turn also transpiles to sCrypt
@@ -83,17 +84,17 @@ async function compile() {
         fs.writeFileSync(artifactFile, JSON.stringify(artifact, null, 1))
         console.log(green(`Compiled successfully, artifact file: ${artifactFile}`));
       } catch (e) {
-        const resStr = `\nProject wasn't successfully compiled!\n`;
+        const resStr = `\nCompilation failed.\n`;
         console.log(red(resStr));
         console.log(red(`ERROR: ${e.message}`));
-        process.exit(-1);
+        exit(-1);
       }
     }
   };
 
   const resStr = `\nProject was successfully compiled!\n`;
   console.log(green(resStr));
-  process.exit(0);
+  exit(0);
 }
 
 

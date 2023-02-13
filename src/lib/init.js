@@ -11,7 +11,7 @@ async function configReactScriptsV5() {
     const packageJSONFilePath = path.join('.', 'package.json')
     // Install devDependencies
     await stepCmd(
-        'Install devDependencies',
+        'Installing devDependencies...',
         'npm i -D react-app-rewired node-polyfill-webpack-plugin'
     );
 
@@ -71,7 +71,7 @@ async function gitCommit() {
     const gitignoreContent = readfile(gitignorePath, false) + '\n/artifact\nscrypt.index.json';
     writefile(gitignorePath, gitignoreContent)
     await stepCmd("Git add all file", 'git add --all')
-    await stepCmd("Git commit", 'git commit -am "Install sCrypt"')
+    await stepCmd("Git commit", 'git commit -am "Initialized sCrypt."')
 }
 
 async function createContract() {
@@ -101,19 +101,19 @@ async function createContract() {
 }
 
 async function init() {
-    console.log(green('Init sCrypt ...'))
+    console.log(green('Initializing sCrypt in current project...'))
 
     const packageJSONFilePath = path.join('.', 'package.json')
     if (!existsSync(packageJSONFilePath)) {
-        console.log(red('No package.json found, init sCrypt failed.'));
+        console.log(red('No package.json found, initialization failed.'));
         exit(-1);
     }
 
 
     const log = await stepCmd("Git status", "git status");
 
-    if (log.includes("Untracked") || log.includes("modified")) {
-        console.log(red('Changes not staged for commit, please commit your change first.'));
+    if (log.includes("Untracked") || log.includes("modified")  || log.includes("to be committed")) {
+        console.log(red('Please commit your current changes before initialization.'));
         exit(-1);
     }
 
@@ -121,13 +121,14 @@ async function init() {
 
     if (!packageJSON.scripts.start.includes("react-scripts")
         || !packageJSON.scripts.build.includes("react-scripts")) {
-        console.log(red('Only support project created by [Create React App], init sCrypt failed.'));
+        console.log(red('Only projects created by "create-react-app" are supported'));
+        console.log(red('Initialization failed.'));
         exit(-1)
     }
 
     // Install dependencies
     await stepCmd(
-        'Install dependencies',
+        'Installing dependencies...',
         'npm i typescript@4.8.4 scrypt-ts@beta'
     );
 
@@ -145,9 +146,9 @@ async function init() {
 
     await createContract();
 
-    const resStr = `\nsCrypt has successfully initialized!\n`;
+    const resStr = `\nsCrypt has been successfully initialized!\n`;
     console.log(green(resStr));
-    process.exit(0);
+    exit(0);
 }
 
 module.exports = {

@@ -1,9 +1,10 @@
 const ora = require('ora');
 const util = require('util');
 const sh = require('shelljs');
+const fs = require('fs');
 const { green, red } = require('chalk');
 const { readdir } = require('fs/promises');
-const { join } = require('path');
+const { join, basename, dirname, extname } = require('path');
 
 const shExec = util.promisify(sh.exec);
 const isWindows = process.platform === 'win32';
@@ -41,7 +42,7 @@ async function step(str, fn) {
   } catch (err) {
     spin.fail(str);
     console.error('  ' + red(err)); // maintain expected indentation
-    process.exit(1);
+    exit(-1);
   }
 }
 
@@ -49,23 +50,91 @@ async function step(str, fn) {
  * Helper for any steps that need to call a shell command.
  * @param {string} step - Name of step to show user
  * @param {string} cmd - Shell command to execute.
- * @returns {Promise<void>}
+ * @returns {Promise<string>}
  */
 async function stepCmd(step, cmd) {
   const spin = ora({ text: `${step}...`, discardStdin: true }).start();
   try {
-    await shExec(cmd);
+    const result = await shExec(cmd);
     spin.succeed(green(step));
+    return result;
   } catch (err) {
     console.log(err);
     spin.fail(step);
-    process.exit(1);
+    exit(-1);
   }
 }
+
+/**
+ * Helper to replace text in a file.
+ * @param {string} file - Path to file
+ * @param {string} a - Old text.
+ * @param {string} b - New text.
+ */
+function replaceInFile(file, a, b) {
+  let content = fs.readFileSync(file, 'utf8');
+  content = content.replaceAll(a, b);
+  fs.writeFileSync(file, content);
+}
+
+/**
+ * Helper to read a json
+ * @param {string} file 
+ * @param {boolean} if returns json format 
+ * @returns 
+ */
+function readfile(file, json = true) {
+  const content = fs.readFileSync(file, 'utf8');
+  if(json) {
+    return JSON.parse(content);
+  }
+  return content;
+}
+
+/**
+ *  Helper to write a json object to file
+ * @param {string} path of file 
+ * @param {object | string} object or text to save
+ */
+function writefile(file, content) {
+  if(typeof content === "string") {
+    fs.writeFileSync(file, content);
+  } else {
+    fs.writeFileSync(file, JSON.stringify(content, null, 2));
+  }
+}
+
+
+/**
+ * Helper to change file extension in a path
+ * @param {string} the path of a file 
+ * @param {string} extension 
+ * @returns 
+ */
+function changeExtension(file, extension) {
+  const name = basename(file, extname(file))
+  return join(dirname(file), name + "." + extension)
+}
+
+
+/**
+ * read config in src/configs
+ * @param {string} config filename 
+ * @returns 
+ */
+function readAsset(filename) {
+  return readfile(join(dirname(__filename), '..', 'asserts', filename), false);
+}
+
 
 
 module.exports = {
   step,
   stepCmd,
-  readdirRecursive
+  readdirRecursive,
+  replaceInFile,
+  readfile,
+  writefile,
+  changeExtension,
+  readConfig: readAsset
 };

@@ -6,6 +6,9 @@ A CLI tool to make development of sCrypt faster and easier.
 
 ## Usage
 
+>**Note:**
+>Node version 16 or greater is required.
+
 ### Create a new sCrypt smart contract project
 
 ```sh

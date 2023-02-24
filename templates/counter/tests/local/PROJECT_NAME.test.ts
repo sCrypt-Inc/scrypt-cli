@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
-import { randomBytes } from 'crypto'
+import { getDummySigner, getDummyUTXO } from './utils/txHelper'
+import { MethodCallOptions } from 'scrypt-ts'
 
 describe('Test SmartContract `PROJECT_NAME`', () => {
     before(async () => {
@@ -8,21 +9,11 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
     })
 
     it('should pass the public method unit test successfully.', async () => {
-        const utxos = [
-            {
-                txId: randomBytes(32).toString('hex'),
-                outputIndex: 0,
-                script: '', // placeholder
-                satoshis: 1000,
-            },
-        ]
-
         // create a genesis instance
-        const counter = new PROJECT_NAME(0n).markAsGenesis()
+        const counter = new PROJECT_NAME(0n)
         // construct a transaction for deployment
-        const deployTx = counter.getDeployTx(utxos, 1)
+        await counter.connect(getDummySigner())
 
-        let prevTx = deployTx
         let prevInstance = counter
 
         // multiple calls
@@ -32,20 +23,21 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
             // 2. apply the updates on the new instance.
             newPROJECT_NAME.count++
             // 3. construct a transaction for contract call
-            const callTx = prevInstance.getCallTx(
-                utxos,
-                prevTx,
-                newPROJECT_NAME
-            )
+            const { tx: callTx, atInputIndex } =
+                await prevInstance.methods.increment({
+                    fromUTXO: getDummyUTXO(1),
+                    next: {
+                        instance: newPROJECT_NAME,
+                        balance: 1,
+                    },
+                } as MethodCallOptions<PROJECT_NAME>)
+
             // 4. run `verify` method on `prevInstance`
-            const result = prevInstance.verify((self) => {
-                self.increment()
-            })
+            const result = callTx.verifyScript(atInputIndex)
 
             expect(result.success, result.error).to.be.true
 
             // prepare for the next iteration
-            prevTx = callTx
             prevInstance = newPROJECT_NAME
         }
     })

@@ -1,4 +1,4 @@
-import { method, prop, SmartContract, assert, bsv, UTXO } from 'scrypt-ts'
+import { method, prop, SmartContract, assert } from 'scrypt-ts'
 
 export class PROJECT_NAME extends SmartContract {
     @prop()
@@ -17,38 +17,19 @@ export class PROJECT_NAME extends SmartContract {
 
     // Contract internal method to compute x + y.
     @method()
-    sum(a: bigint, b: bigint): bigint {
+    static sum(a: bigint, b: bigint): bigint {
         return a + b
     }
 
     // Public method which can be unlocked by providing the solution to x + y.
     @method()
     public add(z: bigint) {
-        assert(z == this.sum(this.x, this.y))
+        assert(z == PROJECT_NAME.sum(this.x, this.y), 'add check failed')
     }
 
     // Public method which can be unlocked by providing the solution to x - y.
     @method()
     public sub(z: bigint) {
-        assert(z == this.x - this.y)
-    }
-
-    // Local method to construct deployment TX.
-    getDeployTx(utxos: UTXO[], satoshis: number): bsv.Transaction {
-        return new bsv.Transaction().from(utxos).addOutput(
-            new bsv.Transaction.Output({
-                script: this.lockingScript,
-                satoshis: satoshis,
-            })
-        )
-    }
-
-    // Local method to construct TX that calls deployed contract.
-    getCallTxForAdd(z: bigint, prevTx: bsv.Transaction): bsv.Transaction {
-        return new bsv.Transaction()
-            .addInputFromPrevTx(prevTx)
-            .setInputScript(0, () => {
-                return this.getUnlockingScript((self) => self.add(z))
-            })
+        assert(z == this.x - this.y, 'sub check failed')
     }
 }

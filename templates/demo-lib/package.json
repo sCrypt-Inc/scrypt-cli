@@ -27,8 +27,7 @@
   },
   "dependencies": {
     "scrypt-ts": "beta",
-    "dotenv": "^16.0.3",
-    "axios": "^1.2.1"
+    "dotenv": "^16.0.3"
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",

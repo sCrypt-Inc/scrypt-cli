@@ -7,14 +7,9 @@ const dotenvConfigPath = '.env'
 dotenv.config({ path: dotenvConfigPath })
 
 // fill in private key on testnet in WIF here
-const privKey: string = process.env.PRIVATE_KEY || ''
+let privKey = process.env.PRIVATE_KEY
 if (!privKey) {
     genPrivKey()
-} else {
-    console.log(`Private key already generated. 
-You can fund its address '${bsv.PrivateKey.fromWIF(
-        privKey
-    ).toAddress()}' from the sCrypt faucet https://scrypt.io/#faucet`)
 }
 
 export function genPrivKey() {
@@ -23,12 +18,8 @@ export function genPrivKey() {
 Private key generated: '${newPrivKey.toWIF()}'
 You can fund its address '${newPrivKey.toAddress()}' from sCrypt faucet https://scrypt.io/#faucet`)
     // auto generate .env file with new generated key
-    fs.writeFileSync(
-        dotenvConfigPath,
-        `# You can fund its address '${newPrivKey.toAddress()}' from the sCrypt faucet https://scrypt.io/#faucet
-PRIVATE_KEY="${newPrivKey}"`
-    )
-    exit(-1)
+    fs.writeFileSync(dotenvConfigPath, `PRIVATE_KEY="${newPrivKey}"`)
+    privKey = newPrivKey.toWIF()
 }
 
 export const myPrivateKey = bsv.PrivateKey.fromWIF(privKey)

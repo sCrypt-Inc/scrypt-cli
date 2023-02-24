@@ -1,0 +1,5 @@
+.husky/
+templates/
+src/**/*.test.js
+test-templates.sh
+.travis.yml

@@ -80,10 +80,8 @@ async function compile() {
 
         artifact.transformer = transformer;
 
-        const artifactFile = changeExtension(path.join(currentPath, transformer.scryptfile), "json");
-
-        fs.writeFileSync(artifactFile, JSON.stringify(artifact, null, 1))
-        console.log(green(`Compiled successfully, artifact file: ${artifactFile}`));
+        fs.writeFileSync(artifactPath, JSON.stringify(artifact, null, 1))
+        console.log(green(`Compiled successfully, artifact file: ${artifactPath}`));
       } catch (e) {
         const resStr = `\nCompilation failed.\n`;
         console.log(red(resStr));

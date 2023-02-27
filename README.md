@@ -66,3 +66,11 @@ When filing an issue a lot of time it's useful to provide information about your
 npx scrypt-cli system
 ```
 
+
+### Show version
+
+Show the version of scrypt-cli:
+
+```sh
+npx scrypt-cli version
+```

@@ -13,3 +13,7 @@ os:
 script:
   - npm t
   - npm run test-templates
+  - npx scrypt-cli -v
+  - npx scrypt-cli project my-proj
+  - cd my-proj && npm i && npm t
+

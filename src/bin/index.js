@@ -7,6 +7,8 @@ const { compile } = require('../lib/compile');
 const { system } = require('../lib/system');
 const { init } = require('../lib/init');
 const chalk = require('chalk');
+const { showVersion } = require('yargs');
+
 
 const _g = chalk.green;
 const _r = chalk.reset;
@@ -68,6 +70,7 @@ yargs(hideBin(process.argv))
   .command(['compile', 'comp', 'c'], 'Compile smart contracts in current project.', {}, () => compile())
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
   .command(['init'], 'Initialize sCrypt in an existing project', {}, () => init())
+  .command(['version'], 'show version', {}, () => showVersion())
   .alias('h', 'help')
   .alias('v', 'version')
 

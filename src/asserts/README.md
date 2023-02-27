@@ -9,8 +9,8 @@ Use the contract artifact file to initialize the contract class at the front end
 
 ```ts
 import { PROJECT_NAME } from './contracts/PROJECT_FILENAME';
-import artifact from './contracts/PROJECT_FILENAME.json';
-PROJECT_NAME.init(artifact);
+import artifact from '../artifact/src/contracts/PROJECT_FILENAME.json';
+PROJECT_NAME.loadArtifact(artifact);
 ```
 
 ## Connect wallet
@@ -24,7 +24,7 @@ Call the `getConnectedTarget()` interface of the signer to request to connect to
 
 ```ts
 try {
-    const provider = new WhatsonchainProvider(bsv.Networks.testnet);
+    const provider = new DefaultProvider();
     const signer = new SensiletSigner(provider);
     await signer.getConnectedTarget();
 } catch (error) {
@@ -39,7 +39,7 @@ Instantiate the contract and call `deploy()` to deploy the contract.
 
 ```ts
     const balance = 1000
-    const instance = new PROJECT_NAME().markAsGenesis();
+    const instance = new PROJECT_NAME();
     await instance.connect(signer);
     const tx = await instance.deploy(balance);
 ```
@@ -59,14 +59,12 @@ let nextInstance = instance.next();
 // apply updates on the next instance locally
 nextInstance.count++;
 // call the method of current instance to apply the updates on chain
-const { tx: tx_i } = await instance.methods.increment(
-    {
+const { tx: tx_i } = await instance.methods.increment({
     next: {
         instance: nextInstance,
         balance
     }
-    } as MethodCallOptions<PROJECT_NAME>
-);
+} as MethodCallOptions<PROJECT_NAME>);
 ```
 
 ## Learn sCrypt

@@ -72,5 +72,22 @@ npx scrypt-cli system
 Show the version of scrypt-cli:
 
 ```sh
-npx scrypt-cli version
+npx scrypt-cli -v
+```
+
+### Using latest version
+
+1. run command with `latest` tag: 
+
+```sh
+npx scrypt-cli@latest -v
+```
+
+or 
+
+2. clear cache to fetch the latest version: 
+
+```sh
+npx clear-npx-cache
+npx scrypt-cli -v
 ```

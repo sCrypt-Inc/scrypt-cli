@@ -10,6 +10,7 @@ for d in */ ; do
     npm i
     npm run lint
     npm run lint-check || exit 1
+    npm run genprivkey
     npm run test || exit 1
     rm -rf .git/
     cd ../

@@ -7,6 +7,7 @@ coverage
 
 # System
 .DS_Store
+.env
 
 **/scrypts
 **/scrypt.index.json

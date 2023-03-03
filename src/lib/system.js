@@ -7,8 +7,7 @@ function system() {
       {
         System: ['OS', 'CPU'],
         Binaries: ['Node', 'npm', 'Yarn'],
-        npmPackages: ['scrypt-ts'],
-        npmGlobalPackages: ['scrypt-cli'],
+        npmPackages: ['scrypt-ts', 'scryptlib']
       },
       { showNotFound: true }
     )

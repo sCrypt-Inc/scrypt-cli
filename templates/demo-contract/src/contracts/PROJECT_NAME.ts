@@ -1,35 +1,24 @@
-import { method, prop, SmartContract, assert } from 'scrypt-ts'
+import {
+    assert,
+    ByteString,
+    method,
+    prop,
+    sha256,
+    Sha256,
+    SmartContract,
+} from 'scrypt-ts'
 
 export class PROJECT_NAME extends SmartContract {
     @prop()
-    readonly x: bigint
+    hash: Sha256
 
-    @prop()
-    readonly y: bigint
-
-    // The values of the x and y properties get passed via the
-    // smart contracts constructor.
-    constructor(x: bigint, y: bigint) {
+    constructor(hash: Sha256) {
         super(...arguments)
-        this.x = x
-        this.y = y
+        this.hash = hash
     }
 
-    // Contract internal method to compute x + y.
     @method()
-    static sum(a: bigint, b: bigint): bigint {
-        return a + b
-    }
-
-    // Public method which can be unlocked by providing the solution to x + y.
-    @method()
-    public add(z: bigint) {
-        assert(z == PROJECT_NAME.sum(this.x, this.y), 'add check failed')
-    }
-
-    // Public method which can be unlocked by providing the solution to x - y.
-    @method()
-    public sub(z: bigint) {
-        assert(z == this.x - this.y, 'sub check failed')
+    public unlock(message: ByteString) {
+        assert(this.hash === sha256(message), 'Not expected message!')
     }
 }

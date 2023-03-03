@@ -1,25 +1,11 @@
 const fs = require('fs-extra');
 const path = require('path');
-const sh = require('shelljs');
 const json5 = require('json5');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, readdirRecursive, changeExtension } = require('./helpers');
-const { resolve } = require('path');
-const { readdir } = require('fs').promises;
+const { stepCmd, readdirRecursive } = require('./helpers');
 const { compileContract } = require('scryptlib');
 
-async function* getFiles(dir) {
-  const dirents = await readdir(dir, { withFileTypes: true });
-  for (const dirent of dirents) {
-    const res = resolve(dir, dirent.name);
-    if (dirent.isDirectory()) {
-      yield* getFiles(res);
-    } else {
-      yield res;
-    }
-  }
-}
 
 async function compile() {
 
@@ -65,10 +51,17 @@ async function compile() {
     if (path.extname(fAbs) == '.scrypt') {
       try {
         const outDir = path.join(currentPath, path.dirname(f));
-        compileContract(f, {
+        const result = compileContract(f, {
           out: outDir,
           artifact: true
         });
+
+        if(result.errors.length > 0) {
+          const resStr = `\nCompilation failed.\n`;
+          console.log(red(resStr));
+          console.log(red(`ERROR: Failed to compile ${f}`));
+          exit(-1);
+        }
 
         const transformerPath = path.join(outDir, `${path.basename(f, '.scrypt')}.transformer.json`);
 

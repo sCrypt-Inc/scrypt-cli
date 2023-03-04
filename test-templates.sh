@@ -11,8 +11,21 @@ for d in */ ; do
     npm run lint
     npm run lint-check || exit 1
     npm run genprivkey
+    npx scrypt-cli compile 
     npm run test || exit 1
     rm -rf .git/
     cd ../
 done
+
+rm -rf dapp
+
+npx create-react-app dapp --template typescript
+
+cd dapp
+git init
+git add .
+git commit -am "Initial commit"
+npm i
+npx scrypt-cli init
+npx scrypt-cli compile 
 

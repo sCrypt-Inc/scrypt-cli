@@ -31,6 +31,6 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
             instance.methods.unlock(toByteString('wrong message', true), {
                 fromUTXO: getDummyUTXO(),
             } as MethodCallOptions<PROJECT_NAME>)
-        ).to.be.rejectedWith(/Not expected message!/)
+        ).to.be.rejectedWith(/Hash does not match/)
     })
 })

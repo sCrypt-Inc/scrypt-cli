@@ -13,4 +13,5 @@ coverage
 **/scrypt.index.json
 
 
-templates/dapp
+templates/dapp/
+templates/hello-world/

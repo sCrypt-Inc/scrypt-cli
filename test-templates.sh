@@ -35,6 +35,9 @@ cd templates/
 
 echo "testing npx scrypt-cli project hello-world"
 rm -rf hello-world
+echo "npx version"
+npx -v
+echo "npx scrypt-cli -v"
 npx scrypt-cli -v
 echo "aaa"
 npx scrypt-cli project hello-world

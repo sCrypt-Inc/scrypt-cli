@@ -5,6 +5,9 @@ node_js:
   - 18
   - 19
 
+git:
+  autocrlf: false
+
 before_install:
 
 os:

@@ -9,7 +9,7 @@ Use the contract artifact file to initialize the contract class at the front end
 
 ```ts
 import { PROJECT_NAME } from './contracts/PROJECT_FILENAME';
-import artifact from '../artifact/src/contracts/PROJECT_FILENAME.json';
+var artifact = require('../artifact/src/contracts/PROJECT_FILENAME.json');
 PROJECT_NAME.loadArtifact(artifact);
 ```
 

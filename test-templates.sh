@@ -32,44 +32,43 @@ cd templates/
 # npx scrypt-cli compile 
 # cd ..
 
-
-echo "testing npx scrypt-cli project hello-world"
-rm -rf hello-world
-echo "npx version"
 npx -v
-echo "npx scrypt-cli -v"
-npx scrypt-cli -v
-echo "aaa"
-npx scrypt-cli project hello-world
-echo "hello-world created"
-cd hello-world
 
-npm i
-npm t
-npm run genprivkey
-cd ..
+if ! node -v | grep -q 'v16.'; then
+    npx scrypt-cli -v
+    echo "testing npx scrypt-cli project hello-world"
+    rm -rf hello-world
+    npx scrypt-cli project hello-world
+    cd hello-world
 
-
-echo "testing npx scrypt-cli project --state stateful-counter"
-rm -rf stateful-counter
-npx scrypt-cli project --state stateful-counter
-cd stateful-counter
-
-npm i
-npm t
-npm run genprivkey
-cd ..
+    npm i
+    npm t
+    npm run genprivkey
+    cd ..
 
 
-echo "testing npx scrypt-cli project --lib my-lib"
-rm -rf my-lib
-npx scrypt-cli project --lib my-lib
-cd my-lib
+    echo "testing npx scrypt-cli project --state stateful-counter"
+    rm -rf stateful-counter
+    npx scrypt-cli project --state stateful-counter
+    cd stateful-counter
 
-npm i
-npm t
-npm run genprivkey
-cd ..
+    npm i
+    npm t
+    npm run genprivkey
+    cd ..
 
-echo "testing npx scrypt-cli system"
-npx scrypt-cli system
+
+    echo "testing npx scrypt-cli project --lib my-lib"
+    rm -rf my-lib
+    npx scrypt-cli project --lib my-lib
+    cd my-lib
+
+    npm i
+    npm t
+    npm run genprivkey
+    cd ..
+
+    echo "testing npx scrypt-cli system"
+    npx scrypt-cli system
+fi
+

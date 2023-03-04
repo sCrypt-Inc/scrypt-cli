@@ -1,4 +1,12 @@
-import { assert, ByteString, method, prop, sha256, Sha256, SmartContract } from 'scrypt-ts'
+import {
+    assert,
+    ByteString,
+    method,
+    prop,
+    sha256,
+    Sha256,
+    SmartContract,
+} from 'scrypt-ts'
 
 export class PROJECT_NAME extends SmartContract {
     @prop()

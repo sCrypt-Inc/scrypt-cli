@@ -8,7 +8,7 @@ const { compileContract } = require('scryptlib');
 
 
 async function compile() {
-
+  
   // Check TS config
   let outDir = "";
   const tsConfig = json5.parse(fs.readFileSync('tsconfig.json', 'utf8'));
@@ -43,6 +43,11 @@ async function compile() {
   // TODO: This is a hacky approach but works for now. Is there a more elegant solution?
 
   var currentPath = process.cwd();
+  if(!fs.existsSync(outDir)) {
+    console.log(red(`ERROR: outDir '${outDir}' not exists`));
+    exit(-1);
+  }
+
   const distFiles = await readdirRecursive(outDir);
 
 

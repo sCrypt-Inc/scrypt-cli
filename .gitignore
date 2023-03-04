@@ -9,8 +9,11 @@ coverage
 .DS_Store
 .env
 
-**/scrypts
+**/artifacts
 **/scrypt.index.json
 
 
-templates/dapp
+templates/dapp/
+templates/hello-world/
+templates/stateful-counter/
+templates/my-lib/

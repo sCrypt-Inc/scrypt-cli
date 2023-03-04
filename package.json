@@ -1,6 +1,6 @@
 {
   "name": "scrypt-cli",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "CLI tool for creating and managing sCrypt projects.",
   "bin": {
     "scrypt": "./src/bin/index.js",

@@ -23,6 +23,8 @@ npx create-react-app dapp --template typescript
 
 cd dapp
 git init
+git config user.email "ci@scrypt.io"
+git config user.name "scrypt"
 git add .
 git commit -am "Initial commit"
 npm i

@@ -1,12 +1,4 @@
-import {
-    assert,
-    ByteString,
-    method,
-    prop,
-    sha256,
-    Sha256,
-    SmartContract,
-} from 'scrypt-ts'
+import { assert, ByteString, method, prop, sha256, Sha256, SmartContract } from 'scrypt-ts'
 
 export class PROJECT_NAME extends SmartContract {
     @prop()
@@ -19,6 +11,6 @@ export class PROJECT_NAME extends SmartContract {
 
     @method()
     public unlock(message: ByteString) {
-        assert(this.hash === sha256(message), 'Not expected message!')
+        assert(sha256(message) == this.hash, 'Hash does not match')
     }
 }

@@ -17,7 +17,7 @@ export class PROJECT_NAME extends SmartContract {
         this.count = count
     }
 
-    @method(SigHash.ANYONECANPAY_SINGLE)
+    @method(SigHash.SINGLE)
     public increment() {
         this.count++
 

@@ -54,7 +54,7 @@ npx scrypt-cli init
 npx scrypt-cli compile
 ```
 
-This will search current project for classes extending `SmartContract` and compile them. This will produce a [contract artifact file](https://github.com/sCrypt-Inc/scryptlib#contract-description-file) for each compiled class. The files will be stored under the `scrypts` directory. 
+This will search current project for classes extending `SmartContract` and compile them. This will produce a [contract artifact file](https://github.com/sCrypt-Inc/scryptlib#contract-description-file) for each compiled class. The files will be stored under the `artifacts` directory. 
 
 The command needs to run in the root directory of the project.
 

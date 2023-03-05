@@ -2,6 +2,6 @@ src
 tests
 .gitignore
 node_modules
-scrypts/**/*
-!scrypts/**/*.scrypt
+artifacts/**/*
+!artifacts/**/*.scrypt
 !scrypt.index.json

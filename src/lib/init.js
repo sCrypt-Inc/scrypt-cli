@@ -53,7 +53,7 @@ async function configTSconfig() {
 
         plugins.push({
             transform: "scrypt-ts/dist/transformation/transformer",
-            outDir: "./artifact",
+            outDir: "./artifacts",
             transformProgram: true
         })
 

@@ -12,6 +12,7 @@
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --silent",
     "testw": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch --silent",
     "test-templates": "sh test-templates.sh",
+    "test-all-commands": "sh test-all-commands.sh",
     "prepare": "husky install"
   },
   "jest": {

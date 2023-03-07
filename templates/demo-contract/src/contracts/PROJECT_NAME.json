@@ -1,0 +1,43 @@
+{
+ "version": 9,
+ "compilerVersion": "1.19.0+commit.72eaeba",
+ "contract": "PROJECT_NAME",
+ "md5": "baa2c293b0cede3158de9736f65e26fb",
+ "structs": [],
+ "library": [],
+ "alias": [],
+ "abi": [
+  {
+   "type": "function",
+   "name": "unlock",
+   "index": 0,
+   "params": [
+    {
+     "name": "message",
+     "type": "bytes"
+    }
+   ]
+  },
+  {
+   "type": "constructor",
+   "params": [
+    {
+     "name": "hash",
+     "type": "Sha256"
+    }
+   ]
+  }
+ ],
+ "stateProps": [],
+ "buildType": "debug",
+ "file": "file:///home/miha/Work/kala/bitcoin/scrypt-cli/templates/demo-contract/artifacts/src/contracts/PROJECT_NAME.scrypt",
+ "hex": "00<hash>610079527a75517a75615179a85179877777",
+ "sourceMapFile": "",
+ "transformer": {
+  "success": true,
+  "errors": [],
+  "scryptfile": "src/contracts/PROJECT_NAME.scrypt",
+  "sourceMapFile": "src/contracts/PROJECT_NAME.scrypt.map",
+  "ctxMethods": []
+ }
+}

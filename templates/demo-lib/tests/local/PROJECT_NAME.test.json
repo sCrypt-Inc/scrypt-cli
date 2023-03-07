@@ -1,0 +1,66 @@
+{
+ "version": 9,
+ "compilerVersion": "1.19.0+commit.72eaeba",
+ "contract": "TestLibContract",
+ "md5": "500fe4fab1742a08e0c20ba997a21436",
+ "structs": [],
+ "library": [
+  {
+   "name": "PROJECT_NAME",
+   "params": [
+    {
+     "name": "ctor.x",
+     "type": "int"
+    }
+   ],
+   "properties": [
+    {
+     "name": "x",
+     "type": "int"
+    }
+   ],
+   "genericTypes": []
+  }
+ ],
+ "alias": [],
+ "abi": [
+  {
+   "type": "function",
+   "name": "unlock1",
+   "index": 0,
+   "params": [
+    {
+     "name": "x",
+     "type": "int"
+    }
+   ]
+  },
+  {
+   "type": "function",
+   "name": "unlock2",
+   "index": 1,
+   "params": [
+    {
+     "name": "x",
+     "type": "int"
+    }
+   ]
+  },
+  {
+   "type": "constructor",
+   "params": []
+  }
+ ],
+ "stateProps": [],
+ "buildType": "debug",
+ "file": "file:///home/miha/Work/kala/bitcoin/scrypt-cli/templates/demo-lib/artifacts/tests/local/PROJECT_NAME.test.scrypt",
+ "hex": "00790087635152615179517993517a75517a756152799c77776700795187630055610079527a75517a756152615179517994517a756153799c77777767006868",
+ "sourceMapFile": "",
+ "transformer": {
+  "success": true,
+  "errors": [],
+  "scryptfile": "tests/local/PROJECT_NAME.test.scrypt",
+  "sourceMapFile": "tests/local/PROJECT_NAME.test.scrypt.map",
+  "ctxMethods": []
+ }
+}

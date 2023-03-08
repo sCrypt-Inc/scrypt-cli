@@ -153,7 +153,7 @@ async function setProjectName(dir, name) {
   let dirSrc = path.join(dir, 'src')
   let fIndex = path.join(dirSrc, 'index.ts')
   if (fs.existsSync(fIndex)) {
-    const importTemplateIndex = `from './contracts/${PROJECT_NAME_TEMPLATE}''`
+    const importTemplateIndex = `from './contracts/${PROJECT_NAME_TEMPLATE}'`
     const importReplacementIndex = importTemplateIndex.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
     replaceInFile(fIndex, importTemplateIndex, importReplacementIndex);
     replaceInFile(fIndex, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));

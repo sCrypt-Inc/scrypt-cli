@@ -1,7 +1,27 @@
-src
-tests
+github
+.env.example
+.env
+.mocharc.json
+.husky
+.vscode
+/src
+/tests
 .gitignore
-node_modules
+/node_modules
+.eslintcache
+.eslintignore
+.eslintrc
+.prettierignore
+.prettierrc
+.travis.yml
+tsconfig.json
+
+# It is important to package dist files and sCrypt artifacts
+# in order to be able to import from other packages.
+!/dist/
+/dist/tests
+/dist/src/**/*.js.map
 artifacts/**/*
 !artifacts/**/*.scrypt
+!scrypt.index.json
 !scrypt.index.json

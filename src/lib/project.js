@@ -150,24 +150,32 @@ async function setProjectName(dir, name) {
 
   // Rename contract and test files w project name.
   // Also rename template inside these files.
-  const importTemplate = `from '../../src/contracts/${PROJECT_NAME_TEMPLATE}'`
-  const importReplacement = importTemplate.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
+  let dirSrc = path.join(dir, 'src')
+  let fIndex = path.join(dirSrc, 'index.ts')
+  if (fs.existsSync(fIndex)) {
+    const importTemplateIndex = `from './contracts/${PROJECT_NAME_TEMPLATE}''`
+    const importReplacementIndex = importTemplateIndex.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
+    replaceInFile(fIndex, importTemplateIndex, importReplacementIndex);
+    replaceInFile(fIndex, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
+  }
 
-  let dirContracts = path.join(dir, 'src', 'contracts')
+  let dirContracts = path.join(dirSrc, 'contracts')
   let fContract = path.join(dirContracts, PROJECT_NAME_TEMPLATE + '.ts')
   let fContractNew = fContract.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
   if (fs.existsSync(fContract)) {
     sh.mv(fContract, fContractNew)
-    replaceInFile(fContractNew, importTemplate, importReplacement);
     replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
+
+  const importTemplateTests = `from '../../src/contracts/${PROJECT_NAME_TEMPLATE}'`
+  const importReplacementTests = importTemplateTests.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
 
   let dirTestsLocal = path.join(dir, 'tests', 'local')
   let fTestLocal = path.join(dirTestsLocal, PROJECT_NAME_TEMPLATE + '.test.ts')
   let fTestLocalNew = fTestLocal.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
   if (fs.existsSync(fTestLocal)) {
     sh.mv(fTestLocal, fTestLocalNew)
-    replaceInFile(fTestLocalNew, importTemplate, importReplacement);
+    replaceInFile(fTestLocalNew, importTemplateTests, importReplacementTests);
     replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
@@ -176,7 +184,7 @@ async function setProjectName(dir, name) {
   let fTestTestnetNew = fTestTestnet.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
   if (fs.existsSync(fTestTestnet)) {
     sh.mv(fTestTestnet, fTestTestnetNew)
-    replaceInFile(fTestTestnetNew, importTemplate, importReplacement);
+    replaceInFile(fTestTestnetNew, importTemplateTests, importReplacementTests);
     replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
@@ -196,7 +204,7 @@ function kebabCase(str) {
 
 function camelCase(str) {
   const a = str.toLowerCase()
-      .replace(/[-_\s.]+(.)?/g, (_, c) => c ? c.toUpperCase() : '');
+    .replace(/[-_\s.]+(.)?/g, (_, c) => c ? c.toUpperCase() : '');
   return a.substring(0, 1).toLowerCase() + a.substring(1);
 }
 

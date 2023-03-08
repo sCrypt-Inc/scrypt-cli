@@ -1,6 +1,6 @@
 .husky/
 templates/
 src/**/*.test.js
-test-templates.sh
+*.sh
 .travis.yml
 test-commands/

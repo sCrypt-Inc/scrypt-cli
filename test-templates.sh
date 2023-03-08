@@ -11,7 +11,7 @@ for d in */ ; do
     npm run lint
     npm run lint-check || exit 1
     npm run genprivkey
-    npx scrypt-cli compile 
+    node ../../src/bin/index.js compile
     npm run test || exit 1
     rm -rf .git/
     cd ../

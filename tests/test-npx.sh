@@ -1,50 +1,46 @@
 #!/bin/sh
 set -e
+cd ..
+rm -rf test-npx
+mkdir -p test-npx
 
-rm -rf test-commands
-mkdir -p test-commands
-
-cd test-commands
+cd test-npx
 
 echo "testing get version info"
-node ../src/bin/index.js -v
+npx scrypt-cli -v
 
 echo "testing get system info"
-node ../src/bin/index.js system
+npx scrypt-cli system
 
 echo "testing create project hello-world"
 rm -rf hello-world
-node ../src/bin/index.js project hello-world
+npx scrypt-cli project hello-world
 cd hello-world
 
 npm i
-node ../../src/bin/index.js compile
+npx scrypt-cli compile
 npm t
-npm run genprivkey
 cd ..
 
 
 echo "testing create project --state stateful-counter"
 rm -rf stateful-counter
-node ../src/bin/index.js project --state stateful-counter
+npx scrypt-cli project --state stateful-counter
 cd stateful-counter
 
 npm i
-node ../../src/bin/index.js compile
+npx scrypt-cli compile
 npm t
-npm run genprivkey
 cd ..
 
 
 echo "testing create project --lib my-lib"
 rm -rf my-lib
-node ../src/bin/index.js project --lib my-lib
+npx scrypt-cli project --lib my-lib
 cd my-lib
 
 npm i
-node ../../src/bin/index.js compile
-npm t
-npm run genprivkey
+npx scrypt-cli compile
 cd ..
 
 
@@ -59,6 +55,8 @@ git config user.name "scrypt"
 git add .
 git commit -am "Initial commit"
 npm i
-node ../../src/bin/index.js init
-node ../../src/bin/index.js compile
+npx scrypt-cli init
+npx scrypt-cli compile
 cd ..
+
+rm -rf test-npx

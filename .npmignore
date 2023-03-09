@@ -2,6 +2,5 @@
 templates/
 src/**/*.test.js
 *.sh
-test-lib-import.js
 .travis.yml
-test-commands/
+tests/

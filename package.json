@@ -11,9 +11,10 @@
     "format": "prettier --write --ignore-unknown **/*",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --silent",
     "testw": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch --silent",
-    "test-templates": "sh test-templates.sh",
-    "test-all-commands": "sh test-all-commands.sh",
-    "test-lib-import": "node test-lib-import.js",
+    "test-templates": "sh tests/test-templates.sh",
+    "test-all-commands": "sh tests/test-all-commands.sh",
+    "test-lib-import": "node tests/test-lib-import.js",
+    "test-all": "npm t && npm run test-templates && npm run test-all-commands && npm run test-lib-import",
     "prepare": "husky install"
   },
   "jest": {

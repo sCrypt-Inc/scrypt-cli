@@ -42,4 +42,5 @@ script:
   - npm t
   - npm run test-templates
   - npm run test-all-commands
+  - npm run test-lib-import
   - if [ $TRAVIS_EVENT_TYPE == "cron" ] ; then sh test-npx.sh ; fi

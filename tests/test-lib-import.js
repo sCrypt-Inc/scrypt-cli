@@ -36,7 +36,6 @@ export class TestConsumer extends SmartContract {
 }
 `
 
-// TODO: Check exec errors
 try {
   const tmpDir = os.tmpdir()
 
@@ -45,7 +44,7 @@ try {
   if (fs.existsSync(libDir)) {
     fs.rmSync(libDir, { recursive: true, force: true })
   }
-  execSync(`node ${__dirname}/src/bin/index.js p --lib ${libName}`, { cwd: tmpDir })
+  execSync(`node ${__dirname}/../src/bin/index.js p --lib ${libName}`, { cwd: tmpDir })
 
   execSync('npm i', { cwd: libDir })
   execSync('npm run build', { cwd: libDir })
@@ -55,7 +54,7 @@ try {
   if (fs.existsSync(consumerDir)) {
     fs.rmSync(consumerDir, { recursive: true, force: true })
   }
-  execSync(`node ${__dirname}/src/bin/index.js p ${consumerName}`, { cwd: tmpDir })
+  execSync(`node ${__dirname}/../src/bin/index.js p ${consumerName}`, { cwd: tmpDir })
 
   const consumerPackageJSONPath = path.join(consumerDir, 'package.json')
   const consumerPackageJSON = JSON.parse(fs.readFileSync(consumerPackageJSONPath))

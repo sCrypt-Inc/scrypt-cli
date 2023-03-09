@@ -68,7 +68,7 @@ try {
   execSync('npm i', { cwd: consumerDir })
 
   const modulePath = path.join(consumerDir, 'node_modules', 'test-lib')
-  fs.rmSync(modulePath)
+  fs.rmSync(modulePath, { recursive: true, force: true })
   fs.copySync(libDir, modulePath)
 
   execSync('npm run build', { cwd: consumerDir })

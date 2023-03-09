@@ -3,4 +3,4 @@ templates/
 src/**/*.test.js
 *.sh
 .travis.yml
-test-commands/
+tests/

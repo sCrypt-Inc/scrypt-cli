@@ -12,5 +12,5 @@ coverage
 **/artifacts
 **/scrypt.index.json
 
-
-test-commands/
+**/test-commands
+**/test-npx

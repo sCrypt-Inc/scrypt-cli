@@ -68,17 +68,8 @@ async function compile() {
           exit(-1);
         }
 
-        const transformerPath = path.join(outDir, `${path.basename(f, '.scrypt')}.transformer.json`);
-
-        const transformer = json5.parse(fs.readFileSync(transformerPath, 'utf8'));
-
         const artifactPath = path.join(outDir, `${path.basename(f, '.scrypt')}.json`);
 
-        const artifact = json5.parse(fs.readFileSync(artifactPath, 'utf8'));
-
-        artifact.transformer = transformer;
-
-        fs.writeFileSync(artifactPath, JSON.stringify(artifact, null, 1))
         console.log(green(`Compiled successfully, artifact file: ${artifactPath}`));
       } catch (e) {
         const resStr = `\nCompilation failed.\n`;

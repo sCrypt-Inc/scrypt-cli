@@ -128,9 +128,7 @@ function readAsset(filename) {
 }
 
 function isProjectRoot(dirPath = cwd()) {
-  return fs.existsSync('src') &&
-         (fs.existsSync('test') || fs.existsSync('tests')) &&
-         fs.existsSync('package.json') &&
+  return fs.existsSync('package.json') &&
          fs.existsSync('tsconfig.json')
 }
 

@@ -5,7 +5,7 @@ const fs = require('fs');
 const { green, red } = require('chalk');
 const { readdir } = require('fs/promises');
 const { join, basename, dirname, extname } = require('path');
-const { exit } = require('process');
+const { exit, cwd } = require('process');
 
 const shExec = util.promisify(sh.exec);
 const isWindows = process.platform === 'win32';
@@ -127,6 +127,13 @@ function readAsset(filename) {
   return readfile(join(dirname(__filename), '..', 'asserts', filename), false);
 }
 
+function isProjectRoot(dirPath = cwd()) {
+  return fs.existsSync('src') &&
+         (fs.existsSync('test') || fs.existsSync('tests')) &&
+         fs.existsSync('package.json') &&
+         fs.existsSync('tsconfig.json')
+}
+
 function titleCase(str) {
   return str
     .split('-')
@@ -159,6 +166,7 @@ module.exports = {
   writefile,
   changeExtension,
   readConfig: readAsset,
+  isProjectRoot,
   titleCase,
   kebabCase,
   camelCase,

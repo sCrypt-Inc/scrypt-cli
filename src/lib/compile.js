@@ -3,12 +3,17 @@ const path = require('path');
 const json5 = require('json5');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, readdirRecursive } = require('./helpers');
+const { stepCmd, readdirRecursive, isProjectRoot } = require('./helpers');
 const { compileContract } = require('scryptlib');
 
 
 async function compile() {
   
+  if (!isProjectRoot()) {
+    console.error(red(`Please run this command in the root directory of the project.`))
+    exit(-1)
+  }
+
   // Check TS config
   let outDir = "";
   const tsConfig = json5.parse(fs.readFileSync('tsconfig.json', 'utf8'));

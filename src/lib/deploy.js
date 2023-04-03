@@ -3,7 +3,7 @@ const path = require('path');
 const json5 = require('json5');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, camelCase, shExec } = require('./helpers');
+const { stepCmd, camelCase, shExec, isProjectRoot } = require('./helpers');
 
 
 function getDeployScript(projName) {
@@ -43,6 +43,11 @@ main()
 }
 
 async function deploy({ scriptPath }) {
+    if (!isProjectRoot()) {
+        console.error(red(`Please run this command in the root directory of the project.`))
+        exit(-1)
+    }
+
     await stepCmd(
         'Building TS',
         'npm run genprivkey'
@@ -75,7 +80,7 @@ async function deploy({ scriptPath }) {
         await shExec(
             `npx ts-node ${scriptPath}`
         );
-    } catch(e) {
+    } catch (e) {
         exit(-1)
     }
 

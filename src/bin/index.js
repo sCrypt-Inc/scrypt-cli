@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
+const semver = require('semver');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { project, ProjectType } = require('../lib/project');
 const { compile } = require('../lib/compile');
+const { deploy } = require('../lib/deploy');
 const { system } = require('../lib/system');
 const { init } = require('../lib/init');
 const chalk = require('chalk');
@@ -13,6 +15,15 @@ const { showVersion } = require('yargs');
 const _g = chalk.green;
 const _r = chalk.reset;
 const _red = chalk.red;
+
+// Check for minimum required Node.js version
+const minNodeVersion = '16.0.0';
+if (!semver.satisfies(process.version, `>=${minNodeVersion}`)) {
+  console.error(
+    `ERROR: You are using Node.js ${process.version}, but sCrypt requires at least Node.js ${minNodeVersion}. Please upgrade your Node.js version.`
+  );
+  process.exit(1);
+}
 
 yargs(hideBin(process.argv))
   .scriptName(_g('scrypt'))
@@ -43,16 +54,16 @@ yargs(hideBin(process.argv))
     ['project [name]', 'proj [name]', 'p [name]'],
     'Create a new smart contract project',
     (y) => {
-        return y.option('stateful', {
-            description: 'Create stateful smart contract project.',
-            required: false,
-            type: 'boolean'
-        })
+      return y.option('stateful', {
+        description: 'Create stateful smart contract project.',
+        required: false,
+        type: 'boolean'
+      })
         .alias('state', 'stateful')
         .option('library', {
-            description: 'Create library project.',
-            required: false,
-            type: 'boolean'
+          description: 'Create library project.',
+          required: false,
+          type: 'boolean'
         })
         .alias('lib', 'library')
         .positional('name', { demand: true, string: true, hidden: true });
@@ -68,6 +79,17 @@ yargs(hideBin(process.argv))
     }
   )
   .command(['compile', 'comp', 'c'], 'Compile smart contracts in current project.', {}, () => compile())
+  .command(['deploy', 'depl', 'd'], 'Deploy a smart contract.',
+    (y) => {
+      return y.option('script', {
+          description: 'Path to deployment script. Defaults to "deploy.ts" if none specified.',
+          required: false,
+          type: 'string'
+        })
+    },
+    async (argv) => {
+      await deploy(argv)
+    })
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
   .command(['init'], 'Initialize sCrypt in an existing project', {}, () => init())
   .command(['version'], 'show version', {}, () => showVersion())

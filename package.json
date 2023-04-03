@@ -1,6 +1,6 @@
 {
   "name": "scrypt-cli",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "CLI tool for creating and managing sCrypt projects.",
   "bin": {
     "scrypt": "./src/bin/index.js",
@@ -35,7 +35,8 @@
     "scryptlib": "^2.1.12",
     "shelljs": "^0.8.5",
     "table": "^6.8.0",
-    "yargs": "^17.5.1"
+    "yargs": "^17.5.1",
+    "semver": "^7.3.8"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",

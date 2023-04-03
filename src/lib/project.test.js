@@ -3,9 +3,11 @@ const path = require('path');
 let {
   setProjectName,
   replaceInFile,
+} = require('./project');
+let {
   titleCase,
   kebabCase,
-} = require('./project');
+} = require('./helpers');
 
 describe('project.js', () => {
   describe('project()', () => {

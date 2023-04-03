@@ -58,6 +58,20 @@ This will search current project for classes extending `SmartContract` and compi
 
 The command needs to run in the root directory of the project.
 
+### Deploy sCrypt smart contracts
+
+```sh
+npx scrypt-cli deploy
+```
+
+This will create a deploy script template `deploy.ts` if it doesn't exist yet. If it does it executes it.
+
+
+You can also run a script with a different name using the `script` option:
+```sh
+npx scrypt-cli deploy --script scripts/myDeployScript.ts
+```
+
 ### Get system info
 
 When filing an issue a lot of time it's useful to provide information about your system. You can get this information with the following command:

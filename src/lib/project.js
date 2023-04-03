@@ -5,7 +5,7 @@ const sh = require('shelljs');
 const gittar = require('gittar');
 const { green, red } = require('chalk');
 const { exit } = require('process');
-const { stepCmd, replaceInFile } = require("./helpers");
+const { stepCmd, replaceInFile, camelCase,camelCaseCapitalized, kebabCase, titleCase } = require("./helpers");
 
 
 const ProjectType = {
@@ -191,28 +191,6 @@ async function setProjectName(dir, name) {
   spin.succeed(green(step));
 }
 
-function titleCase(str) {
-  return str
-    .split('-')
-    .map((w) => w.charAt(0).toUpperCase() + w.substr(1).toLowerCase())
-    .join(' ').replace("Scrypt", "sCrypt");
-}
-
-function kebabCase(str) {
-  return str.toLowerCase().replace(' ', '-');
-}
-
-function camelCase(str) {
-  const a = str.toLowerCase()
-    .replace(/[-_\s.]+(.)?/g, (_, c) => c ? c.toUpperCase() : '');
-  return a.substring(0, 1).toLowerCase() + a.substring(1);
-}
-
-function camelCaseCapitalized(str) {
-  const a = camelCase(str)
-  return a.substring(0, 1).toUpperCase() + a.substring(1);
-}
-
 module.exports = {
   PROJECT_NAME_TEMPLATE,
   PROJECT_FILENAME_TEMPLATE,
@@ -220,8 +198,4 @@ module.exports = {
   ProjectType,
   setProjectName,
   replaceInFile,
-  titleCase,
-  kebabCase,
-  camelCase,
-  camelCaseCapitalized
 };

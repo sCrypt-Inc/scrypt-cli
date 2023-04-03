@@ -12,17 +12,17 @@ const isWindows = process.platform === 'win32';
 
 
 async function readdirRecursive(dir) {
-  const files = await readdir( dir, { withFileTypes: true } );
+  const files = await readdir(dir, { withFileTypes: true });
 
-  const paths = files.map( async file => {
-    const p = join( dir, file.name );
+  const paths = files.map(async file => {
+    const p = join(dir, file.name);
 
-    if ( file.isDirectory() ) return await readdirRecursive( p );
+    if (file.isDirectory()) return await readdirRecursive(p);
 
     return p;
-  } );
+  });
 
-  return ( await Promise.all( paths ) ).flat( Infinity );
+  return (await Promise.all(paths)).flat(Infinity);
 }
 
 /**
@@ -86,7 +86,7 @@ function replaceInFile(file, a, b) {
  */
 function readfile(file, json = true) {
   const content = fs.readFileSync(file, 'utf8');
-  if(json) {
+  if (json) {
     return JSON.parse(content);
   }
   return content;
@@ -98,7 +98,7 @@ function readfile(file, json = true) {
  * @param {object | string} object or text to save
  */
 function writefile(file, content) {
-  if(typeof content === "string") {
+  if (typeof content === "string") {
     fs.writeFileSync(file, content);
   } else {
     fs.writeFileSync(file, JSON.stringify(content, null, 2));
@@ -127,15 +127,40 @@ function readAsset(filename) {
   return readfile(join(dirname(__filename), '..', 'asserts', filename), false);
 }
 
+function titleCase(str) {
+  return str
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.substr(1).toLowerCase())
+    .join(' ').replace("Scrypt", "sCrypt");
+}
 
+function kebabCase(str) {
+  return str.toLowerCase().replace(' ', '-');
+}
+
+function camelCase(str) {
+  const a = str.toLowerCase()
+    .replace(/[-_\s.]+(.)?/g, (_, c) => c ? c.toUpperCase() : '');
+  return a.substring(0, 1).toLowerCase() + a.substring(1);
+}
+
+function camelCaseCapitalized(str) {
+  const a = camelCase(str)
+  return a.substring(0, 1).toUpperCase() + a.substring(1);
+}
 
 module.exports = {
   step,
   stepCmd,
+  shExec,
   readdirRecursive,
   replaceInFile,
   readfile,
   writefile,
   changeExtension,
-  readConfig: readAsset
+  readConfig: readAsset,
+  titleCase,
+  kebabCase,
+  camelCase,
+  camelCaseCapitalized
 };

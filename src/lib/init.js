@@ -1,7 +1,7 @@
 const { green, red, yellow } = require('chalk');
 const { existsSync, renameSync, mkdirSync } = require('fs');
-const { stepCmd, replaceInFile, readfile, writefile, readConfig } = require("./helpers");
-const { camelCase, PROJECT_NAME_TEMPLATE, PROJECT_FILENAME_TEMPLATE, camelCaseCapitalized } = require("./project");
+const { stepCmd, replaceInFile, readfile, writefile, readConfig, camelCase, camelCaseCapitalized } = require("./helpers");
+const { PROJECT_NAME_TEMPLATE, PROJECT_FILENAME_TEMPLATE } = require("./project");
 const path = require('path');
 const { exit } = require('process');
 

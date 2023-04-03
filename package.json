@@ -35,7 +35,8 @@
     "scryptlib": "^2.1.12",
     "shelljs": "^0.8.5",
     "table": "^6.8.0",
-    "yargs": "^17.5.1"
+    "yargs": "^17.5.1",
+    "semver": "^7.3.8"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",

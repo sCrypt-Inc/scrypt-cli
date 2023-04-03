@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const semver = require('semver');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { project, ProjectType } = require('../lib/project');
@@ -13,6 +14,15 @@ const { showVersion } = require('yargs');
 const _g = chalk.green;
 const _r = chalk.reset;
 const _red = chalk.red;
+
+// Check for minimum required Node.js version
+const minNodeVersion = '16.0.0';
+if (!semver.satisfies(process.version, `>=${minNodeVersion}`)) {
+  console.error(
+    `ERROR: You are using Node.js ${process.version}, but sCrypt requires at least Node.js ${minNodeVersion}. Please upgrade your Node.js version.`
+  );
+  process.exit(1);
+}
 
 yargs(hideBin(process.argv))
   .scriptName(_g('scrypt'))

@@ -91,7 +91,14 @@ async function createContract() {
     writefile(readmePath, readConfig('README.md'));
     replaceInFile(readmePath, PROJECT_FILENAME_TEMPLATE, camelCase(packageJSON.name));
     replaceInFile(readmePath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
-
+    
+    // create deploy.ts
+    const deployScriptPath = 'deploy.ts'
+    writefile(deployScriptPath, readConfig('deploy.ts'));
+    const importTemplateDeployScript = `from './src/contracts/${PROJECT_NAME_TEMPLATE}'`
+    const importReplacementDeployScript = importTemplateDeployScript.replace(PROJECT_NAME_TEMPLATE, camelCase(packageJSON.name))
+    replaceInFile(deployScriptPath, importTemplateDeployScript, importReplacementDeployScript);
+    replaceInFile(deployScriptPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
 
     // Compiling contract
     await stepCmd(

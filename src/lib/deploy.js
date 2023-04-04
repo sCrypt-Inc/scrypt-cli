@@ -3,62 +3,28 @@ const path = require('path');
 const json5 = require('json5');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, camelCase, shExec, isProjectRoot } = require('./helpers');
+const { stepCmd, camelCase, shExec, isProjectRoot, writefile, replaceInFile, camelCaseCapitalized, readConfig } = require('./helpers');
+const { PROJECT_NAME_TEMPLATE } = require('./project')
 
 
-function getDeployScript(projName) {
-    return `
-import { ${projName} } from './src/contracts/${camelCase(projName)}'
-import { bsv, TestWallet, DefaultProvider } from 'scrypt-ts'
-
-import * as dotenv from 'dotenv'
-
-// Load the .env file
-dotenv.config()
-
-// Read the private key from the .env file
-const privateKey = bsv.PrivateKey.fromWIF(process.env.PRIVATE_KEY)
-
-const signer = new TestWallet(privateKey, new DefaultProvider())
-
-async function main() {
-    await ${projName}.compile()
-    
-    const amount = 100 // TODO: Adjust the amount of sats locked in the smart contract.
-
-    const instance = new ${projName}(
-        // TODO: Pass constructor parameters.
-    )
-
-    // Connect to a signer.
-    await instance.connect(signer)
-
-    // Contract deployment.
-    const deployTx = await instance.deploy(amount)
-    console.log('${projName} contract deployed: ', deployTx.id)
-}
-
-main()
-`
-}
-
-async function deploy({ scriptPath }) {
+async function deploy({ file }) {
     if (!isProjectRoot()) {
         console.error(red(`Please run this command in the root directory of the project.`))
         exit(-1)
     }
 
+    // TODO: If private key was generated just now, then exit.
     await stepCmd(
         'Generating private key',
         'npm run genprivkey'
     );
 
-    if (!scriptPath) {
-        scriptPath = 'deploy.ts'
+    if (!file) {
+        file = 'deploy.ts'
     }
 
     // Check if script exists, if not, create one.
-    if (!fs.existsSync(scriptPath)) {
+    if (!fs.existsSync(file)) {
         await stepCmd(
             'Building TS',
             'npx tsc'
@@ -67,18 +33,24 @@ async function deploy({ scriptPath }) {
         const scryptIndex = json5.parse(fs.readFileSync('scrypt.index.json', 'utf8'));
         const projName = scryptIndex['bindings'][0]['symbol']
 
-        fs.writeFileSync(scriptPath, getDeployScript(projName))
 
-        const resStr = `New deploy script written to "${scriptPath}".\nPlease adjust it and run the deploy command once again!`;
+        // create deploy.ts
+        writefile(file, readConfig('deployTemplate.ts'));
+        const importTemplateDeployScript = `from './src/contracts/${PROJECT_NAME_TEMPLATE}'`
+        const importReplacementDeployScript = importTemplateDeployScript.replace(PROJECT_NAME_TEMPLATE, camelCase(projName))
+        replaceInFile(file, importTemplateDeployScript, importReplacementDeployScript);
+        replaceInFile(file, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(projName));
+
+        const resStr = `New deploy script written to "${file}".\nPlease adjust it and run the deploy command once again!`;
         console.log(green(resStr));
         exit(0)
     }
 
     // Run deploy script.
     try {
-        console.log(green(`Running deployment script "${scriptPath}"...`));
+        console.log(green(`Running deployment script "${file}"...`));
         await shExec(
-            `npx ts-node ${scriptPath}`
+            `npx ts-node ${file}`
         );
     } catch (e) {
         exit(-1)

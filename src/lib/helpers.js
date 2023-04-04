@@ -124,7 +124,7 @@ function changeExtension(file, extension) {
  * @returns 
  */
 function readAsset(filename) {
-  return readfile(join(dirname(__filename), '..', 'asserts', filename), false);
+  return readfile(join(dirname(__filename), '..', 'assets', filename), false);
 }
 
 function isProjectRoot(dirPath = cwd()) {

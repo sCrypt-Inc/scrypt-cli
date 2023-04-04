@@ -69,7 +69,7 @@ This will create a deployment script template `deploy.ts` if it doesn't exist ye
 
 You can also run a deployment script with a different name using the `f` option:
 ```sh
-npx scrypt-cli deploy --f myDeployScript.ts
+npx scrypt-cli deploy -f myDeployScript.ts
 ```
 
 ### Get system info

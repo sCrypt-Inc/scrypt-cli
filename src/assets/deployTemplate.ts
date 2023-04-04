@@ -22,8 +22,7 @@ async function main() {
     const amount = 100
 
     const instance = new PROJECT_NAME(
-        // TODO: Adjust constructor parameter values:
-        0n
+        // TODO: Pass constructor parameter values.
     )
 
     // Connect to a signer.

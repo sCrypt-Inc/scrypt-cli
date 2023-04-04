@@ -5,7 +5,7 @@ const sh = require('shelljs');
 const gittar = require('gittar');
 const { green, red } = require('chalk');
 const { exit } = require('process');
-const { stepCmd, replaceInFile, camelCase,camelCaseCapitalized, kebabCase, titleCase } = require("./helpers");
+const { stepCmd, replaceInFile, camelCase, camelCaseCapitalized, kebabCase, titleCase } = require("./helpers");
 
 
 const ProjectType = {
@@ -186,6 +186,14 @@ async function setProjectName(dir, name) {
     sh.mv(fTestTestnet, fTestTestnetNew)
     replaceInFile(fTestTestnetNew, importTemplateTests, importReplacementTests);
     replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
+  }
+
+  const importTemplateDeployScript = `from './src/contracts/${PROJECT_NAME_TEMPLATE}'`
+  const importReplacementDeployScript = importTemplateDeployScript.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
+  const fDeployScript = path.join(dir, 'deploy.ts')
+  if (fs.existsSync(fDeployScript)) {
+    replaceInFile(fDeployScript, importTemplateDeployScript, importReplacementDeployScript);
+    replaceInFile(fDeployScript, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
   spin.succeed(green(step));

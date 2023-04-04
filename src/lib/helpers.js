@@ -54,7 +54,7 @@ async function step(str, fn) {
  * @returns {Promise<string>}
  */
 async function stepCmd(step, cmd) {
-  const spin = ora({ text: `${step}...`, discardStdin: true }).start();
+  const spin = ora({ text: `${step}...\n`, discardStdin: true }).start();
   try {
     const result = await shExec(cmd);
     spin.succeed(green(step));

@@ -81,11 +81,11 @@ yargs(hideBin(process.argv))
   .command(['compile', 'comp', 'c'], 'Compile smart contracts in current project.', {}, () => compile())
   .command(['deploy', 'depl', 'd'], 'Deploy a smart contract.',
     (y) => {
-      return y.option('script', {
+      return y.option('f', {
           description: 'Path to deployment script. Defaults to "deploy.ts" if none specified.',
           required: false,
           type: 'string'
-        })
+        }).alias('file', 'f')
     },
     async (argv) => {
       await deploy(argv)

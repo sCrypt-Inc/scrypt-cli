@@ -49,7 +49,7 @@ async function deploy({ scriptPath }) {
     }
 
     await stepCmd(
-        'Building TS',
+        'Generating private key',
         'npm run genprivkey'
     );
 
@@ -71,7 +71,7 @@ async function deploy({ scriptPath }) {
 
         const resStr = `New deploy script written to "${scriptPath}".\nPlease adjust it and run the deploy command once again!`;
         console.log(green(resStr));
-        exit(1)
+        exit(0)
     }
 
     // Run deploy script.

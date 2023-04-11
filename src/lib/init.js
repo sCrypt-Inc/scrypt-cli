@@ -68,7 +68,7 @@ async function configTSconfig() {
 async function gitCommit() {
     // update gitignore
     const gitignorePath = path.join('.', '.gitignore')
-    const gitignoreContent = readfile(gitignorePath, false) + '\n/artifact\nscrypt.index.json';
+    const gitignoreContent = readfile(gitignorePath, false) + '\n/artifacts\nscrypt.index.json';
     writefile(gitignorePath, gitignoreContent)
     await stepCmd("Git add all file", 'git add --all')
     await stepCmd("Git commit", 'git commit -am "Initialized sCrypt."')

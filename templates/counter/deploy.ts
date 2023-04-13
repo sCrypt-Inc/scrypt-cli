@@ -11,7 +11,7 @@ dotenv.config()
 // See https://scrypt.io/docs/bitcoin-basics/bsv/#private-keys
 const privateKey = bsv.PrivateKey.fromWIF(process.env.PRIVATE_KEY)
 
-// Prepare signer. 
+// Prepare signer.
 // See https://scrypt.io/docs/how-to-deploy-and-call-a-contract/#prepare-a-signer-and-provider
 const signer = new TestWallet(privateKey, new DefaultProvider())
 

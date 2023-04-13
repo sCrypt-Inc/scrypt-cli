@@ -1,6 +1,5 @@
-import { bsv } from 'scryptlib'
 import { randomBytes } from 'crypto'
-import { DummyProvider, TestWallet, UTXO } from 'scrypt-ts'
+import { DummyProvider, TestWallet, UTXO, bsv } from 'scrypt-ts'
 import { myPrivateKey } from '../../utils/privateKey'
 
 export const inputSatoshis = 10000

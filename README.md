@@ -72,6 +72,28 @@ You can also run a deployment script with a different name using the `f` option:
 npx scrypt-cli deploy -f myDeployScript.ts
 ```
 
+### Verify a deployed smart contract
+
+With the `verify` you can verify that a already deployed output script was produced by the specified sCrypt code.
+
+```sh
+npx scrypt-cli verify <scriptHash> <contractPath>
+```
+
+The first positional argument is the double-SHA256 hash of the deployed output script, commonly used by block explorers to index scripts. The second one is the path to the file which contains the sCrypt smart contract. Note, that the file must also include all the code it depends on, i.e. third party libraries. 
+
+Using the `network` option, you can specify on which network the contract is deployed. This defaults to `test`, indicating the Bitcoin testnet:
+
+```sh
+npx scrypt-cli verify --network main <scriptHash> <contractPath>
+```
+
+You can also specify the version of sCrypt used during verification. By default, the command will use the version specified in `package.json`:
+
+```sh
+npx scrypt-cli verify --scryptVer 0.2.0-beta.9 <scriptHash> <contractPath>
+```
+
 ### Get system info
 
 When filing an issue a lot of time it's useful to provide information about your system. You can get this information with the following command:

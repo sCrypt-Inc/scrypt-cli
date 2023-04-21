@@ -3,43 +3,36 @@ const path = require('path');
 const json5 = require('json5');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, readdirRecursive, isProjectRoot } = require('./helpers');
+const { stepCmd, readdirRecursive, isProjectRoot, readConfig, writefile } = require('./helpers');
 const { compileContract } = require('scryptlib');
 
 
 async function compile() {
-  
+
   if (!isProjectRoot()) {
     console.error(red(`Please run this command in the root directory of the project.`))
     exit(-1)
   }
 
+  const tsconfigPath = "tsconfig-scryptTS.json";
+
+  if (!fs.existsSync(tsconfigPath)) {
+    writefile(tsconfigPath, readConfig('tsconfig.json'));
+    console.log(green(`${tsconfigPath} created`))
+  } else {
+    console.log(green(`${tsconfigPath} exists`))
+  }
+
+
+  const tsConfig = json5.parse(fs.readFileSync(tsconfigPath, 'utf8'));
+
   // Check TS config
-  let outDir = "";
-  const tsConfig = json5.parse(fs.readFileSync('tsconfig.json', 'utf8'));
-  let scryptTransFound = false;
-  if (tsConfig.hasOwnProperty('compilerOptions')) {
-    if (tsConfig.compilerOptions.hasOwnProperty('plugins')) {
-      tsConfig.compilerOptions.plugins.map((obj) => {
-        if (obj.hasOwnProperty("transform")) {
-          scryptTransFound = obj.transform.startsWith('scrypt-ts') && obj.transform.endsWith('transformer');
-          outDir = obj.outDir;
-          return;
-        }
-      });
-    }
-  }
-  if (!scryptTransFound) {
-    console.error(red(`TS config missing sCrypt transformer plugin.\n` +
-      `Check out a working example of tsconfig.json:\n` +
-      `https://github.com/sCrypt-Inc/scryptTS-examples/blob/master/tsconfig.json`));
-    exit(-1)
-  }
+  let outDir = tsConfig.compilerOptions.plugins[0].outDir || "artifacts";
 
   // Run tsc which in turn also transpiles to sCrypt
   await stepCmd(
     'Building TS',
-    'npx tsc'
+    `npx tsc --p ${tsconfigPath}`
   );
 
   // Recursively iterate over dist/ dir and find all classes extending 
@@ -48,7 +41,7 @@ async function compile() {
   // TODO: This is a hacky approach but works for now. Is there a more elegant solution?
 
   var currentPath = process.cwd();
-  if(!fs.existsSync(outDir)) {
+  if (!fs.existsSync(outDir)) {
     console.log(red(`ERROR: outDir '${outDir}' not exists`));
     exit(-1);
   }
@@ -66,7 +59,7 @@ async function compile() {
           artifact: true
         });
 
-        if(result.errors.length > 0) {
+        if (result.errors.length > 0) {
           const resStr = `\nCompilation failed.\n`;
           console.log(red(resStr));
           console.log(red(`ERROR: Failed to compile ${f}`));

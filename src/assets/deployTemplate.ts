@@ -17,6 +17,7 @@ async function main() {
 
     const instance = new PROJECT_NAME(
         // TODO: Pass constructor parameter values.
+        0n
     )
 
     // Connect to a signer.

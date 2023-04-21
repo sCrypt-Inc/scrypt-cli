@@ -109,7 +109,7 @@ async function createContract() {
     // create scripts/deploy.ts
     const deployScriptPath = path.join('.', 'scripts', 'deploy.ts')
     writefile(deployScriptPath, readConfig('deployTemplate.ts'));
-    const importTemplateDeployScript = `from './src/contracts/${PROJECT_NAME_TEMPLATE}'`
+    const importTemplateDeployScript = `from '../src/contracts/${PROJECT_NAME_TEMPLATE}'`
     const importReplacementDeployScript = importTemplateDeployScript.replace(PROJECT_NAME_TEMPLATE, camelCase(packageJSON.name))
     replaceInFile(deployScriptPath, importTemplateDeployScript, importReplacementDeployScript);
     replaceInFile(deployScriptPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));

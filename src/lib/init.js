@@ -54,8 +54,8 @@ async function configPackageScripts() {
 
 async function configTSconfig() {
 
-    // create tsconfig.json
-    const tsConfigPath = path.join('.', 'tsconfig.json')
+    // update tsconfig.json
+    let tsConfigPath = path.join('.', 'tsconfig.json')
 
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
@@ -64,9 +64,20 @@ async function configTSconfig() {
         tsConfigJSON.compilerOptions.experimentalDecorators = true;
 
         writefile(tsConfigPath, tsConfigJSON)
+
+        console.log(green('tsconfig.json updated'));
     } else {
         console.log(red('tsconfig.json not found'));
         exit(-1);
+    }
+
+    // create tsconfig-scryptTS.json
+    tsConfigPath =  path.join('.', 'tsconfig-scryptTS.json')
+    if (!existsSync(tsConfigPath)) {
+        writefile(tsConfigPath, readConfig('tsconfig.json'));
+        console.log(green(`${tsConfigPath} created`))
+    } else {
+        console.log(green(`${tsConfigPath} exists`))
     }
 }
 

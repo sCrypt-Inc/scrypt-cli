@@ -37,38 +37,54 @@ async function configReactScriptsV5() {
 }
 
 
+async function configPackageScripts() {
+
+    const packageJSONFilePath = path.join('.', 'package.json')
+
+    // reload packageJSON
+    packageJSON = readfile(packageJSONFilePath);
+
+    packageJSON.scripts["build:contract"] = "npx scrypt-cli compile";
+    packageJSON.scripts["deploy:contract"] = "npx ts-node --project tsconfig-scryptTS.json ./scripts/deploy.ts";
+    packageJSON.scripts["genprivkey"] = "npx ts-node --project tsconfig-scryptTS.json ./scripts/privateKey.ts";
+    // update packageJSON
+    writefile(packageJSONFilePath, packageJSON);
+}
+
+
 async function configTSconfig() {
 
-    // create tsconfig.json
-    const tsConfigPath = path.join('.', 'tsconfig.json')
+    // update tsconfig.json
+    let tsConfigPath = path.join('.', 'tsconfig.json')
 
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
         
         tsConfigJSON.compilerOptions.target = "ES2020";
         tsConfigJSON.compilerOptions.experimentalDecorators = true;
-        tsConfigJSON.compilerOptions.experimentalDecorators = true;
-
-        const plugins = tsConfigJSON.compilerOptions.plugins || [];
-
-        plugins.push({
-            transform: "scrypt-ts/dist/transformation/transformer",
-            outDir: "./artifacts",
-            transformProgram: true
-        })
-
-        tsConfigJSON.compilerOptions.plugins = plugins;
 
         writefile(tsConfigPath, tsConfigJSON)
+
+        console.log(green('tsconfig.json updated'));
     } else {
-        writefile(tsConfigPath, readConfig('tsconfig.json'))
+        console.log(red('tsconfig.json not found'));
+        exit(-1);
+    }
+
+    // create tsconfig-scryptTS.json
+    tsConfigPath =  path.join('.', 'tsconfig-scryptTS.json')
+    if (!existsSync(tsConfigPath)) {
+        writefile(tsConfigPath, readConfig('tsconfig.json'));
+        console.log(green(`${tsConfigPath} created`))
+    } else {
+        console.log(green(`${tsConfigPath} exists`))
     }
 }
 
 async function gitCommit() {
     // update gitignore
     const gitignorePath = path.join('.', '.gitignore')
-    const gitignoreContent = readfile(gitignorePath, false) + '\n/artifact\nscrypt.index.json';
+    const gitignoreContent = readfile(gitignorePath, false) + '\n.env\n/artifacts\nscrypt.index.json';
     writefile(gitignorePath, gitignoreContent)
     await stepCmd("Git add all file", 'git add --all')
     await stepCmd("Git commit", 'git commit -am "Initialized sCrypt."')
@@ -91,11 +107,20 @@ async function createContract() {
     writefile(readmePath, readConfig('README.md'));
     replaceInFile(readmePath, PROJECT_FILENAME_TEMPLATE, camelCase(packageJSON.name));
     replaceInFile(readmePath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
+
+    // create scripts dir
+    const scriptsDir = path.join('.', 'scripts')
+    if (!existsSync(scriptsDir)) {
+        mkdirSync(scriptsDir);
+    }
     
-    // create deploy.ts
-    const deployScriptPath = 'deploy.ts'
-    writefile(deployScriptPath, readConfig('deploy.ts'));
-    const importTemplateDeployScript = `from './src/contracts/${PROJECT_NAME_TEMPLATE}'`
+    // create scripts/privateKey.ts
+    const privateKeyScriptPath = path.join('.', 'scripts', 'privateKey.ts')
+    writefile(privateKeyScriptPath, readConfig('privateKey.ts'));
+    // create scripts/deploy.ts
+    const deployScriptPath = path.join('.', 'scripts', 'deploy.ts')
+    writefile(deployScriptPath, readConfig('deployTemplate.ts'));
+    const importTemplateDeployScript = `from '../src/contracts/${PROJECT_NAME_TEMPLATE}'`
     const importReplacementDeployScript = importTemplateDeployScript.replace(PROJECT_NAME_TEMPLATE, camelCase(packageJSON.name))
     replaceInFile(deployScriptPath, importTemplateDeployScript, importReplacementDeployScript);
     replaceInFile(deployScriptPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
@@ -149,9 +174,17 @@ async function init() {
 
     await configTSconfig();
 
-    await gitCommit();
+    await configPackageScripts();
 
     await createContract();
+
+    await gitCommit();
+
+    // Install dependencies
+    await stepCmd(
+        'Generating a private key...',
+        'npm run genprivkey'
+    );
 
     const resStr = `\nsCrypt has been successfully initialized!\n`;
     console.log(green(resStr));

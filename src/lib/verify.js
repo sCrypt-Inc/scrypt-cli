@@ -9,18 +9,18 @@ async function verify({ network, scryptVer, scriptHash, contractPath }) {
 
   const wocUrl = network == 'test' ? 'https://test.whatsonchain.com' : 'https://whatsonchain.com'
 
-  if (!isProjectRoot()) {
-    console.error(red(`Please run this command in the root directory of the project.`))
-    exit(-1)
-  }
-
   // Read contract source
   const src = fs.readFileSync(contractPath).toString()
 
   if (!scryptVer) {
-    // Get version from package.json
-    const packageJSON = json5.parse(fs.readFileSync('package.json', 'utf8'));
-    scryptVer = packageJSON.dependencies['scrypt-ts']
+    try {
+      // Get version from package.json
+      const packageJSON = json5.parse(fs.readFileSync('package.json', 'utf8'));
+      scryptVer = packageJSON.dependencies['scrypt-ts']
+    } catch (e) {
+      console.error(red('sCrypt version couldn\'t be read from package.json\nEither specify the version manually using the `scrytVer` option or run this command in the root of an sCrypt project.'));
+      exit(-1)
+    }
   }
 
   const url = `https://woc.scrypt.io/api/${network}/${scriptHash}?ver=${scryptVer}`

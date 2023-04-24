@@ -38,7 +38,6 @@ async function verify({ network, scryptVer, scriptHash, contractPath }) {
   axios
     .post(url, payload, options)
     .then((response) => {
-      console.log('Response:', response.data);
       const resStr = `\nContract was successfully verified! ✓\nCheck the sCrypt tab at ${wocUrl}/script/${scriptHash}`;
 
       console.log(green(resStr));
@@ -46,8 +45,7 @@ async function verify({ network, scryptVer, scriptHash, contractPath }) {
     })
     .catch((error) => {
       if (error.response) {
-        // TODO: Should be checked via reponse code or shold just be a successfull response.
-        if (error.response.data.startsWith('Output already has verified code')) {
+        if (error.response.status == 409) {
           const resStr = `\n${error.response.data}\nCheck the sCrypt tab at ${wocUrl}/script/${scriptHash}`;
 
           console.log(green(resStr));

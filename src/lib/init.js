@@ -128,7 +128,7 @@ async function createContract() {
     // Compiling contract
     await stepCmd(
         'Compiling contract',
-        'npx scrypt-cli compile'
+        'npx scrypt-cli@latest compile'
     );
 }
 
@@ -186,7 +186,10 @@ async function init() {
         'npm run genprivkey'
     );
 
-    const resStr = `\nsCrypt has been successfully initialized!\n`;
+    const resStr = `
+sCrypt has been successfully initialized!
+You can compile contract with "npm run build:contract",
+and deploy contract with "npm run deploy:contract"`;
     console.log(green(resStr));
     exit(0);
 }

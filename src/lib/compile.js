@@ -19,8 +19,6 @@ async function compile() {
   if (!fs.existsSync(tsconfigPath)) {
     writefile(tsconfigPath, readConfig('tsconfig.json'));
     console.log(green(`${tsconfigPath} created`))
-  } else {
-    console.log(green(`${tsconfigPath} exists`))
   }
 
 

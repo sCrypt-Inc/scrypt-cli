@@ -5,6 +5,7 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const { project, ProjectType } = require('../lib/project');
 const { compile } = require('../lib/compile');
+const { verify } = require('../lib/verify');
 const { deploy } = require('../lib/deploy');
 const { system } = require('../lib/system');
 const { init } = require('../lib/init');
@@ -82,13 +83,33 @@ yargs(hideBin(process.argv))
   .command(['deploy', 'depl', 'd'], 'Deploy a smart contract.',
     (y) => {
       return y.option('f', {
-          description: 'Path to deployment script. Defaults to "deploy.ts" if none specified.',
-          required: false,
-          type: 'string'
-        }).alias('file', 'f')
+        description: 'Path to deployment script. Defaults to "deploy.ts" if none specified.',
+        required: false,
+        type: 'string'
+      }).alias('file', 'f')
     },
     async (argv) => {
       await deploy(argv)
+    })
+  .command(['verify [scriptHash] [contractPath]'], 'Verify a deployed smart contract.',
+    (y) => {
+      return y.option('n', {
+        description: 'Select Bitcoin network.',
+        required: false,
+        type: 'string',
+        choices: ['main', 'test'],
+        default: 'test'
+      }).alias('network', 'n')
+        .option('scryptVer', {
+          description: 'Select sCrypt version. Defaults to latest release, if omitted.',
+          required: false,
+          type: 'string',
+        })
+        .positional('scriptHash', { demand: true, string: true, hidden: true })
+        .positional('contractPath', { demand: true, string: true, hidden: true });
+    },
+    async (argv) => {
+      await verify(argv)
     })
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
   .command(['init'], 'Initialize sCrypt in an existing project', {}, () => init())

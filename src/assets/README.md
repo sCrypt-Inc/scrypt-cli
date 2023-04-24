@@ -20,40 +20,50 @@ PROJECT_NAME.loadArtifact(artifact);
 `Provider` is an abstraction for operations on the blockchain, such as broadcasting transactions. Usually not involved in signing transactions.
 
 
-Call the `getConnectedTarget()` interface of the signer to request to connect to the wallet.
+Call the `requestAuth()` interface of the signer to request to connect to the wallet.
 
 ```ts
 try {
-    const provider = new DefaultProvider();
+    const provider = new ScryptProvider();
     const signer = new SensiletSigner(provider);
-    await signer.getConnectedTarget();
+
+    const { isAuthenticated, error } = await signer.requestAuth();
+    if (!isAuthenticated) {
+        throw new Error(error);
+    }
+
 } catch (error) {
     console.error("connect wallet failed", error);
 }
-```
-
-
-## Deploying contract
-
-Instantiate the contract and call `deploy()` to deploy the contract.
-
-```ts
-    const balance = 1000
-    const instance = new PROJECT_NAME();
-    await instance.connect(signer);
-    const tx = await instance.deploy(balance);
 ```
 
 ## Calling contract
 
 Calling the contract requires the following work:
 
-1. Create a new contract instance via the `.next()` method of the current instance. Update the state of the new instance state.
+1. Get latest contract instance by Scrypt API `Scrypt.contractApi.getLatestInstance()`. 
 
-2. Call the methods public method on the contract instance to send the transaction to execute the contract on the blockchain.
+2. Create a new contract instance via the `.next()` method of the current instance. Update the state of the new instance state.
+
+3. Call the methods public method on the contract instance to send the transaction to execute the contract on the blockchain.
 
 
 ```ts
+
+// `npm run deploy:contract` to get deployment transaction id
+const contract_id = {
+  /** The deployment transaction id */
+  txId: "65d80537b63bc7fe12280826cdb9fa4424add5c08def0340ddc8444908c03d9e",
+  /** The output index */
+  outputIndex: 0,
+};
+
+
+const instance = await Scrypt.contractApi.getLatestInstance(
+        PROJECT_NAME,
+        contract_id
+    );
+
 // create the next instance from the current
 let nextInstance = instance.next();
 // apply updates on the next instance locally
@@ -69,4 +79,4 @@ const { tx: tx_i } = await instance.methods.increment({
 
 ## Learn sCrypt
 
-If you want to learn more about sCrypt, go [here](https://learn.scrypt.io/en).
+If you want to learn more about sCrypt, go [here](https://scrypt.io/docs).

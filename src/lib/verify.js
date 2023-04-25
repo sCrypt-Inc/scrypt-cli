@@ -5,8 +5,9 @@ const { isProjectRoot } = require('./helpers');
 const axios = require('axios');
 const json5 = require('json5');
 
-async function verify({ network, scryptVer, scriptHash, contractPath }) {
-
+async function verify({ network, V, scriptHash, contractPath }) {
+  
+  const scryptVer = V
   const wocUrl = network == 'test' ? 'https://test.whatsonchain.com' : 'https://whatsonchain.com'
 
   // Read contract source

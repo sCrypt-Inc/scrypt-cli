@@ -100,7 +100,7 @@ yargs(hideBin(process.argv))
         choices: ['main', 'test'],
         default: 'test'
       }).alias('network', 'n')
-        .option('scryptVer', {
+        .option('V', {
           description: 'Select sCrypt version. Defaults to latest release, if omitted.',
           required: false,
           type: 'string',

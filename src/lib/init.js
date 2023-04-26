@@ -46,6 +46,7 @@ async function configPackageScripts() {
 
     packageJSON.scripts["build:contract"] = "npx scrypt-cli compile";
     packageJSON.scripts["deploy:contract"] = "npx ts-node --project tsconfig-scryptTS.json ./scripts/deploy.ts";
+    packageJSON.scripts["verify:contract"] = `npx scrypt-cli verify $(cat .scriptHash) ./src/contracts/${camelCase(packageJSON.name)}.ts`;
     packageJSON.scripts["genprivkey"] = "npx ts-node --project tsconfig-scryptTS.json ./scripts/privateKey.ts";
     // update packageJSON
     writefile(packageJSONFilePath, packageJSON);

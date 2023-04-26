@@ -1,9 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
-const json5 = require('json5');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, camelCase, shExec, isProjectRoot, writefile, readfile, replaceInFile, camelCaseCapitalized, readConfig } = require('./helpers');
+const { stepCmd, shExec, isProjectRoot } = require('./helpers');
 
 
 async function deploy({ file }) {

@@ -7,7 +7,7 @@ const json5 = require('json5');
 
 async function verify({ network, V, scriptHash, contractPath }) {
   
-  const scryptVer = V
+  let scryptVer = V
   const wocUrl = network == 'test' ? 'https://test.whatsonchain.com' : 'https://whatsonchain.com'
 
   // Read contract source

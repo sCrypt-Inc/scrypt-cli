@@ -188,9 +188,9 @@ async function setProjectName(dir, name) {
     replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
-  const importTemplateDeployScript = `from '../src/contracts/${PROJECT_NAME_TEMPLATE}'`
+  const importTemplateDeployScript = `from './src/contracts/${PROJECT_NAME_TEMPLATE}'`
   const importReplacementDeployScript = importTemplateDeployScript.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
-  const fDeployScript = path.join(dir, 'scripts', 'deploy.ts')
+  const fDeployScript = path.join(dir, 'deploy.ts')
   if (fs.existsSync(fDeployScript)) {
     replaceInFile(fDeployScript, importTemplateDeployScript, importReplacementDeployScript);
     replaceInFile(fDeployScript, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));

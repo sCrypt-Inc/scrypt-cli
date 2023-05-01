@@ -10,7 +10,7 @@
       "name": "Launch demo",
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
       "resolveSourceMapLocations": ["!**/node_modules/**"],
-      "program": "${workspaceRoot}/src/contracts/demo.ts",
+      "program": "${workspaceRoot}/src/contracts/PROJECT_NAME.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": ["${workspaceRoot}/dist/**/*.js"]
     },
@@ -22,7 +22,7 @@
       "resolveSourceMapLocations": ["!**/node_modules/**"],
       "program": "${workspaceRoot}/node_modules/.bin/_mocha",
       "args": [
-        "${workspaceRoot}/dist/tests/**/demo.test.js",
+        "${workspaceRoot}/dist/tests/**/PROJECT_NAME.test.js",
         "--colors",
         "-t",
         "100000"

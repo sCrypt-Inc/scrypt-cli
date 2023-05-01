@@ -196,6 +196,14 @@ async function setProjectName(dir, name) {
     replaceInFile(fDeployScript, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
+  const importTemplateLaunch = `${PROJECT_NAME_TEMPLATE}`
+  const importReplacementLaunch = importTemplateLaunch.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
+  const fLaunch = path.join(dir, '.vscode', 'launch.json')
+  if (fs.existsSync(fLaunch)) {
+    replaceInFile(fLaunch, importTemplateLaunch, importReplacementLaunch);
+    replaceInFile(fLaunch, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
+  }
+
   spin.succeed(green(step));
 }
 

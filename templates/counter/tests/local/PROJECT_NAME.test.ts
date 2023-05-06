@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
-import { getDummySigner, getDummyUTXO } from './utils/txHelper'
+import { getDummySigner, getDummyUTXO } from '../utils/txHelper'
 import { MethodCallOptions } from 'scrypt-ts'
 
 describe('Test SmartContract `PROJECT_NAME`', () => {

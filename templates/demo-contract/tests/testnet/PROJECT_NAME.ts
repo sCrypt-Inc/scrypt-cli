@@ -1,5 +1,5 @@
 import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
-import { getDefaultSigner, inputSatoshis } from './utils/txHelper'
+import { getDefaultSigner, inputSatoshis } from '../utils/txHelper'
 import { toByteString, sha256 } from 'scrypt-ts'
 
 const message = 'hello world, sCrypt!'

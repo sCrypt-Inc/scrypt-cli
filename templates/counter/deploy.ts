@@ -24,7 +24,7 @@ async function main() {
     await PROJECT_NAME.compile()
 
     // TODO: Adjust the amount of satoshis locked in the smart contract:
-    const amount = 100
+    const amount = 1
 
     const instance = new PROJECT_NAME(
         // TODO: Adjust constructor parameter values:
@@ -36,7 +36,7 @@ async function main() {
 
     // Contract deployment.
     const deployTx = await instance.deploy(amount)
-    console.log('PROJECT_NAME contract deployed: ', deployTx.id)
+    console.log(`PROJECT_NAME contract deployed: ${deployTx.id}`)
 }
 
 main()

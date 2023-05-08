@@ -1,5 +1,5 @@
 import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
-import { getDefaultSigner } from './util/txHelper'
+import { getDefaultSigner } from '../utils/txHelper'
 import { MethodCallOptions } from 'scrypt-ts'
 
 async function main() {

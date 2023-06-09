@@ -91,7 +91,7 @@ npx scrypt-cli verify --network main <scriptHash> <contractPath>
 You can also specify the version of sCrypt used during verification. By default, the command will use the version specified in `package.json`:
 
 ```sh
-npx scrypt-cli verify --scryptVer 0.2.0-beta.9 <scriptHash> <contractPath>
+npx scrypt-cli verify -V 0.2.1-beta.9 <scriptHash> <contractPath>
 ```
 
 ### Get system info

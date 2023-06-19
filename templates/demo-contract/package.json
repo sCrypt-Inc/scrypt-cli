@@ -5,7 +5,8 @@
   "author": "",
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc",
+    "build": "tsc && npm run apply-asm",
+    "apply-asm": "node .asm/apply_asm.js",
     "deploy": "npx ts-node ./deploy.ts",
     "clean": "rimraf scrypt.index.json && rimraf dist && rimraf artifacts",
     "pretest": "npm run build",

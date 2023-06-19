@@ -67,6 +67,11 @@ yargs(hideBin(process.argv))
           type: 'boolean'
         })
         .alias('lib', 'library')
+        .option('asm', {
+          description: 'Include inline ASM script.',
+          required: false,
+          type: 'boolean'
+        })
         .positional('name', { demand: true, string: true, hidden: true });
     },
     async (argv) => {

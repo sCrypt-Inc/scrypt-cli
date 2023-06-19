@@ -5,7 +5,7 @@ const sh = require('shelljs');
 const gittar = require('gittar');
 const { green, red } = require('chalk');
 const { exit } = require('process');
-const { stepCmd, replaceInFile, camelCase, camelCaseCapitalized, kebabCase, titleCase } = require("./helpers");
+const { stepCmd, replaceInFile, camelCase, camelCaseCapitalized, kebabCase, titleCase, readAsset, writefile } = require("./helpers");
 
 
 const ProjectType = {
@@ -16,17 +16,17 @@ const ProjectType = {
 
 const PROJECT_NAME_TEMPLATE = 'PROJECT_NAME'
 const PROJECT_FILENAME_TEMPLATE = 'PROJECT_FILENAME'
-const PROJECT_NAME_TEMPLATE_CAMEL_CAP = 'PROJECT_NAME_CAMEL_CAP'
 
 /**
  * Create a new sCrypt project with recommended dir structure, Prettier config,
  * testing lib, etc. Warns if already exists and does NOT overwrite.
  * @param {string} projType - The user's desired project type.
  * @param {object} argv - The arguments object provided by yargs.
+ * @param {string} argv.asm - Add .asm dir to project.
  * @param {string} argv.name - The user's desired project name.
  * @return {Promise<void>}
  */
-async function project(projType, { name }) {
+async function project(projType, { asm, name }) {
   if (name.search(/[^-0-9a-zA-Z]/g) != -1) {
     console.error(red(`Invalid project name format`));
     exit(-1);
@@ -83,6 +83,19 @@ async function project(projType, { name }) {
   //  'Git init commit',
   //  'git add . && git commit -m "Init commit" -q -n && git branch -m main'
   //);
+  //
+
+  await configurePackageJson('.', asm)
+
+  if (asm) {
+    const step = 'Creating .asm dir ';
+    const asmDir = path.join('.', '.asm')
+    await stepCmd(
+      step,
+      `mkdir ${asmDir} && echo "{}" > ${asmDir}/asm.json`
+    );
+    writefile(path.join(asmDir, 'apply_asm.js'), readAsset('apply_asm.js'))
+  }
 
   const resStr = `\nProject ${name} was successfully created!\n` +
     `\nAdd your Git repo URL and you're good to go:` +
@@ -203,6 +216,28 @@ async function setProjectName(dir, name) {
     replaceInFile(fLaunch, importTemplateLaunch, importReplacementLaunch);
     replaceInFile(fLaunch, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
+
+  spin.succeed(green(step));
+}
+
+
+/**
+ * Apply modifications to package.json if needed.
+ * @returns {Promise<boolean>} - True if successful; false if not.
+ */
+async function configurePackageJson(dir, asm) {
+  const step = 'Configure package.json ';
+  const spin = ora(`${step}...`).start();
+
+  const packageJsonPath = path.join(dir, 'package.json')
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath))
+
+  if (asm) {
+    packageJson.scripts['build'] = 'tsc && npm run apply-asm'
+    packageJson.scripts['apply-asm'] = 'node .asm/apply_asm.js'
+  }
+
+  writefile(packageJsonPath, packageJson)
 
   spin.succeed(green(step));
 }

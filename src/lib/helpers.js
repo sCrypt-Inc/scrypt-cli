@@ -164,6 +164,7 @@ module.exports = {
   writefile,
   changeExtension,
   readConfig: readAsset,
+  readAsset,
   isProjectRoot,
   titleCase,
   kebabCase,

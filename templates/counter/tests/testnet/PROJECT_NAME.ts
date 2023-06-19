@@ -24,13 +24,12 @@ async function main() {
         // 2. apply the updates on the new instance.
         newPROJECT_NAME.count++
         // 3. construct a transaction for contract call
-        const { tx: callTx, atInputIndex } =
-            await prevInstance.methods.increment({
-                next: {
-                    instance: newPROJECT_NAME,
-                    balance: 1,
-                },
-            } as MethodCallOptions<PROJECT_NAME>)
+        const { tx: callTx } = await prevInstance.methods.increment({
+            next: {
+                instance: newPROJECT_NAME,
+                balance: 1,
+            },
+        } as MethodCallOptions<PROJECT_NAME>)
 
         console.log(
             'Counter call tx: ',

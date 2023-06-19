@@ -5,7 +5,6 @@ import {
     hash256,
     assert,
     ByteString,
-    SigHash,
 } from 'scrypt-ts'
 
 export class PROJECT_NAME extends SmartContract {
@@ -18,16 +17,17 @@ export class PROJECT_NAME extends SmartContract {
         this.count = count
     }
 
-    @method(SigHash.SINGLE)
+    @method()
     public increment() {
         // Increment counter value.
         this.count++
 
         // Make sure balance in the contract does not change.
         const amount: bigint = this.ctx.utxo.value
-        // Output containing the latest state.
-        const output: ByteString = this.buildStateOutput(amount)
-        // Verify current tx has this single output.
-        assert(this.ctx.hashOutputs == hash256(output), 'hashOutputs mismatch')
+        // Output containing the latest state and an optional change output.
+        const outputs: ByteString =
+            this.buildStateOutput(amount) + this.buildChangeOutput()
+        // Verify current tx has the same outputs.
+        assert(this.ctx.hashOutputs == hash256(outputs), 'hashOutputs mismatch')
     }
 }

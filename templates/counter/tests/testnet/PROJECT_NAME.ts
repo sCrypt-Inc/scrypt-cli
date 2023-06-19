@@ -22,9 +22,9 @@ async function main() {
         // 1. build a new contract instance
         const newPROJECT_NAME = prevInstance.next()
         // 2. apply the updates on the new instance.
-        newPROJECT_NAME.count++
+        newPROJECT_NAME.increment()
         // 3. construct a transaction for contract call
-        const { tx: callTx } = await prevInstance.methods.increment({
+        const { tx: callTx } = await prevInstance.methods.incrementOnChain({
             next: {
                 instance: newPROJECT_NAME,
                 balance: 1,

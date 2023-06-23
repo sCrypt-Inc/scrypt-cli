@@ -52,6 +52,7 @@ rm -rf hello-world-asm
 node ../src/bin/index.js project --asm hello-world-asm
 cd hello-world-asm
 
+echo '{"HelloWorldAsm": {"unlock": "op_1 op_1 op_equalverify"}}' > .asm/asm.json
 npm i
 node ../../src/bin/index.js compile
 npm t

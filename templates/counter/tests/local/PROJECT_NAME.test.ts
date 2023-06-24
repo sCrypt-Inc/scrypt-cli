@@ -21,10 +21,10 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
             // 1. build a new contract instance
             const newPROJECT_NAME = prevInstance.next()
             // 2. apply the updates on the new instance.
-            newPROJECT_NAME.count++
+            newPROJECT_NAME.increment()
             // 3. construct a transaction for contract call
             const { tx: callTx, atInputIndex } =
-                await prevInstance.methods.increment({
+                await prevInstance.methods.incrementOnChain({
                     fromUTXO: getDummyUTXO(1),
                     next: {
                         instance: newPROJECT_NAME,

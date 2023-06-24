@@ -47,7 +47,17 @@ npm t
 npm run genprivkey
 cd ..
 
+echo "testing create project --asm hello-world-asm"
+rm -rf hello-world-asm
+node ../src/bin/index.js project --asm hello-world-asm
+cd hello-world-asm
 
+echo '{"HelloWorldAsm": {"unlock": "op_1 op_1 op_equalverify"}}' > .asm/asm.json
+npm i
+node ../../src/bin/index.js compile
+npm t
+npm run genprivkey
+cd ..
 
 echo "testing init ..."
 rm -rf dapp

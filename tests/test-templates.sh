@@ -13,6 +13,7 @@ for d in */ ; do
     npm run genprivkey
     node ../../src/bin/index.js compile
     npm run test || exit 1
+    rm -rf node_modules/ package-lock.json
     rm -rf .git/
     cd ../
 done

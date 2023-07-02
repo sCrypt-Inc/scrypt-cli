@@ -1,6 +1,6 @@
 const { green, red, yellow } = require('chalk');
 const { existsSync, renameSync, mkdirSync } = require('fs');
-const { stepCmd, replaceInFile, readfile, writefile, readConfig, camelCase, camelCaseCapitalized } = require("./helpers");
+const { stepCmd, replaceInFile, readfile, writefile, readConfig, camelCase, camelCaseCapitalized, changeExtension } = require("./helpers");
 const { PROJECT_NAME_TEMPLATE, PROJECT_FILENAME_TEMPLATE } = require("./project");
 const path = require('path');
 const { exit } = require('process');
@@ -27,15 +27,33 @@ async function configReactScriptsV5() {
     writefile(packageJSONFilePath, packageJSON);
 
     // create config-overrides.js
-    const webpackConfigPath = path.join('.', 'config-overrides.js')
-    if (existsSync(webpackConfigPath)) {
-        console.log(yellow('Found config-overrides.json, move to config-overrides.js.backup'));
-        renameSync(webpackConfigPath, changeExtension(webpackConfigPath, "js.backup"))
+    const webpackConfigFileName = 'config-overrides.js'
+    const webpackConfigFilePath = path.join('.', webpackConfigFileName)
+    if (existsSync(webpackConfigFilePath)) {
+        console.log(yellow(`Found ${webpackConfigFileName}, move to ${webpackConfigFileName}.backup`));
+        renameSync(webpackConfigFilePath, changeExtension(webpackConfigFilePath, "js.backup"))
     }
 
-    writefile(webpackConfigPath, readConfig('config-overrides.js'))
+    writefile(webpackConfigFilePath, readConfig(webpackConfigFileName))
 }
 
+async function configNext() {
+    // install dependencies
+    await stepCmd(
+        'Installing dependencies...',
+        'npm i dotenv@10.0.0'
+    );
+
+    // override next.config.js
+    const nextConfigFileName = 'next.config.js'
+    const nextConfigFilePath = path.join('.', nextConfigFileName)
+    if (existsSync(nextConfigFilePath)) {
+        console.log(yellow(`Found ${nextConfigFileName}, move to ${nextConfigFileName}.backup`));
+        renameSync(nextConfigFilePath, changeExtension(nextConfigFilePath, "js.backup"))
+    }
+
+    writefile(nextConfigFilePath, readConfig(nextConfigFileName))
+}
 
 async function configPackageScripts() {
 
@@ -60,7 +78,7 @@ async function configTSconfig() {
 
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
-        
+
         tsConfigJSON.compilerOptions.target = "ES2020";
         tsConfigJSON.compilerOptions.experimentalDecorators = true;
 
@@ -73,7 +91,7 @@ async function configTSconfig() {
     }
 
     // create tsconfig-scryptTS.json
-    tsConfigPath =  path.join('.', 'tsconfig-scryptTS.json')
+    tsConfigPath = path.join('.', 'tsconfig-scryptTS.json')
     if (!existsSync(tsConfigPath)) {
         writefile(tsConfigPath, readConfig('tsconfig.json'));
         console.log(green(`${tsConfigPath} created`))
@@ -95,7 +113,7 @@ async function createContract() {
     // create src/contracts dir
     const contractsDir = path.join('.', 'src', 'contracts')
     if (!existsSync(contractsDir)) {
-        mkdirSync(contractsDir);
+        mkdirSync(contractsDir, { recursive: true });
     }
 
     // create src/contracts/counter.ts
@@ -114,7 +132,7 @@ async function createContract() {
     if (!existsSync(scriptsDir)) {
         mkdirSync(scriptsDir);
     }
-    
+
     // create scripts/privateKey.ts
     const privateKeyScriptPath = path.join('.', 'scripts', 'privateKey.ts')
     writefile(privateKeyScriptPath, readConfig('privateKey.ts'));
@@ -145,19 +163,13 @@ async function init() {
 
     const log = await stepCmd("Git status", "git status");
 
-    if (log.includes("Untracked") || log.includes("modified")  || log.includes("to be committed")) {
+    if (log.includes("Untracked") || log.includes("modified") || log.includes("to be committed")) {
         console.log(red('Please commit your current changes before initialization.'));
         exit(-1);
     }
 
     let packageJSON = readfile(packageJSONFilePath);
 
-    if (!packageJSON.scripts.start.includes("react-scripts")
-        || !packageJSON.scripts.build.includes("react-scripts")) {
-        console.log(red('Only projects created by "create-react-app" are supported'));
-        console.log(red('Initialization failed.'));
-        exit(-1)
-    }
 
     // Install dependencies
     await stepCmd(
@@ -165,12 +177,23 @@ async function init() {
         'npm i typescript@4.8.4 scrypt-ts@beta'
     );
 
-    let react_scripts_version = packageJSON?.dependencies["react-scripts"] || '';
+    const isReactProject = packageJSON.scripts.start.includes("react-scripts") && packageJSON.scripts.build.includes("react-scripts")
+    const isNextProject = packageJSON.scripts.start.includes("next") && packageJSON.scripts.build.includes("next")
 
-    let v = /(\d+)/.exec(react_scripts_version)[0]
+    if (isReactProject) {
+        let react_scripts_version = packageJSON?.dependencies["react-scripts"] || '';
 
-    if (parseInt(v) >= 5) {
-        await configReactScriptsV5();
+        let v = /(\d+)/.exec(react_scripts_version)[0]
+
+        if (parseInt(v) >= 5) {
+            await configReactScriptsV5();
+        }
+    } else if (isNextProject) {
+        await configNext();
+    } else {
+        console.log(red('Only projects created by "create-react-app" or "create-next-app" are supported'));
+        console.log(red('Initialization failed.'));
+        exit(-1)
     }
 
     await configTSconfig();

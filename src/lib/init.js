@@ -121,12 +121,6 @@ async function createContract() {
     writefile(contractPath, readConfig('PROJECT_NAME.ts'));
     replaceInFile(contractPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
 
-    // create src/contracts/README.md
-    const readmePath = path.join('.', 'src', 'contracts', "README.md");
-    writefile(readmePath, readConfig('README.md'));
-    replaceInFile(readmePath, PROJECT_FILENAME_TEMPLATE, camelCase(packageJSON.name));
-    replaceInFile(readmePath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
-
     // create scripts dir
     const scriptsDir = path.join('.', 'scripts')
     if (!existsSync(scriptsDir)) {

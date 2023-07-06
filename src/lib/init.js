@@ -55,6 +55,24 @@ async function configNext() {
     writefile(nextConfigFilePath, readConfig(nextConfigFileName))
 }
 
+async function configVue(version) {
+    // install dependencies
+    await stepCmd(
+        'Installing dependencies...',
+        'npm i dotenv@10.0.0 vite-plugin-node-polyfills'
+    );
+
+    // override vite.config.ts
+    const viteConfigFileName = 'vite.config.ts'
+    const viteConfigFilePath = path.join('.', viteConfigFileName)
+    if (existsSync(viteConfigFilePath)) {
+        console.log(yellow(`Found ${viteConfigFileName}, move to ${viteConfigFileName}.backup`));
+        renameSync(viteConfigFilePath, changeExtension(viteConfigFilePath, "ts.backup"))
+    }
+
+    writefile(viteConfigFilePath, readConfig(`vite${version}.config.ts`))
+}
+
 async function configPackageScripts() {
 
     const packageJSONFilePath = path.join('.', 'package.json')
@@ -71,22 +89,24 @@ async function configPackageScripts() {
 }
 
 
-async function configTSconfig() {
+async function configTSconfig(fileName = 'tsconfig.json') {
 
     // update tsconfig.json
-    let tsConfigPath = path.join('.', 'tsconfig.json')
+    let tsConfigPath = path.join('.', fileName)
 
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
 
         tsConfigJSON.compilerOptions.target = "ES2020";
         tsConfigJSON.compilerOptions.experimentalDecorators = true;
+        tsConfigJSON.compilerOptions.preserveValueImports = false;
+        tsConfigJSON.compilerOptions.moduleResolution = 'node';
 
         writefile(tsConfigPath, tsConfigJSON)
 
-        console.log(green('tsconfig.json updated'));
+        console.log(green(`${fileName} updated`));
     } else {
-        console.log(red('tsconfig.json not found'));
+        console.log(red(`${fileName} not found`));
         exit(-1);
     }
 
@@ -145,6 +165,21 @@ async function createContract() {
     );
 }
 
+function scriptIncludes(scripts, includes) {
+    for (const k in includes) {
+        const v = includes[k]
+        const script = scripts[k]
+        if (!script || !script.includes(v)) {
+            return false
+        }
+    }
+    return true
+}
+
+function majorVersion(dependency) {
+    return parseInt(/(\d+)/.exec(dependency || '')[0])
+}
+
 async function init() {
     console.log(green('Initializing sCrypt in current project...'))
 
@@ -171,26 +206,30 @@ async function init() {
         'npm i typescript@4.8.4 scrypt-ts@beta'
     );
 
-    const isReactProject = packageJSON.scripts.start.includes("react-scripts") && packageJSON.scripts.build.includes("react-scripts")
-    const isNextProject = packageJSON.scripts.start.includes("next") && packageJSON.scripts.build.includes("next")
+    const isReactProject = scriptIncludes(packageJSON.scripts, { start: 'react-scripts', build: 'react-scripts' })
+    const isNextProject = scriptIncludes(packageJSON.scripts, { start: 'next', build: 'next' })
+    const isVueProject = scriptIncludes(packageJSON.scripts, { dev: 'vite', 'build-only': 'vite' })
+    let isVue2Project = false, isVue3Project = false
 
     if (isReactProject) {
-        let react_scripts_version = packageJSON?.dependencies["react-scripts"] || '';
-
-        let v = /(\d+)/.exec(react_scripts_version)[0]
-
-        if (parseInt(v) >= 5) {
+        const reactScriptsVersion = majorVersion(packageJSON?.dependencies["react-scripts"])
+        if (reactScriptsVersion >= 5) {
             await configReactScriptsV5();
         }
     } else if (isNextProject) {
         await configNext();
+    } else if (isVueProject) {
+        const vueVersion = majorVersion(packageJSON?.dependencies["vue"])
+        isVue2Project = vueVersion === 2
+        isVue3Project = vueVersion === 3
+        await configVue(vueVersion);
     } else {
-        console.log(red('Only projects created by "create-react-app" or "create-next-app" are supported'));
+        console.log(red('Only projects created by "create-react-app", "create-next-app", "npm create vue@2", or "npm create vue@3" are supported'));
         console.log(red('Initialization failed.'));
         exit(-1)
     }
 
-    await configTSconfig();
+    await configTSconfig(isVue3Project ? 'tsconfig.app.json' : 'tsconfig.json');
 
     await configPackageScripts();
 

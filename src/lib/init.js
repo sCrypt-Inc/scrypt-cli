@@ -55,22 +55,22 @@ async function configNext() {
     writefile(nextConfigFilePath, readConfig(nextConfigFileName))
 }
 
-async function configVue(version) {
+async function configVue() {
     // install dependencies
     await stepCmd(
         'Installing dependencies...',
-        'npm i dotenv@10.0.0 vite-plugin-node-polyfills'
+        'npm i node-polyfill-webpack-plugin'
     );
 
-    // override vite.config.ts
-    const viteConfigFileName = 'vite.config.ts'
-    const viteConfigFilePath = path.join('.', viteConfigFileName)
-    if (existsSync(viteConfigFilePath)) {
-        console.log(yellow(`Found ${viteConfigFileName}, move to ${viteConfigFileName}.backup`));
-        renameSync(viteConfigFilePath, changeExtension(viteConfigFilePath, "ts.backup"))
+    // override vue.config.js
+    const vueConfigFileName = 'vue.config.js'
+    const vueConfigFilePath = path.join('.', vueConfigFileName)
+    if (existsSync(vueConfigFilePath)) {
+        console.log(yellow(`Found ${vueConfigFileName}, move to ${vueConfigFileName}.backup`));
+        renameSync(vueConfigFilePath, changeExtension(vueConfigFilePath, "js.backup"))
     }
 
-    writefile(viteConfigFilePath, readConfig(`vite${version}.config.ts`))
+    writefile(vueConfigFilePath, readConfig(vueConfigFileName))
 }
 
 async function configPackageScripts() {
@@ -89,24 +89,23 @@ async function configPackageScripts() {
 }
 
 
-async function configTSconfig(fileName = 'tsconfig.json') {
+async function configTSconfig() {
 
     // update tsconfig.json
-    let tsConfigPath = path.join('.', fileName)
+    let tsConfigPath = path.join('.', 'tsconfig.json')
 
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
 
         tsConfigJSON.compilerOptions.target = "ES2020";
         tsConfigJSON.compilerOptions.experimentalDecorators = true;
-        tsConfigJSON.compilerOptions.preserveValueImports = false;
-        tsConfigJSON.compilerOptions.moduleResolution = 'node';
+        tsConfigJSON.compilerOptions.resolveJsonModule = true;
 
         writefile(tsConfigPath, tsConfigJSON)
 
-        console.log(green(`${fileName} updated`));
+        console.log(green('tsconfig.json updated'));
     } else {
-        console.log(red(`${fileName} not found`));
+        console.log(red('tsconfig.json not found'));
         exit(-1);
     }
 
@@ -208,8 +207,7 @@ async function init() {
 
     const isReactProject = scriptIncludes(packageJSON.scripts, { start: 'react-scripts', build: 'react-scripts' })
     const isNextProject = scriptIncludes(packageJSON.scripts, { start: 'next', build: 'next' })
-    const isVueProject = scriptIncludes(packageJSON.scripts, { dev: 'vite', 'build-only': 'vite' })
-    let isVue2Project = false, isVue3Project = false
+    const isVueProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
 
     if (isReactProject) {
         const reactScriptsVersion = majorVersion(packageJSON?.dependencies["react-scripts"])
@@ -219,17 +217,14 @@ async function init() {
     } else if (isNextProject) {
         await configNext();
     } else if (isVueProject) {
-        const vueVersion = majorVersion(packageJSON?.dependencies["vue"])
-        isVue2Project = vueVersion === 2
-        isVue3Project = vueVersion === 3
-        await configVue(vueVersion);
+        await configVue();
     } else {
-        console.log(red('Only projects created by "create-react-app", "create-next-app", "npm create vue@2", or "npm create vue@3" are supported'));
+        console.log(red('Only projects created by "create-react-app", "create-next-app", or "@vue/cli" are supported'));
         console.log(red('Initialization failed.'));
         exit(-1)
     }
 
-    await configTSconfig(isVue3Project ? 'tsconfig.app.json' : 'tsconfig.json');
+    await configTSconfig();
 
     await configPackageScripts();
 

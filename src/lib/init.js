@@ -1,7 +1,7 @@
-const { green, red, yellow } = require('chalk');
-const { existsSync, renameSync, mkdirSync } = require('fs');
-const { stepCmd, replaceInFile, readfile, writefile, readConfig, camelCase, camelCaseCapitalized, changeExtension } = require("./helpers");
-const { PROJECT_NAME_TEMPLATE, PROJECT_FILENAME_TEMPLATE } = require("./project");
+const { green, red } = require('chalk');
+const { existsSync, mkdirSync } = require('fs');
+const { stepCmd, replaceInFile, readfile, writefile, readConfig, camelCase, camelCaseCapitalized, writeAsset } = require("./helpers");
+const { PROJECT_NAME_TEMPLATE } = require("./project");
 const path = require('path');
 const { exit } = require('process');
 
@@ -27,14 +27,7 @@ async function configReactScriptsV5() {
     writefile(packageJSONFilePath, packageJSON);
 
     // create config-overrides.js
-    const webpackConfigFileName = 'config-overrides.js'
-    const webpackConfigFilePath = path.join('.', webpackConfigFileName)
-    if (existsSync(webpackConfigFilePath)) {
-        console.log(yellow(`Found ${webpackConfigFileName}, move to ${webpackConfigFileName}.backup`));
-        renameSync(webpackConfigFilePath, changeExtension(webpackConfigFilePath, "js.backup"))
-    }
-
-    writefile(webpackConfigFilePath, readConfig(webpackConfigFileName))
+    writeAsset('./config-overrides.js')
 }
 
 async function configNext() {
@@ -45,14 +38,7 @@ async function configNext() {
     );
 
     // override next.config.js
-    const nextConfigFileName = 'next.config.js'
-    const nextConfigFilePath = path.join('.', nextConfigFileName)
-    if (existsSync(nextConfigFilePath)) {
-        console.log(yellow(`Found ${nextConfigFileName}, move to ${nextConfigFileName}.backup`));
-        renameSync(nextConfigFilePath, changeExtension(nextConfigFilePath, "js.backup"))
-    }
-
-    writefile(nextConfigFilePath, readConfig(nextConfigFileName))
+    writeAsset('./next.config.js')
 }
 
 async function configVue() {
@@ -63,14 +49,47 @@ async function configVue() {
     );
 
     // override vue.config.js
-    const vueConfigFileName = 'vue.config.js'
-    const vueConfigFilePath = path.join('.', vueConfigFileName)
-    if (existsSync(vueConfigFilePath)) {
-        console.log(yellow(`Found ${vueConfigFileName}, move to ${vueConfigFileName}.backup`));
-        renameSync(vueConfigFilePath, changeExtension(vueConfigFilePath, "js.backup"))
+    writeAsset('./vue.config.js')
+}
+
+async function configAngular(projectName) {
+    // install dependencies
+    await stepCmd(
+        'Installing dependencies...',
+        'npm i dotenv@10.0.0 @angular-builders/custom-webpack node-polyfill-webpack-plugin'
+    );
+
+    // create webpack.config.js
+    const webpackConfigFileName = 'webpack.config.js'
+    writeAsset(`./${webpackConfigFileName}`)
+
+
+    // update angularJSON
+    const angularJSONFilePath = path.join('.', 'angular.json')
+    const angularJSON = readfile(angularJSONFilePath);
+
+    angularJSON.projects[projectName].architect.build.builder = '@angular-builders/custom-webpack:browser'
+    angularJSON.projects[projectName].architect.build.options.customWebpackConfig = {
+        path: webpackConfigFileName,
+        "replaceDuplicatePlugins": true
+    }
+    angularJSON.projects[projectName].architect.build.configurations.production.budgets[0].maximumError = '10mb'
+
+    angularJSON.projects[projectName].architect.serve.builder = '@angular-builders/custom-webpack:dev-server'
+    angularJSON.projects[projectName].architect.serve.options = {
+        browserTarget: `${projectName}:build`
     }
 
-    writefile(vueConfigFilePath, readConfig(vueConfigFileName))
+    angularJSON.projects[projectName].architect["extract-i18n"].builder = '@angular-builders/custom-webpack:extract-i18n'
+
+    angularJSON.projects[projectName].architect.test.builder = '@angular-builders/custom-webpack:karma'
+
+    writefile(angularJSONFilePath, angularJSON);
+
+
+    // override src/index.html
+    writeAsset('src/index.html')
+    replaceInFile('src/index.html', PROJECT_NAME_TEMPLATE, camelCaseCapitalized(projectName));
 }
 
 async function configPackageScripts() {
@@ -100,6 +119,8 @@ async function configTSconfig() {
         tsConfigJSON.compilerOptions.target = "ES2020";
         tsConfigJSON.compilerOptions.experimentalDecorators = true;
         tsConfigJSON.compilerOptions.resolveJsonModule = true;
+        tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
+        tsConfigJSON.compilerOptions.noImplicitAny = false;
 
         writefile(tsConfigPath, tsConfigJSON)
 
@@ -198,16 +219,10 @@ async function init() {
 
     let packageJSON = readfile(packageJSONFilePath);
 
-
-    // Install dependencies
-    await stepCmd(
-        'Installing dependencies...',
-        'npm i typescript@4.8.4 scrypt-ts@beta'
-    );
-
     const isReactProject = scriptIncludes(packageJSON.scripts, { start: 'react-scripts', build: 'react-scripts' })
     const isNextProject = scriptIncludes(packageJSON.scripts, { start: 'next', build: 'next' })
     const isVueProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
+    const isAngularProject = scriptIncludes(packageJSON.scripts, { start: 'ng', build: 'ng' })
 
     if (isReactProject) {
         const reactScriptsVersion = majorVersion(packageJSON?.dependencies["react-scripts"])
@@ -218,11 +233,19 @@ async function init() {
         await configNext();
     } else if (isVueProject) {
         await configVue();
+    } else if (isAngularProject) {
+        await configAngular(packageJSON.name)
     } else {
-        console.log(red('Only projects created by "create-react-app", "create-next-app", or "@vue/cli" are supported'));
+        console.log(red('Only projects created by "create-react-app", "create-next-app", "@vue/cli", or "@angular/cli" are supported'));
         console.log(red('Initialization failed.'));
         exit(-1)
     }
+
+    // Install scrypt-ts
+    await stepCmd(
+        'Installing dependencies...',
+        isAngularProject ? 'npm i scrypt-ts@ts5' : 'npm i typescript@4.8.4 scrypt-ts@beta'
+    );
 
     await configTSconfig();
 
@@ -232,7 +255,7 @@ async function init() {
 
     await gitCommit();
 
-    // Install dependencies
+    // Generate a new private key
     await stepCmd(
         'Generating a private key...',
         'npm run genprivkey'

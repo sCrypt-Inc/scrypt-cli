@@ -31,6 +31,7 @@
     "find-npm-prefix": "^1.0.2",
     "fs-extra": "^10.1.0",
     "gittar": "^0.1.1",
+    "hjson": "^3.2.2",
     "json5": "^2.2.2",
     "ora": "^5.4.1",
     "scryptlib": "^2.1.12",

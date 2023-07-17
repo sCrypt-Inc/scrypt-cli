@@ -258,12 +258,6 @@ async function init() {
         exit(-1)
     }
 
-    // Install scrypt-ts
-    await stepCmd(
-        'Installing dependencies...',
-        isAngularProject ? 'npm i scrypt-ts@ts5' : 'npm i typescript@4.8.4 scrypt-ts@beta'
-    );
-
     await configTSconfig();
 
     await configPackageScripts();

@@ -61,7 +61,7 @@ cd ..
 
 echo "testing init React ..."
 rm -rf dapp-react
-npx create-react-app dapp-react --template typescript
+npx create-react-app@latest dapp-react --template typescript
 cd dapp-react
 git init
 git config user.email "ci@scrypt.io"

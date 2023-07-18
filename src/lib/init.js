@@ -225,21 +225,21 @@ async function init() {
     const isVueProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
     const isAngularProject = scriptIncludes(packageJSON.scripts, { start: 'ng', build: 'ng' })
 
-    if(isReactProject) {
-        // Install dependencies
-        await stepCmd(
-            'Installing dependencies...',
-            'npm i typescript@4 scrypt-ts@beta'
-        );
-    } else {
-        // Install dependencies
-        await stepCmd(
-            'Installing dependencies...',
-            'npm i typescript@latest scrypt-ts@latest'
-        );
+    if (isReactProject) {
+        // update packageJSON
+        packageJSON.overrides =  {
+            "react-scripts": {
+              "typescript": "^5"
+            }
+        }
+        writefile(packageJSONFilePath, packageJSON);
     }
 
-
+    // Install dependencies
+    await stepCmd(
+        'Installing dependencies...',
+        'npm i typescript@latest scrypt-ts@latest'
+    );
 
     if (isReactProject) {
         const reactScriptsVersion = majorVersion(packageJSON?.dependencies["react-scripts"])

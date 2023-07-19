@@ -71,6 +71,7 @@ git commit -am "Initial commit"
 npm i
 node ../../src/bin/index.js init
 node ../../src/bin/index.js compile
+CI=true npm t
 cd ..
 
 rm -rf test-commands

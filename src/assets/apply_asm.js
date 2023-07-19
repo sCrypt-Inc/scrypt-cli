@@ -119,7 +119,7 @@ async function main() {
 
   const outDir = getOutDir();
   const scryptFiles = findFilesWithExtension(
-    path.join(outDir, "src"),
+    outDir,
     ".scrypt"
   );
 

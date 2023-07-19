@@ -44,6 +44,7 @@ async function configPackageScripts() {
     // reload packageJSON
     packageJSON = readfile(packageJSONFilePath);
 
+    packageJSON.scripts["pretest"] = "npx scrypt-cli compile";
     packageJSON.scripts["build:contract"] = "npx scrypt-cli compile";
     packageJSON.scripts["deploy:contract"] = "npx ts-node --project tsconfig-scryptTS.json ./scripts/deploy.ts";
     packageJSON.scripts["verify:contract"] = `npx scrypt-cli verify $(cat .scriptHash) ./src/contracts/${camelCase(packageJSON.name)}.ts`;
@@ -102,6 +103,12 @@ async function createContract() {
     const contractPath = path.join('.', 'src', 'contracts', `${camelCase(packageJSON.name)}.ts`);
     writefile(contractPath, readConfig('PROJECT_NAME.ts'));
     replaceInFile(contractPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
+
+    // create src/contracts/counter.test.tsx
+    const contractTestPath = path.join('.', 'src', 'contracts', `${camelCase(packageJSON.name)}.test.tsx`);
+    writefile(contractTestPath, readConfig('PROJECT_NAME.test.tsx'));
+    replaceInFile(contractTestPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
+    replaceInFile(contractTestPath, PROJECT_FILENAME_TEMPLATE, camelCase(packageJSON.name));
 
     // create src/contracts/README.md
     const readmePath = path.join('.', 'src', 'contracts', "README.md");

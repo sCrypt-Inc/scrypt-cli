@@ -2,10 +2,11 @@ const ora = require('ora');
 const util = require('util');
 const sh = require('shelljs');
 const fs = require('fs');
-const { green, red } = require('chalk');
+const { green, red, yellow } = require('chalk');
 const { readdir } = require('fs/promises');
-const { join, basename, dirname, extname } = require('path');
+const { join, basename, dirname, extname, sep } = require('path');
 const { exit, cwd } = require('process');
+const hjson = require('hjson')
 
 const shExec = util.promisify(sh.exec);
 const isWindows = process.platform === 'win32';
@@ -87,7 +88,7 @@ function replaceInFile(file, a, b) {
 function readfile(file, json = true) {
   const content = fs.readFileSync(file, 'utf8');
   if (json) {
-    return JSON.parse(content);
+    return hjson.parse(content);
   }
   return content;
 }
@@ -125,6 +126,16 @@ function changeExtension(file, extension) {
  */
 function readAsset(filename) {
   return readfile(join(dirname(__filename), '..', 'assets', filename), false);
+}
+
+function writeAsset(absolutePath, assetFileName) {
+  const fileName = absolutePath.substring(absolutePath.lastIndexOf(sep) + 1)
+  const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1)
+  if (fs.existsSync(absolutePath)) {
+    console.log(yellow(`Found ${fileName}, move to ${fileName}.backup`));
+    fs.renameSync(absolutePath, changeExtension(absolutePath, `${fileExtension}.backup`))
+  }
+  writefile(absolutePath, readAsset(assetFileName || fileName))
 }
 
 function isProjectRoot(dirPath = cwd()) {
@@ -165,6 +176,7 @@ module.exports = {
   changeExtension,
   readConfig: readAsset,
   readAsset,
+  writeAsset,
   isProjectRoot,
   titleCase,
   kebabCase,

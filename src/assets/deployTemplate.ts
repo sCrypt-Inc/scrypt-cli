@@ -5,7 +5,7 @@ import { bsv, TestWallet, DefaultProvider, sha256 } from 'scrypt-ts'
 
 function getScriptHash(scriptPubKeyHex: string) {
     const res = sha256(scriptPubKeyHex).match(/.{2}/g)
-    if(!res) {
+    if (!res) {
         throw new Error('scriptPubKeyHex is not of even length')
     }
     return res.reverse().join('')
@@ -30,7 +30,7 @@ async function main() {
 
     // Connect to a signer.
     await instance.connect(signer)
-    
+
     // Contract deployment.
     const deployTx = await instance.deploy(amount)
 

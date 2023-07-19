@@ -45,10 +45,10 @@ cd ..
 
 
 
-echo "testing init ..."
-rm -rf dapp
-npx create-react-app dapp --template typescript
-cd dapp
+echo "testing init React ..."
+rm -rf dapp-react
+npx create-react-app@latest dapp-react --template typescript
+cd dapp-react
 git init
 git config user.email "ci@scrypt.io"
 git config user.name "scrypt"
@@ -59,4 +59,20 @@ npx scrypt-cli init
 npx scrypt-cli compile
 cd ..
 
+echo "testing init Next.js ..."
+rm -rf dapp-next
+npx create-next-app dapp-next --typescript --use-npm --eslint --tailwind --src-dir --app --import-alias "@/*"
+cd dapp-next
+git init
+git config user.email "ci@scrypt.io"
+git config user.name "scrypt"
+git add .
+git commit -am "Initial commit"
+npm i
+npx scrypt-cli init
+npx scrypt-cli compile
+cd ..
+
+
+cd ..
 rm -rf test-npx

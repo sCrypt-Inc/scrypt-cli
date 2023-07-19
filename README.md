@@ -44,6 +44,7 @@ Currently only supports projects created by [Create React App](https://create-re
 ```sh
 npx create-react-app my-app --template typescript
 cd my-app
+git init && git add . && git commit -m "Initial commit." 
 npx scrypt-cli init
 ```
 

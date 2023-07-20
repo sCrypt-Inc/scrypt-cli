@@ -3,7 +3,7 @@ const path = require('path');
 const json5 = require('json5');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, readdirRecursive, isProjectRoot, readConfig, writefile } = require('./helpers');
+const { stepCmd, readdirRecursive, isProjectRoot, readConfig, writefile, readfile } = require('./helpers');
 const { compileContract } = require('scryptlib');
 
 
@@ -16,27 +16,42 @@ async function compile() {
 
   const tsconfigPath = "tsconfig-scryptTS.json";
 
-  if (!fs.existsSync(tsconfigPath)) {
-    writefile(tsconfigPath, readConfig('tsconfig.json'));
-    console.log(green(`${tsconfigPath} created`))
-  }
-
-
-  const tsConfig = json5.parse(fs.readFileSync(tsconfigPath, 'utf8'));
+  const result = await stepCmd(`Git check if '${tsconfigPath}' exists`, `git ls-files ${tsconfigPath}`);
+  if (result === tsconfigPath) {
+    await stepCmd(`Git remove '${tsconfigPath}' file`, `git rm -f ${tsconfigPath}`)
+    await stepCmd("Git commit", `git commit -am "remove ${tsconfigPath} file."`)
+  } 
 
   // Check TS config
-  let outDir = tsConfig.compilerOptions.plugins[0].outDir || "artifacts";
+  let outDir = "artifacts";
+
+  const config = JSON.parse(readConfig('tsconfig.json'));
+  config.compilerOptions.plugins.push({
+    transform: require.resolve("scrypt-ts-transpiler"),
+    transformProgram: true,
+    outDir
+  })
+
+  writefile(tsconfigPath, JSON.stringify(config, null, 2));
+
+
+  const ts_patch_path = require.resolve("ts-patch").replace("index.js", "");
+
+  const tspc = ts_patch_path + "bin" + path.sep + "tspc.js";
 
   // Run tsc which in turn also transpiles to sCrypt
   await stepCmd(
     'Building TS',
-    `npx tsc --p ${tsconfigPath}`
+    `node ${tspc} --p ${tsconfigPath}`
   );
+
+  fs.removeSync(tsconfigPath)
 
   // Recursively iterate over dist/ dir and find all classes extending 
   // SmartContract class. For each found class, all it's compile() function.
   // This will generate the artifact file of the contract.
   // TODO: This is a hacky approach but works for now. Is there a more elegant solution?
+
 
   var currentPath = process.cwd();
   if (!fs.existsSync(outDir)) {

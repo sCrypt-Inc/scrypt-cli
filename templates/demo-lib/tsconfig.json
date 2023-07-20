@@ -16,14 +16,7 @@
     /* "strict": true,                                       Enable all strict type-checking options. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "sourceMap": true,
-    "declaration": true /* Include type declarations in output. Important for libraries! */,
-    "plugins": [
-      {
-        "transform": "scrypt-ts/dist/transformation/transformer",
-        "outDir": "./artifacts",
-        "transformProgram": true
-      }
-    ]
+    "declaration": true /* Include type declarations in output. Important for libraries! */
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"]
 }

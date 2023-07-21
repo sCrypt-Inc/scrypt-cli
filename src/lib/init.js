@@ -33,7 +33,7 @@ async function configReactScriptsV5() {
 async function configNext() {
     // install dependencies
     await stepCmd(
-        'Installing dependencies...',
+        'Installing devDependencies...',
         'npm i -D dotenv@10.0.0'
     );
 
@@ -44,7 +44,7 @@ async function configNext() {
 async function configVue() {
     // install dependencies
     await stepCmd(
-        'Installing dependencies...',
+        'Installing devDependencies...',
         'npm i -D node-polyfill-webpack-plugin'
     );
 
@@ -55,7 +55,7 @@ async function configVue() {
 async function configAngular(projectName) {
     // install dependencies
     await stepCmd(
-        'Installing dependencies...',
+        'Installing devDependencies...',
         'npm i -D dotenv@10.0.0 @angular-builders/custom-webpack node-polyfill-webpack-plugin'
     );
 
@@ -122,6 +122,12 @@ async function configTSconfig() {
         tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
         tsConfigJSON.compilerOptions.noImplicitAny = false;
 
+        tsConfigJSON["ts-node"] = {
+            "compilerOptions": {
+              "module": "commonjs"
+            }
+        }
+
         writefile(tsConfigPath, tsConfigJSON)
 
         console.log(green('tsconfig.json updated'));
@@ -172,7 +178,7 @@ async function createContract() {
     // Compiling contract
     await stepCmd(
         'Compiling contract',
-        'npx scrypt-cli@latest compile'
+        'npx scrypt-cli compile'
     );
 }
 
@@ -197,7 +203,7 @@ function majorVersion(dependency) {
     return parseInt(/(\d+)/.exec(dependency || '')[0])
 }
 
-async function init() {
+async function init({force}) {
     console.log(green('Initializing sCrypt in current project...'))
 
     const packageJSONFilePath = path.join('.', 'package.json')
@@ -206,13 +212,15 @@ async function init() {
         exit(-1);
     }
 
+    if(!force) {
+        const log = await stepCmd("Git status", "git status");
 
-    const log = await stepCmd("Git status", "git status");
-
-    if (log.includes("Untracked") || log.includes("modified") || log.includes("to be committed")) {
-        console.log(red('Please commit your current changes before initialization.'));
-        exit(-1);
+        if (log.includes("Untracked") || log.includes("modified") || log.includes("to be committed")) {
+            console.log(red('Please commit your current changes before initialization.'));
+            exit(-1);
+        }
     }
+
 
     await configTSconfig();
 

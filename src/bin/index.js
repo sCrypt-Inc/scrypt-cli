@@ -117,7 +117,14 @@ yargs(hideBin(process.argv))
       await verify(argv)
     })
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
-  .command(['init'], 'Initialize sCrypt in an existing project', {}, () => init())
+  .command(['init'], 'Initialize sCrypt in an existing project', (y) => {
+    return y.option('f', {
+        description: 'Force init will ignore git status, default false',
+        required: false,
+        type: 'boolean',
+        default: false
+      }).alias('force', 'f')
+  }, (argv) => init(argv))
   .command(['version'], 'show version', {}, () => showVersion())
   .alias('h', 'help')
   .alias('v', 'version')

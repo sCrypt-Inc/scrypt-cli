@@ -7,15 +7,10 @@ const { stepCmd, readdirRecursive, isProjectRoot, readConfig, writefile, readfil
 const { compileContract } = require('scryptlib');
 
 
-async function compile() {
+async function compile({include, compilerOptions}) {
 
-  if (!isProjectRoot()) {
-    console.error(red(`Please run this command in the root directory of the project.`))
-    exit(-1)
-  }
 
-  const tsconfigPath = "tsconfig-scryptTS.json";
-
+  const tsconfigPath = path.resolve("tsconfig-scryptTS.json");
   const result = await stepCmd(`Git check if '${tsconfigPath}' exists`, `git ls-files ${tsconfigPath}`);
   if (result === tsconfigPath) {
     await stepCmd(`Git remove '${tsconfigPath}' file`, `git rm -f ${tsconfigPath}`)
@@ -26,11 +21,25 @@ async function compile() {
   let outDir = "artifacts";
 
   const config = JSON.parse(readConfig('tsconfig.json'));
+
+  if(compilerOptions) {
+    try {
+      Object.assign(config.compilerOptions, JSON.parse(compilerOptions)) 
+    } catch (error) {
+      console.log(red(`ERROR: invalid compilerOptions '${compilerOptions}'`));
+      exit(-1);
+    }
+  }
+  
   config.compilerOptions.plugins.push({
     transform: require.resolve("scrypt-ts-transpiler"),
     transformProgram: true,
     outDir
-  })
+  });
+
+  if(include) {
+    config.include = [include];
+  }
 
   writefile(tsconfigPath, JSON.stringify(config, null, 2));
 

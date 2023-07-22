@@ -5,3 +5,4 @@ src/**/*.test.js
 .travis.yml
 tests/
 test-commands/
+.github/

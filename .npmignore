@@ -4,3 +4,4 @@ src/**/*.test.js
 *.sh
 .travis.yml
 tests/
+test-commands/

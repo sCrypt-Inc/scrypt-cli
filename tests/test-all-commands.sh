@@ -18,7 +18,8 @@ node ../src/bin/index.js project hello-world
 cd hello-world
 
 npm i
-node ../../src/bin/index.js compile
+npm i -D ../../
+npm run compile
 npm t
 npm run genprivkey
 cd ..
@@ -30,7 +31,8 @@ node ../src/bin/index.js project --state stateful-counter
 cd stateful-counter
 
 npm i
-node ../../src/bin/index.js compile
+npm i -D ../../
+npm run compile
 npm t
 npm run genprivkey
 cd ..
@@ -42,7 +44,8 @@ node ../src/bin/index.js project --lib my-lib
 cd my-lib
 
 npm i
-node ../../src/bin/index.js compile
+npm i -D ../../
+npm run compile
 npm t
 npm run genprivkey
 cd ..
@@ -54,7 +57,8 @@ cd hello-world-asm
 
 echo '{"HelloWorldAsm": {"unlock": "op_1 op_1 op_equalverify"}}' > .asm/asm.json
 npm i
-node ../../src/bin/index.js compile
+npm i -D ../../
+npm run compile
 npm t
 npm run genprivkey
 cd ..

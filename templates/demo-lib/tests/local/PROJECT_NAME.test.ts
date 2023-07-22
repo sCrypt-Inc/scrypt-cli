@@ -1,6 +1,5 @@
 import { expect } from 'chai'
-import { assert, method, SmartContract } from 'scrypt-ts'
-import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
+import { PROJECT_NAME, TestLibContract } from '../../src/contracts/PROJECT_NAME'
 
 // Test lib directly:
 describe('Test SmartContractLib `PROJECT_NAME`', () => {
@@ -13,20 +12,6 @@ describe('Test SmartContractLib `PROJECT_NAME`', () => {
         expect(myLib.diff(2n)).to.eq(3n)
     })
 })
-
-// Test via smart contract:
-class TestLibContract extends SmartContract {
-    @method()
-    public unlock1(x: bigint) {
-        assert(PROJECT_NAME.add(1n, 2n) === x)
-    }
-
-    @method()
-    public unlock2(x: bigint) {
-        const myLib = new PROJECT_NAME(5n)
-        assert(myLib.diff(2n) === x)
-    }
-}
 
 describe('Test SmartContractLib `Lib`', () => {
     before(async () => {

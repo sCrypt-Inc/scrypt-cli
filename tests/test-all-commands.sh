@@ -69,8 +69,10 @@ git config user.name "scrypt"
 git add .
 git commit -am "Initial commit"
 npm i
-node ../../src/bin/index.js init
-node ../../src/bin/index.js compile
+npm i -D ../../
+npx scrypt-cli init --force
+npx scrypt-cli compile
+npm run build
 cd ..
 
 echo "testing init Next.js ..."
@@ -83,8 +85,10 @@ git config user.name "scrypt"
 git add .
 git commit -am "Initial commit"
 npm i
-node ../../src/bin/index.js init
-node ../../src/bin/index.js compile
+npm i -D ../../
+npx scrypt-cli init --force
+npx scrypt-cli compile
+npm run build
 cd ..
 
 cd ..

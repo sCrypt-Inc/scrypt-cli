@@ -84,7 +84,19 @@ yargs(hideBin(process.argv))
       }
     }
   )
-  .command(['compile', 'comp', 'c'], 'Compile smart contracts in current project.', {}, () => compile())
+  .command(['compile', 'comp', 'c'], 'Compile smart contracts in current project.',  (y) => {
+    return y.option('i', {
+        description: 'Directory or file to be compiled. Defaults "src/contracts/**.ts".',
+        required: false,
+        type: 'string',
+      }).alias('include', 'i')
+      .option('o', {
+        description: 'Specify compilerOptions, which will be merged into the default configuration.',
+        required: false,
+        type: 'string'
+      }).alias('compilerOptions', 'o')
+
+  }, (argv) => compile(argv))
   .command(['deploy', 'depl', 'd'], 'Deploy a smart contract.',
     (y) => {
       return y.option('f', {
@@ -117,7 +129,14 @@ yargs(hideBin(process.argv))
       await verify(argv)
     })
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
-  .command(['init'], 'Initialize sCrypt in an existing project', {}, () => init())
+  .command(['init'], 'Initialize sCrypt in an existing project', (y) => {
+    return y.option('f', {
+        description: 'Force init will ignore git status, default false',
+        required: false,
+        type: 'boolean',
+        default: false
+      }).alias('force', 'f')
+  }, (argv) => init(argv))
   .command(['version'], 'show version', {}, () => showVersion())
   .alias('h', 'help')
   .alias('v', 'version')

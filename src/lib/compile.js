@@ -11,7 +11,7 @@ async function compile({include, compilerOptions}) {
 
 
   const tsconfigPath = path.resolve("tsconfig-scryptTS.json");
-  const result = await stepCmd(`Git check if '${tsconfigPath}' exists`, `git ls-files ${tsconfigPath}`);
+  const result = await stepCmd(`Git check if 'tsconfig-scryptTS.json' exists`, `git ls-files ${tsconfigPath}`);
   if (result === tsconfigPath) {
     await stepCmd(`Git remove '${tsconfigPath}' file`, `git rm -f ${tsconfigPath}`)
     await stepCmd("Git commit", `git commit -am "remove ${tsconfigPath} file."`)

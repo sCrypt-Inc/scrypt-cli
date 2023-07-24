@@ -41,7 +41,7 @@ async function configNext() {
     writeAsset('./next.config.js')
 }
 
-async function configVue() {
+async function configVueCli() {
     // install dependencies
     await stepCmd(
         'Installing devDependencies...',
@@ -125,7 +125,7 @@ async function configTSconfig() {
 
         tsConfigJSON["ts-node"] = {
             "compilerOptions": {
-              "module": "commonjs"
+                "module": "commonjs"
             }
         }
 
@@ -193,7 +193,7 @@ function scriptIncludes(scripts, includes) {
     for (const k in includes) {
         const v = includes[k]
         const script = scripts[k]
-        if(typeof v === 'boolean') {
+        if (typeof v === 'boolean') {
             if (!script) {
                 return false
             }
@@ -210,7 +210,7 @@ function majorVersion(dependency) {
     return parseInt(/(\d+)/.exec(dependency || '')[0])
 }
 
-async function init({force}) {
+async function init({ force }) {
     console.log(green('Initializing sCrypt in current project...'))
 
     const packageJSONFilePath = path.join('.', 'package.json')
@@ -219,7 +219,7 @@ async function init({force}) {
         exit(-1);
     }
 
-    if(!force) {
+    if (!force) {
         const log = await stepCmd("Git status", "git status");
 
         if (log.includes("Untracked") || log.includes("modified") || log.includes("to be committed")) {
@@ -236,7 +236,7 @@ async function init({force}) {
 
     const isReactProject = scriptIncludes(packageJSON.scripts, { start: 'react-scripts', build: 'react-scripts' })
     const isNextProject = scriptIncludes(packageJSON.scripts, { start: 'next', build: 'next' })
-    const isVueProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
+    const isVueCliProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
     const isAngularProject = scriptIncludes(packageJSON.scripts, { start: 'ng', build: 'ng' })
 
     // Install dependencies
@@ -252,8 +252,8 @@ async function init({force}) {
         }
     } else if (isNextProject) {
         await configNext();
-    } else if (isVueProject) {
-        await configVue();
+    } else if (isVueCliProject) {
+        await configVueCli();
     } else if (isAngularProject) {
         await configAngular(packageJSON.name)
     } else {

@@ -52,6 +52,17 @@ async function configVueCli() {
     writeAsset('./vue.config.js')
 }
 
+async function configVueVite(vueVersion) {
+    // install dev dependencies
+    await stepCmd(
+        'Installing dependencies...',
+        'npm i -D dotenv@10.0.0 vite-plugin-node-polyfills'
+    )
+
+    // override vite.config.ts
+    writeAsset('./vite.config.ts', `vue${vueVersion}.vite.config.ts`)
+}
+
 async function configAngular(projectName) {
     // install dependencies
     await stepCmd(
@@ -109,19 +120,27 @@ async function configPackageScripts() {
 }
 
 
-async function configTSconfig() {
+async function configTSconfig(fileName = 'tsconfig.json', tsVersion = 5) {
 
     // update tsconfig.json
-    let tsConfigPath = path.join('.', 'tsconfig.json')
+    let tsConfigPath = path.join('.', fileName)
 
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
 
+        if (!tsConfigJSON.compilerOptions) {
+            tsConfigJSON.compilerOptions = {}
+        }
         tsConfigJSON.compilerOptions.target = "ES2020";
         tsConfigJSON.compilerOptions.experimentalDecorators = true;
         tsConfigJSON.compilerOptions.resolveJsonModule = true;
         tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
         tsConfigJSON.compilerOptions.noImplicitAny = false;
+        tsConfigJSON.compilerOptions.preserveValueImports = false;
+
+        if (tsVersion === 5) {
+            tsConfigJSON.compilerOptions.verbatimModuleSyntax = false;
+        }
 
         tsConfigJSON["ts-node"] = {
             "compilerOptions": {
@@ -129,11 +148,18 @@ async function configTSconfig() {
             }
         }
 
+        if (!tsConfigJSON.include) {
+            tsConfigJSON.include = []
+        }
+        if (tsConfigJSON.include.indexOf('artifacts/*.json') == -1) {
+            tsConfigJSON.include.push('artifacts/*.json')
+        }
+
         writefile(tsConfigPath, tsConfigJSON)
 
-        console.log(green('tsconfig.json updated'));
+        console.log(green(`${fileName} updated`));
     } else {
-        console.log(red('tsconfig.json not found, only supports typescript project!'));
+        console.log(red(`${fileName} not found, only supports typescript project!`));
         exit(-1);
     }
 }
@@ -228,15 +254,16 @@ async function init({ force }) {
         }
     }
 
-
-    await configTSconfig();
-
     let packageJSON = readfile(packageJSONFilePath);
 
 
     const isReactProject = scriptIncludes(packageJSON.scripts, { start: 'react-scripts', build: 'react-scripts' })
     const isNextProject = scriptIncludes(packageJSON.scripts, { start: 'next', build: 'next' })
+
     const isVueCliProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
+    const isVueViteProject = scriptIncludes(packageJSON.scripts, { dev: 'vite', 'build-only': 'vite' })
+    let isVue3ViteProject = false
+
     const isAngularProject = scriptIncludes(packageJSON.scripts, { start: 'ng', build: 'ng' })
 
     // Install dependencies
@@ -254,13 +281,20 @@ async function init({ force }) {
         await configNext();
     } else if (isVueCliProject) {
         await configVueCli();
+    } else if (isVueViteProject) {
+        const vueVersion = majorVersion(packageJSON?.dependencies["vue"])
+        isVue3ViteProject = vueVersion === 3
+        await configVueVite(vueVersion)
     } else if (isAngularProject) {
         await configAngular(packageJSON.name)
     } else {
-        console.log(red('Only projects created by "create-react-app", "create-next-app", "@vue/cli", or "@angular/cli" are supported'));
+        console.log(red('Only projects created by "create-react-app", "create-next-app", "@vue/cli", "vue@2", "vue@3", or "@angular/cli" are supported'));
         console.log(red('Initialization failed.'));
         exit(-1)
     }
+
+    const tsVersion = majorVersion(packageJSON?.devDependencies["typescript"])
+    await configTSconfig(isVue3ViteProject ? 'tsconfig.app.json' : 'tsconfig.json', tsVersion);
 
     await configPackageScripts();
 

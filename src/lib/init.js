@@ -103,6 +103,18 @@ async function configAngular(projectName) {
     replaceInFile('src/index.html', PROJECT_NAME_TEMPLATE, camelCaseCapitalized(projectName));
 }
 
+async function configSvelte(projectName) {
+    // install dev dependencies
+    await stepCmd(
+        'Installing dependencies...',
+        'npm i -D dotenv@10.0.0 vite-plugin-node-polyfills'
+    )
+
+    // override vite.config.ts
+    writeAsset('./vite.config.ts', `svelte.vite.config.ts`)
+    replaceInFile('./vite.config.ts', PROJECT_NAME_TEMPLATE, camelCase(projectName));
+}
+
 async function configPackageScripts() {
 
     const packageJSONFilePath = path.join('.', 'package.json')
@@ -265,6 +277,7 @@ async function init({ force }) {
     let isVue3ViteProject = false
 
     const isAngularProject = scriptIncludes(packageJSON.scripts, { start: 'ng', build: 'ng' })
+    const isSvelteProject = scriptIncludes(packageJSON.scripts, { dev: 'vite', build: 'vite', check: 'svelte-kit' })
 
     // Install dependencies
     await stepCmd(
@@ -285,10 +298,12 @@ async function init({ force }) {
         const vueVersion = majorVersion(packageJSON?.dependencies["vue"])
         isVue3ViteProject = vueVersion === 3
         await configVueVite(vueVersion)
+    } else if (isSvelteProject) {
+        await configSvelte(packageJSON.name)
     } else if (isAngularProject) {
         await configAngular(packageJSON.name)
     } else {
-        console.log(red('Only projects created by "create-react-app", "create-next-app", "@vue/cli", "vue@2", "vue@3", or "@angular/cli" are supported'));
+        console.log(red('Only projects created by "create-react-app", "create-next-app", "@vue/cli", "vue@2", "vue@3", "@angular/cli", or "svelte@latest" are supported'));
         console.log(red('Initialization failed.'));
         exit(-1)
     }

@@ -33,8 +33,8 @@ async function configReactScriptsV5() {
 async function configNext() {
     // install dependencies
     await stepCmd(
-        'Installing dependencies...',
-        'npm i dotenv@10.0.0'
+        'Installing devDependencies...',
+        'npm i -D dotenv@10.0.0'
     );
 
     // override next.config.js
@@ -44,8 +44,8 @@ async function configNext() {
 async function configVue() {
     // install dependencies
     await stepCmd(
-        'Installing dependencies...',
-        'npm i node-polyfill-webpack-plugin'
+        'Installing devDependencies...',
+        'npm i -D node-polyfill-webpack-plugin'
     );
 
     // override vue.config.js
@@ -55,8 +55,8 @@ async function configVue() {
 async function configAngular(projectName) {
     // install dependencies
     await stepCmd(
-        'Installing dependencies...',
-        'npm i dotenv@10.0.0 @angular-builders/custom-webpack node-polyfill-webpack-plugin'
+        'Installing devDependencies...',
+        'npm i -D dotenv@10.0.0 @angular-builders/custom-webpack node-polyfill-webpack-plugin'
     );
 
     // create webpack.config.js
@@ -101,9 +101,9 @@ async function configPackageScripts() {
 
     packageJSON.scripts["pretest"] = "npx scrypt-cli compile";
     packageJSON.scripts["build:contract"] = "npx scrypt-cli compile";
-    packageJSON.scripts["deploy:contract"] = "npx ts-node --project tsconfig-scryptTS.json ./scripts/deploy.ts";
+    packageJSON.scripts["deploy:contract"] = "npx ts-node ./scripts/deploy.ts";
     packageJSON.scripts["verify:contract"] = `npx scrypt-cli verify $(cat .scriptHash) ./src/contracts/${camelCase(packageJSON.name)}.ts`;
-    packageJSON.scripts["genprivkey"] = "npx ts-node --project tsconfig-scryptTS.json ./scripts/privateKey.ts";
+    packageJSON.scripts["genprivkey"] = "npx ts-node ./scripts/privateKey.ts";
     // update packageJSON
     writefile(packageJSONFilePath, packageJSON);
 }
@@ -123,21 +123,18 @@ async function configTSconfig() {
         tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
         tsConfigJSON.compilerOptions.noImplicitAny = false;
 
+        tsConfigJSON["ts-node"] = {
+            "compilerOptions": {
+              "module": "commonjs"
+            }
+        }
+
         writefile(tsConfigPath, tsConfigJSON)
 
         console.log(green('tsconfig.json updated'));
     } else {
-        console.log(red('tsconfig.json not found'));
+        console.log(red('tsconfig.json not found, only supports typescript project!'));
         exit(-1);
-    }
-
-    // create tsconfig-scryptTS.json
-    tsConfigPath = path.join('.', 'tsconfig-scryptTS.json')
-    if (!existsSync(tsConfigPath)) {
-        writefile(tsConfigPath, readConfig('tsconfig.json'));
-        console.log(green(`${tsConfigPath} created`))
-    } else {
-        console.log(green(`${tsConfigPath} exists`))
     }
 }
 
@@ -188,7 +185,7 @@ async function createContract() {
     // Compiling contract
     await stepCmd(
         'Compiling contract',
-        'npx scrypt-cli@latest compile'
+        'npx scrypt-cli compile'
     );
 }
 
@@ -196,8 +193,14 @@ function scriptIncludes(scripts, includes) {
     for (const k in includes) {
         const v = includes[k]
         const script = scripts[k]
-        if (!script || !script.includes(v)) {
-            return false
+        if(typeof v === 'boolean') {
+            if (!script) {
+                return false
+            }
+        } else {
+            if (!script || !script.includes(v)) {
+                return false
+            }
         }
     }
     return true
@@ -207,7 +210,7 @@ function majorVersion(dependency) {
     return parseInt(/(\d+)/.exec(dependency || '')[0])
 }
 
-async function init() {
+async function init({force}) {
     console.log(green('Initializing sCrypt in current project...'))
 
     const packageJSONFilePath = path.join('.', 'package.json')
@@ -216,13 +219,17 @@ async function init() {
         exit(-1);
     }
 
+    if(!force) {
+        const log = await stepCmd("Git status", "git status");
 
-    const log = await stepCmd("Git status", "git status");
-
-    if (log.includes("Untracked") || log.includes("modified") || log.includes("to be committed")) {
-        console.log(red('Please commit your current changes before initialization.'));
-        exit(-1);
+        if (log.includes("Untracked") || log.includes("modified") || log.includes("to be committed")) {
+            console.log(red('Please commit your current changes before initialization.'));
+            exit(-1);
+        }
     }
+
+
+    await configTSconfig();
 
     let packageJSON = readfile(packageJSONFilePath);
 
@@ -232,20 +239,10 @@ async function init() {
     const isVueProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
     const isAngularProject = scriptIncludes(packageJSON.scripts, { start: 'ng', build: 'ng' })
 
-    if (isReactProject) {
-        // update packageJSON
-        packageJSON.overrides =  {
-            "react-scripts": {
-              "typescript": "^5"
-            }
-        }
-        writefile(packageJSONFilePath, packageJSON);
-    }
-
     // Install dependencies
     await stepCmd(
         'Installing dependencies...',
-        'npm i typescript@latest scrypt-ts@latest'
+        'npm i scrypt-ts@latest'
     );
 
     if (isReactProject) {
@@ -264,8 +261,6 @@ async function init() {
         console.log(red('Initialization failed.'));
         exit(-1)
     }
-
-    await configTSconfig();
 
     await configPackageScripts();
 

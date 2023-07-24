@@ -1,6 +1,6 @@
 {
   "name": "scrypt-cli",
-  "version": "0.1.33",
+  "version": "0.1.34",
   "description": "CLI tool for creating and managing sCrypt projects.",
   "bin": {
     "scrypt": "./src/bin/index.js",
@@ -15,7 +15,8 @@
     "test-all-commands": "sh tests/test-all-commands.sh",
     "test-lib-import": "node tests/test-lib-import.js",
     "test-all": "npm t && npm run test-templates && npm run test-all-commands && npm run test-lib-import",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "publish:test": "npm publish --tag test"
   },
   "jest": {
     "testMatch": [
@@ -34,6 +35,7 @@
     "hjson": "^3.2.2",
     "json5": "^2.2.2",
     "ora": "^5.4.1",
+    "scrypt-ts-transpiler": "^1.1.2",
     "scryptlib": "^2.1.12",
     "semver": "^7.3.8",
     "shelljs": "^0.8.5",

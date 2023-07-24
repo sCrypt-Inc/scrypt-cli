@@ -43,11 +43,7 @@ async function deploy({ file }) {
         
         console.log(green(`Running deployment script "${deployScriptPath}"...`));
 
-        if(fs.existsSync('tsconfig-scryptTS.json')) {
-            await shExec(`npx ts-node --project tsconfig-scryptTS.json ${deployScriptPath}`);
-        } else {
-            await shExec(`npx ts-node ${deployScriptPath}`);
-        }
+        await shExec(`npx ts-node ${deployScriptPath}`);
     
     } catch (e) {
         console.error(red(`Running deployment script "${file}" failed, ${e}`));

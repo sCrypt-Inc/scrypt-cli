@@ -20,11 +20,6 @@
     "noEmit": true,
     "experimentalDecorators": true,
     "plugins": [
-      {
-        "transform": "scrypt-ts/dist/transformation/transformer",
-        "outDir": "./artifacts",
-        "transformProgram": true
-      }
     ]
   },
   "include": [

@@ -6,7 +6,7 @@ const dotenvConfigPath = '.env'
 dotenv.config({ path: dotenvConfigPath })
 
 // fill in private key on testnet in WIF here
-let privKey = process.env.PRIVATE_KEY || ""
+let privKey = process.env.PRIVATE_KEY || ''
 if (!privKey) {
     genPrivKey()
 } else {

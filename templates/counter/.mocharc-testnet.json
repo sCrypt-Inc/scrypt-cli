@@ -2,9 +2,7 @@
   "diff": true,
   "require": "ts-node/register",
   "extensions": ["ts"],
-  "spec": [
-    "./tests/testnet/**/*.ts"
-  ],
+  "spec": ["./tests/testnet/**/*.ts"],
   "package": "./package.json",
   "reporter": "spec",
   "slow": "75",

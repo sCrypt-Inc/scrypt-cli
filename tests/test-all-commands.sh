@@ -76,7 +76,7 @@ npm i
 npm i -D ../../
 npx scrypt-cli init --force
 npx scrypt-cli compile
-npm run build
+CI=true npm t
 cd ..
 
 echo "testing init Next.js ..."

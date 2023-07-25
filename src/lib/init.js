@@ -1,7 +1,7 @@
 const { green, red } = require('chalk');
 const { existsSync, mkdirSync } = require('fs');
 const { stepCmd, replaceInFile, readfile, writefile, readConfig, camelCase, camelCaseCapitalized, writeAsset } = require("./helpers");
-const { PROJECT_NAME_TEMPLATE } = require("./project");
+const { PROJECT_NAME_TEMPLATE, PROJECT_FILENAME_TEMPLATE } = require("./project");
 const path = require('path');
 const { exit } = require('process');
 
@@ -99,6 +99,7 @@ async function configPackageScripts() {
     // reload packageJSON
     packageJSON = readfile(packageJSONFilePath);
 
+    packageJSON.scripts["pretest"] = "npx scrypt-cli compile";
     packageJSON.scripts["build:contract"] = "npx scrypt-cli compile";
     packageJSON.scripts["deploy:contract"] = "npx ts-node ./scripts/deploy.ts";
     packageJSON.scripts["verify:contract"] = `npx scrypt-cli verify $(cat .scriptHash) ./src/contracts/${camelCase(packageJSON.name)}.ts`;
@@ -157,6 +158,12 @@ async function createContract() {
     const contractPath = path.join('.', 'src', 'contracts', `${camelCase(packageJSON.name)}.ts`);
     writefile(contractPath, readConfig('PROJECT_NAME.ts'));
     replaceInFile(contractPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
+
+    // create src/contracts/counter.test.tsx
+    const contractTestPath = path.join('.', 'src', 'contracts', `${camelCase(packageJSON.name)}.test.tsx`);
+    writefile(contractTestPath, readConfig('PROJECT_NAME.test.tsx'));
+    replaceInFile(contractTestPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
+    replaceInFile(contractTestPath, PROJECT_FILENAME_TEMPLATE, camelCase(packageJSON.name));
 
     // create scripts dir
     const scriptsDir = path.join('.', 'scripts')

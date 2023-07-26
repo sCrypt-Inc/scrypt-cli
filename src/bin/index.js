@@ -95,6 +95,11 @@ yargs(hideBin(process.argv))
         required: false,
         type: 'string'
       }).alias('compilerOptions', 'o')
+      .option('w', {
+        description: 'Watch input files.',
+        required: false,
+        type: 'boolean'
+      }).alias('watch', 'w')
 
   }, (argv) => compile(argv))
   .command(['deploy', 'depl', 'd'], 'Deploy a smart contract.',

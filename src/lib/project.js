@@ -227,8 +227,7 @@ async function configurePackageJson(dir, asm) {
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath))
 
   if (asm) {
-    packageJson.scripts['postcompile'] = 'npm run apply-asm'
-    packageJson.scripts['apply-asm'] = 'node .asm/apply_asm.js'
+    packageJson.scripts['compile'] = 'npx scrypt-cli compile --asm'
   }
 
   writefile(packageJsonPath, packageJson)

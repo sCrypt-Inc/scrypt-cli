@@ -100,6 +100,16 @@ yargs(hideBin(process.argv))
         required: false,
         type: 'boolean'
       }).alias('watch', 'w')
+      .option('noArtifact', {
+        description: 'Disable emitting artifact file from a compilation.',
+        required: false,
+        type: 'boolean'
+      })
+      .option('asm', {
+        description: 'Apply asm optimization before compiling scrypt file.',
+        required: false,
+        type: 'boolean'
+      });
 
   }, (argv) => compile(argv))
   .command(['deploy', 'depl', 'd'], 'Deploy a smart contract.',

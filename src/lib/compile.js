@@ -7,7 +7,7 @@ const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec } = r
 const { compileContract } = require('scryptlib');
 
 
-async function compile({include, compilerOptions, watch}) {
+async function compile({include, compilerOptions, watch, noArtifact, asm}) {
 
   const tsconfigPath = path.resolve("tsconfig-scryptTS.json");
   const result = await stepCmd(`Git check if 'tsconfig-scryptTS.json' exists`, `git ls-files ${tsconfigPath}`);
@@ -44,7 +44,9 @@ async function compile({include, compilerOptions, watch}) {
 
   process.on('exit',() => {
       try {
-        fs.removeSync(tsconfigPath)
+        if(fs.existsSync(tsconfigPath)) {
+          fs.removeSync(tsconfigPath)
+        }
       } catch (error) {
         
       }
@@ -69,6 +71,12 @@ async function compile({include, compilerOptions, watch}) {
     );
   }
 
+  try {
+    fs.removeSync(tsconfigPath)
+  } catch (error) {
+    
+  }
+
 
   // Recursively iterate over dist/ dir and find all classes extending 
   // SmartContract class. For each found class, all it's compile() function.
@@ -82,38 +90,53 @@ async function compile({include, compilerOptions, watch}) {
     exit(-1);
   }
 
-  const distFiles = await readdirRecursive(outDir);
 
+  if(asm) {
+    if(!fs.existsSync(".asm/apply_asm.js")) {
+      console.log(red(`ERROR: no ".asm/apply_asm.js" found`));
+      process.exit(-1);
+    }
 
-  for (const f of distFiles) {
-    fAbs = path.resolve(f);
-    if (path.extname(fAbs) == '.scrypt') {
-      try {
-        const outDir = path.join(currentPath, path.dirname(f));
-        const result = compileContract(f, {
-          out: outDir,
-          artifact: true
-        });
+    await stepCmd(
+      'Applying ASM optimizations',
+      `node .asm/apply_asm.js`
+    );
+  }
 
-        if (result.errors.length > 0) {
+  if(!noArtifact) {
+    const distFiles = await readdirRecursive(outDir);
+    for (const f of distFiles) {
+      fAbs = path.resolve(f);
+      if (path.extname(fAbs) == '.scrypt') {
+        try {
+          const outDir = path.join(currentPath, path.dirname(f));
+
+          const result = compileContract(f, {
+            out: outDir,
+            artifact: true
+          });
+  
+          if (result.errors.length > 0) {
+            const resStr = `\nCompilation failed.\n`;
+            console.log(red(resStr));
+            console.log(red(`ERROR: Failed to compile ${f}`));
+            exit(-1);
+          }
+  
+          const artifactPath = path.join(outDir, `${path.basename(f, '.scrypt')}.json`);
+  
+          console.log(green(`Compiled successfully, artifact file: ${artifactPath}`));
+        } catch (e) {
           const resStr = `\nCompilation failed.\n`;
           console.log(red(resStr));
-          console.log(red(`ERROR: Failed to compile ${f}`));
+          console.log(red(`ERROR: ${e.message}`));
           exit(-1);
         }
-
-        const artifactPath = path.join(outDir, `${path.basename(f, '.scrypt')}.json`);
-
-        console.log(green(`Compiled successfully, artifact file: ${artifactPath}`));
-      } catch (e) {
-        const resStr = `\nCompilation failed.\n`;
-        console.log(red(resStr));
-        console.log(red(`ERROR: ${e.message}`));
-        exit(-1);
       }
-    }
-  };
+    };
+  }
 
+  
   const resStr = `\nProject was successfully compiled!\n`;
   console.log(green(resStr));
   exit(0);

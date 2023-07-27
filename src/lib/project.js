@@ -6,7 +6,7 @@ const gittar = require('gittar');
 const { green, red } = require('chalk');
 const { exit } = require('process');
 const { stepCmd, replaceInFile, camelCase, camelCaseCapitalized, kebabCase, titleCase, readAsset, writefile } = require("./helpers");
-
+const { createAsmDir } = require("./common")
 
 const ProjectType = {
   Contract: 1,
@@ -88,13 +88,7 @@ async function project(projType, { asm, name }) {
   await configurePackageJson('.', asm)
 
   if (asm) {
-    const step = 'Creating .asm dir ';
-    const asmDir = path.join('.', '.asm')
-    await stepCmd(
-      step,
-      `mkdir ${asmDir} && echo "{}" > ${asmDir}/asm.json`
-    );
-    writefile(path.join(asmDir, 'apply_asm.js'), readAsset('apply_asm.js'))
+    await createAsmDir();
   }
 
   const resStr = `\nProject ${name} was successfully created!\n` +

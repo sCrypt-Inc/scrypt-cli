@@ -3,12 +3,11 @@ const path = require('path');
 const json5 = require('json5');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, readdirRecursive, isProjectRoot, readConfig, writefile, readfile } = require('./helpers');
+const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec } = require('./helpers');
 const { compileContract } = require('scryptlib');
 
 
-async function compile({include, compilerOptions}) {
-
+async function compile({include, compilerOptions, watch}) {
 
   const tsconfigPath = path.resolve("tsconfig-scryptTS.json");
   const result = await stepCmd(`Git check if 'tsconfig-scryptTS.json' exists`, `git ls-files ${tsconfigPath}`);
@@ -43,18 +42,33 @@ async function compile({include, compilerOptions}) {
 
   writefile(tsconfigPath, JSON.stringify(config, null, 2));
 
+  process.on('exit',() => {
+      try {
+        fs.removeSync(tsconfigPath)
+      } catch (error) {
+        
+      }
+  })
 
-  const ts_patch_path = require.resolve("ts-patch").replace("index.js", "");
+  let ts_patch_path = require.resolve("typescript").split(path.sep);
 
-  const tspc = ts_patch_path + "bin" + path.sep + "tspc.js";
+  ts_patch_path = ts_patch_path.slice(0, ts_patch_path.length - 2);
+  ts_patch_path.push("bin")
+  ts_patch_path.push("tsc")
+
+  const tsc = ts_patch_path.join(path.sep)
 
   // Run tsc which in turn also transpiles to sCrypt
-  await stepCmd(
-    'Building TS',
-    `node ${tspc} --p ${tsconfigPath}`
-  );
 
-  fs.removeSync(tsconfigPath)
+  if(watch) {
+    await shExec(`node ${tsc} --watch --p ${tsconfigPath}`)
+  } else {
+    await stepCmd(
+      'Building TS',
+      `node ${tsc} --p ${tsconfigPath}`
+    );
+  }
+
 
   // Recursively iterate over dist/ dir and find all classes extending 
   // SmartContract class. For each found class, all it's compile() function.

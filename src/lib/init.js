@@ -149,6 +149,7 @@ async function configTSconfig(fileName = 'tsconfig.json', tsVersion = 5) {
         tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
         tsConfigJSON.compilerOptions.noImplicitAny = false;
         tsConfigJSON.compilerOptions.preserveValueImports = false;
+        tsConfigJSON.compilerOptions.noPropertyAccessFromIndexSignature = false;
 
         if (tsVersion === 5) {
             tsConfigJSON.compilerOptions.verbatimModuleSyntax = false;
@@ -308,7 +309,7 @@ async function init({ force }) {
         exit(-1)
     }
 
-    const tsVersion = majorVersion(packageJSON?.devDependencies["typescript"])
+    const tsVersion = majorVersion(Object.assign({}, packageJSON?.dependencies, packageJSON?.devDependencies)["typescript"])
     await configTSconfig(isVue3ViteProject ? 'tsconfig.app.json' : 'tsconfig.json', tsVersion);
 
     await configPackageScripts();

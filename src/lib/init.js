@@ -132,8 +132,55 @@ async function configPackageScripts() {
 }
 
 
-async function configTSconfig(fileName = 'tsconfig.json', tsVersion = 5) {
+function configTsNodeconfig({
+    isVue3ViteProject,
+    isReactProject,
+    isNextProject,
+    isVueCliProject,
+    isVueViteProject,
+    isSvelteProject,
+    isAngularProject
+}, tsVersion = 5) {
 
+    fileName = 'tsconfig.json'
+    // update tsconfig.json
+    tsConfigPath = path.join('.', fileName)
+
+    if (existsSync(tsConfigPath)) {
+        let tsConfigJSON = readfile(tsConfigPath);
+
+        tsConfigJSON["ts-node"] = {
+            "compilerOptions": {
+                "lib": ["es2020"],
+                "module": "CommonJS",
+                "target": "es2020",
+                "strict": true,
+                "esModuleInterop": true,
+                "skipLibCheck": true,
+                "moduleResolution": "node",
+                "experimentalDecorators": true,
+            }
+        }
+
+        writefile(tsConfigPath, tsConfigJSON)
+
+        console.log(green(`${fileName} updated`));
+    } else {
+        console.log(red(`${fileName} not found, only supports typescript project!`));
+        exit(-1);
+    }
+}
+
+function configTSconfig({
+    isVue3ViteProject,
+    isReactProject,
+    isNextProject,
+    isVueCliProject,
+    isVueViteProject,
+    isSvelteProject,
+    isAngularProject
+}, tsVersion = 5) {
+    fileName = isVue3ViteProject ? 'tsconfig.app.json' : 'tsconfig.json'
     // update tsconfig.json
     let tsConfigPath = path.join('.', fileName)
 
@@ -155,19 +202,6 @@ async function configTSconfig(fileName = 'tsconfig.json', tsVersion = 5) {
             tsConfigJSON.compilerOptions.verbatimModuleSyntax = false;
         }
 
-        tsConfigJSON["ts-node"] = {
-            "compilerOptions": {
-                "module": "commonjs"
-            }
-        }
-
-        if (!tsConfigJSON.include) {
-            tsConfigJSON.include = []
-        }
-        if (tsConfigJSON.include.indexOf('artifacts/*.json') == -1) {
-            tsConfigJSON.include.push('artifacts/*.json')
-        }
-
         writefile(tsConfigPath, tsConfigJSON)
 
         console.log(green(`${fileName} updated`));
@@ -175,6 +209,16 @@ async function configTSconfig(fileName = 'tsconfig.json', tsVersion = 5) {
         console.log(red(`${fileName} not found, only supports typescript project!`));
         exit(-1);
     }
+
+    return configTsNodeconfig({
+        isVue3ViteProject,
+        isReactProject,
+        isNextProject,
+        isVueCliProject,
+        isVueViteProject,
+        isSvelteProject,
+        isAngularProject
+    }, tsVersion);
 }
 
 async function gitCommit() {
@@ -310,7 +354,15 @@ async function init({ force }) {
     }
 
     const tsVersion = majorVersion(Object.assign({}, packageJSON?.dependencies, packageJSON?.devDependencies)["typescript"])
-    await configTSconfig(isVue3ViteProject ? 'tsconfig.app.json' : 'tsconfig.json', tsVersion);
+    configTSconfig({
+        isVue3ViteProject,
+        isReactProject,
+        isNextProject,
+        isVueCliProject,
+        isVueViteProject,
+        isSvelteProject,
+        isAngularProject
+    }, tsVersion);
 
     await configPackageScripts();
 

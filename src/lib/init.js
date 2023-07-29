@@ -208,7 +208,7 @@ function configTSconfig({
             tsConfigJSON.compilerOptions.verbatimModuleSyntax = false;
         }
 
-        if (isVueViteProject) {
+        if (isVueViteProject || isVueCliProject) {
             if (!tsConfigJSON.exclude) {
                 tsConfigJSON.exclude = []
             }

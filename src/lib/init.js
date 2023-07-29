@@ -132,7 +132,7 @@ async function configPackageScripts() {
 }
 
 
-function configTsNodeconfig({
+function configTsNodeConfig({
     isVue3ViteProject,
     isReactProject,
     isNextProject,
@@ -160,6 +160,12 @@ function configTsNodeconfig({
                 "moduleResolution": "node",
                 "experimentalDecorators": true,
             }
+        }
+
+        if (isSvelteProject) {
+            tsConfigJSON["ts-node"]['compilerOptions']['module'] = 'es2020'
+            tsConfigJSON["ts-node"]['esm'] = true
+            tsConfigJSON["ts-node"]['experimentalSpecifierResolution'] = 'node'
         }
 
         writefile(tsConfigPath, tsConfigJSON)
@@ -210,7 +216,7 @@ function configTSconfig({
         exit(-1);
     }
 
-    return configTsNodeconfig({
+    return configTsNodeConfig({
         isVue3ViteProject,
         isReactProject,
         isNextProject,

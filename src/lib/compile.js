@@ -7,10 +7,10 @@ const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec } = r
 const { compileContract } = require('scryptlib');
 
 
-async function compile({include, compilerOptions, watch, noArtifact, asm}) {
+async function compile({include, exclude, tsconfig, watch, noArtifact, asm}) {
 
   const tsconfigPath = path.resolve("tsconfig-scryptTS.json");
-  const result = await stepCmd(`Git check if 'tsconfig-scryptTS.json' exists`, `git ls-files ${tsconfigPath}`);
+  const result = await shExec(`git ls-files ${tsconfigPath}`);
   if (result === tsconfigPath) {
     await stepCmd(`Git remove '${tsconfigPath}' file`, `git rm -f ${tsconfigPath}`)
     await stepCmd("Git commit", `git commit -am "remove ${tsconfigPath} file."`)
@@ -21,14 +21,24 @@ async function compile({include, compilerOptions, watch, noArtifact, asm}) {
 
   const config = JSON.parse(readConfig('tsconfig.json'));
 
-  if(compilerOptions) {
+  if(tsconfig) {
     try {
-      Object.assign(config.compilerOptions, JSON.parse(compilerOptions)) 
+
+      if(fs.existsSync(path.resolve(tsconfig))) {
+        const configOverrides = readfile(path.resolve(tsconfig));
+        Object.assign(config, configOverrides) 
+      } else {
+        console.log(red(`ERROR: tsconfig '${tsconfig}' not found`));
+        exit(-1);
+      }
+
     } catch (error) {
-      console.log(red(`ERROR: invalid compilerOptions '${compilerOptions}'`));
+      console.log(red(`ERROR: invalid tsconfig '${tsconfig}'`));
       exit(-1);
     }
   }
+
+  config.compilerOptions.plugins = [];
   
   config.compilerOptions.plugins.push({
     transform: require.resolve("scrypt-ts-transpiler"),
@@ -37,7 +47,12 @@ async function compile({include, compilerOptions, watch, noArtifact, asm}) {
   });
 
   if(include) {
-    config.include = [include];
+    config.include = include.split(',')
+  }
+
+  
+  if(exclude) {
+    config.exclude = exclude.split(',')
   }
 
   writefile(tsconfigPath, JSON.stringify(config, null, 2));

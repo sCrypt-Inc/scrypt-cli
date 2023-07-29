@@ -23,6 +23,7 @@
     ]
   },
   "include": [
-    "src/contracts/**.ts"
-  ]
+    "src/contracts/**/*.ts"
+  ], 
+  "exclude": []
 }

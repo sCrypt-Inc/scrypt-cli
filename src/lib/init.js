@@ -41,7 +41,7 @@ async function configNext() {
     writeAsset('./next.config.js')
 }
 
-async function configVue() {
+async function configVueCli() {
     // install dependencies
     await stepCmd(
         'Installing devDependencies...',
@@ -50,6 +50,17 @@ async function configVue() {
 
     // override vue.config.js
     writeAsset('./vue.config.js')
+}
+
+async function configVueVite(vueVersion) {
+    // install dev dependencies
+    await stepCmd(
+        'Installing dependencies...',
+        'npm i -D dotenv@10.0.0 vite-plugin-node-polyfills'
+    )
+
+    // override vite.config.ts
+    writeAsset('./vite.config.ts', `vue${vueVersion}.vite.config.ts`)
 }
 
 async function configAngular(projectName) {
@@ -92,6 +103,18 @@ async function configAngular(projectName) {
     replaceInFile('src/index.html', PROJECT_NAME_TEMPLATE, camelCaseCapitalized(projectName));
 }
 
+async function configSvelte(projectName) {
+    // install dev dependencies
+    await stepCmd(
+        'Installing dependencies...',
+        'npm i -D dotenv@10.0.0 vite-plugin-node-polyfills'
+    )
+
+    // override vite.config.ts
+    writeAsset('./vite.config.ts', `svelte.vite.config.ts`)
+    replaceInFile('./vite.config.ts', PROJECT_NAME_TEMPLATE, camelCase(projectName));
+}
+
 async function configPackageScripts() {
 
     const packageJSONFilePath = path.join('.', 'package.json')
@@ -109,33 +132,99 @@ async function configPackageScripts() {
 }
 
 
-async function configTSconfig() {
+function configTsNodeConfig({
+    isVue3ViteProject,
+    isReactProject,
+    isNextProject,
+    isVueCliProject,
+    isVueViteProject,
+    isSvelteProject,
+    isAngularProject
+}, tsVersion = 5) {
 
+    fileName = 'tsconfig.json'
     // update tsconfig.json
-    let tsConfigPath = path.join('.', 'tsconfig.json')
+    tsConfigPath = path.join('.', fileName)
 
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
 
+        tsConfigJSON["ts-node"] = {
+            "compilerOptions": {
+                "lib": ["es2020"],
+                "module": "CommonJS",
+                "target": "es2020",
+                "strict": true,
+                "esModuleInterop": true,
+                "skipLibCheck": true,
+                "moduleResolution": "node",
+                "experimentalDecorators": true,
+            }
+        }
+
+        if (isSvelteProject) {
+            tsConfigJSON["ts-node"]['compilerOptions']['module'] = 'es2020'
+            tsConfigJSON["ts-node"]['esm'] = true
+            tsConfigJSON["ts-node"]['experimentalSpecifierResolution'] = 'node'
+        }
+
+        writefile(tsConfigPath, tsConfigJSON)
+
+        console.log(green(`${fileName} updated`));
+    } else {
+        console.log(red(`${fileName} not found, only supports typescript project!`));
+        exit(-1);
+    }
+}
+
+function configTSconfig({
+    isVue3ViteProject,
+    isReactProject,
+    isNextProject,
+    isVueCliProject,
+    isVueViteProject,
+    isSvelteProject,
+    isAngularProject
+}, tsVersion = 5) {
+    fileName = isVue3ViteProject ? 'tsconfig.app.json' : 'tsconfig.json'
+    // update tsconfig.json
+    let tsConfigPath = path.join('.', fileName)
+
+    if (existsSync(tsConfigPath)) {
+        let tsConfigJSON = readfile(tsConfigPath);
+
+        if (!tsConfigJSON.compilerOptions) {
+            tsConfigJSON.compilerOptions = {}
+        }
         tsConfigJSON.compilerOptions.target = "ES2020";
         tsConfigJSON.compilerOptions.experimentalDecorators = true;
         tsConfigJSON.compilerOptions.resolveJsonModule = true;
         tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
         tsConfigJSON.compilerOptions.noImplicitAny = false;
+        tsConfigJSON.compilerOptions.preserveValueImports = false;
+        tsConfigJSON.compilerOptions.noPropertyAccessFromIndexSignature = false;
 
-        tsConfigJSON["ts-node"] = {
-            "compilerOptions": {
-              "module": "commonjs"
-            }
+        if (tsVersion === 5) {
+            tsConfigJSON.compilerOptions.verbatimModuleSyntax = false;
         }
 
         writefile(tsConfigPath, tsConfigJSON)
 
-        console.log(green('tsconfig.json updated'));
+        console.log(green(`${fileName} updated`));
     } else {
-        console.log(red('tsconfig.json not found, only supports typescript project!'));
+        console.log(red(`${fileName} not found, only supports typescript project!`));
         exit(-1);
     }
+
+    return configTsNodeConfig({
+        isVue3ViteProject,
+        isReactProject,
+        isNextProject,
+        isVueCliProject,
+        isVueViteProject,
+        isSvelteProject,
+        isAngularProject
+    }, tsVersion);
 }
 
 async function gitCommit() {
@@ -193,7 +282,7 @@ function scriptIncludes(scripts, includes) {
     for (const k in includes) {
         const v = includes[k]
         const script = scripts[k]
-        if(typeof v === 'boolean') {
+        if (typeof v === 'boolean') {
             if (!script) {
                 return false
             }
@@ -210,7 +299,7 @@ function majorVersion(dependency) {
     return parseInt(/(\d+)/.exec(dependency || '')[0])
 }
 
-async function init({force}) {
+async function init({ force }) {
     console.log(green('Initializing sCrypt in current project...'))
 
     const packageJSONFilePath = path.join('.', 'package.json')
@@ -219,7 +308,7 @@ async function init({force}) {
         exit(-1);
     }
 
-    if(!force) {
+    if (!force) {
         const log = await stepCmd("Git status", "git status");
 
         if (log.includes("Untracked") || log.includes("modified") || log.includes("to be committed")) {
@@ -228,16 +317,18 @@ async function init({force}) {
         }
     }
 
-
-    await configTSconfig();
-
     let packageJSON = readfile(packageJSONFilePath);
 
 
     const isReactProject = scriptIncludes(packageJSON.scripts, { start: 'react-scripts', build: 'react-scripts' })
     const isNextProject = scriptIncludes(packageJSON.scripts, { start: 'next', build: 'next' })
-    const isVueProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
+
+    const isVueCliProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
+    const isVueViteProject = scriptIncludes(packageJSON.scripts, { dev: 'vite', 'build-only': 'vite' })
+    let isVue3ViteProject = false
+
     const isAngularProject = scriptIncludes(packageJSON.scripts, { start: 'ng', build: 'ng' })
+    const isSvelteProject = scriptIncludes(packageJSON.scripts, { dev: 'vite', build: 'vite', check: 'svelte-kit' })
 
     // Install dependencies
     await stepCmd(
@@ -252,15 +343,32 @@ async function init({force}) {
         }
     } else if (isNextProject) {
         await configNext();
-    } else if (isVueProject) {
-        await configVue();
+    } else if (isVueCliProject) {
+        await configVueCli();
+    } else if (isVueViteProject) {
+        const vueVersion = majorVersion(packageJSON?.dependencies["vue"])
+        isVue3ViteProject = vueVersion === 3
+        await configVueVite(vueVersion)
+    } else if (isSvelteProject) {
+        await configSvelte(packageJSON.name)
     } else if (isAngularProject) {
         await configAngular(packageJSON.name)
     } else {
-        console.log(red('Only projects created by "create-react-app", "create-next-app", "@vue/cli", or "@angular/cli" are supported'));
+        console.log(red('Only projects created by "create-react-app", "create-next-app", "@vue/cli", "vue@2", "vue@3", "@angular/cli", or "svelte@latest" are supported'));
         console.log(red('Initialization failed.'));
         exit(-1)
     }
+
+    const tsVersion = majorVersion(Object.assign({}, packageJSON?.dependencies, packageJSON?.devDependencies)["typescript"])
+    configTSconfig({
+        isVue3ViteProject,
+        isReactProject,
+        isNextProject,
+        isVueCliProject,
+        isVueViteProject,
+        isSvelteProject,
+        isAngularProject
+    }, tsVersion);
 
     await configPackageScripts();
 

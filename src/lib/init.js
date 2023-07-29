@@ -208,6 +208,15 @@ function configTSconfig({
             tsConfigJSON.compilerOptions.verbatimModuleSyntax = false;
         }
 
+        if (isVueViteProject) {
+            if (!tsConfigJSON.exclude) {
+                tsConfigJSON.exclude = []
+            }
+            if (tsConfigJSON.exclude.indexOf('src/**/*.test.*') === -1) {
+                tsConfigJSON.exclude.push('src/**/*.test.*')
+            }
+        }
+
         writefile(tsConfigPath, tsConfigJSON)
 
         console.log(green(`${fileName} updated`));

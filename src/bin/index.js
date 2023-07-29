@@ -86,15 +86,20 @@ yargs(hideBin(process.argv))
   )
   .command(['compile', 'comp', 'c'], 'Compile smart contracts in current project.',  (y) => {
     return y.option('i', {
-        description: 'Directory or file to be compiled. Defaults "src/contracts/**.ts".',
+        description: 'Specifies an array of filenames or patterns to include when compling.  Defaults "src/contracts/**/*.ts".',
         required: false,
         type: 'string',
       }).alias('include', 'i')
-      .option('o', {
-        description: 'Specify compilerOptions, which will be merged into the default configuration.',
+      .option('e', {
+        description: 'Specifies an array of filenames or patterns that should be skipped when resolving include. Defaults none.',
+        required: false,
+        type: 'string',
+      }).alias('exclude', 'e')
+      .option('t', {
+        description: 'Specify a tsconfig to override the default tsconfig.',
         required: false,
         type: 'string'
-      }).alias('compilerOptions', 'o')
+      }).alias('tsconfig', 't')
       .option('w', {
         description: 'Watch input files.',
         required: false,

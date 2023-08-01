@@ -1,5 +1,6 @@
 import { expect } from 'chai'
-import { PROJECT_NAME, TestLibContract } from '../../src/contracts/PROJECT_NAME'
+import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
+import { TestPROJECT_NAME } from '../../src/contracts/testPROJECT_NAME'
 
 // Test lib directly:
 describe('Test SmartContractLib `PROJECT_NAME`', () => {
@@ -15,11 +16,11 @@ describe('Test SmartContractLib `PROJECT_NAME`', () => {
 
 describe('Test SmartContractLib `Lib`', () => {
     before(async () => {
-        await TestLibContract.compile()
+        await TestPROJECT_NAME.compile()
     })
 
     it('should pass integration test successfully.', () => {
-        const testLib = new TestLibContract()
+        const testLib = new TestPROJECT_NAME()
 
         let result = testLib.verify((self) => self.unlock1(3n))
         expect(result.success, result.error).to.be.true

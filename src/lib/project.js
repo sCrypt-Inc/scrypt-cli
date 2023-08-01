@@ -174,6 +174,18 @@ async function setProjectName(dir, name) {
     replaceInFile(fContractNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
+  let ftestContract = path.join(dirContracts, "test" + PROJECT_NAME_TEMPLATE + '.ts')
+  let ftestContractNew = ftestContract.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
+
+  const importLib = `from './${PROJECT_NAME_TEMPLATE}'`
+  const importReplacementLib = importLib.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
+
+  if (fs.existsSync(ftestContract)) {
+    sh.mv(ftestContract, ftestContractNew)
+    replaceInFile(ftestContractNew, importLib, importReplacementLib);
+    replaceInFile(ftestContractNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
+  }
+
   const importTemplateTests = `from '../../src/contracts/${PROJECT_NAME_TEMPLATE}'`
   const importReplacementTests = importTemplateTests.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
 

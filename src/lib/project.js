@@ -189,12 +189,17 @@ async function setProjectName(dir, name) {
   const importTemplateTests = `from '../../src/contracts/${PROJECT_NAME_TEMPLATE}'`
   const importReplacementTests = importTemplateTests.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
 
+  const importLibTemplateTests = `from '../../src/contracts/test${PROJECT_NAME_TEMPLATE}'`
+  const importLibReplacementTests = importLibTemplateTests.replace(`test${PROJECT_NAME_TEMPLATE}`, `test${camelCase(name)}`)
+
+
   let dirTestsLocal = path.join(dir, 'tests', 'local')
   let fTestLocal = path.join(dirTestsLocal, PROJECT_NAME_TEMPLATE + '.test.ts')
   let fTestLocalNew = fTestLocal.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
   if (fs.existsSync(fTestLocal)) {
     sh.mv(fTestLocal, fTestLocalNew)
     replaceInFile(fTestLocalNew, importTemplateTests, importReplacementTests);
+    replaceInFile(fTestLocalNew, importLibTemplateTests, importLibReplacementTests);
     replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 

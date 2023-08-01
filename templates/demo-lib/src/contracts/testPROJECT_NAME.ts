@@ -5,7 +5,7 @@ import {
     SmartContract,
 } from 'scrypt-ts'
 
-import {PROJECT_NAME} from "./PROJECT_NAME"
+import { PROJECT_NAME } from './PROJECT_NAME'
 
 // Test via smart contract:
 export class TestPROJECT_NAME extends SmartContract {

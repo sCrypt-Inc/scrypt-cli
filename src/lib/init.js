@@ -258,10 +258,10 @@ async function createContract() {
     replaceInFile(contractPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
 
     // create src/contracts/counter.test.tsx
-    const contractTestPath = path.join('.', 'src', 'contracts', `${camelCase(packageJSON.name)}.test.tsx`);
-    writefile(contractTestPath, readConfig('PROJECT_NAME.test.tsx'));
-    replaceInFile(contractTestPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
-    replaceInFile(contractTestPath, PROJECT_FILENAME_TEMPLATE, camelCase(packageJSON.name));
+    // const contractTestPath = path.join('.', 'src', 'contracts', `${camelCase(packageJSON.name)}.test.tsx`);
+    // writefile(contractTestPath, readConfig('PROJECT_NAME.test.tsx'));
+    // replaceInFile(contractTestPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
+    // replaceInFile(contractTestPath, PROJECT_FILENAME_TEMPLATE, camelCase(packageJSON.name));
 
     // create scripts dir
     const scriptsDir = path.join('.', 'scripts')
@@ -280,11 +280,9 @@ async function createContract() {
     replaceInFile(deployScriptPath, importTemplateDeployScript, importReplacementDeployScript);
     replaceInFile(deployScriptPath, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(packageJSON.name));
 
-    // Compiling contract
-    await stepCmd(
-        'Compiling contract',
-        'npx scrypt-cli compile'
-    );
+    console.log(green(`Initialization has been successful.`));
+    console.log(green(`Execute \`npx scrypt-cli compile\` to compile the contracts.`));
+
 }
 
 function scriptIncludes(scripts, includes) {

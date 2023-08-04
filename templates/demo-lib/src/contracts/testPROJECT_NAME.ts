@@ -1,9 +1,4 @@
-
-import {
-    method,
-    assert,
-    SmartContract,
-} from 'scrypt-ts'
+import { method, assert, SmartContract } from 'scrypt-ts'
 
 import { PROJECT_NAME } from './PROJECT_NAME'
 

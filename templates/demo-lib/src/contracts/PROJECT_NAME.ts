@@ -1,8 +1,4 @@
-import {
-    method,
-    prop,
-    SmartContractLib,
-} from 'scrypt-ts'
+import { method, prop, SmartContractLib } from 'scrypt-ts'
 
 export class PROJECT_NAME extends SmartContractLib {
     @prop()

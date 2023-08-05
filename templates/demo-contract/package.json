@@ -8,7 +8,7 @@
     "build": "tsc",
     "deploy": "npx ts-node ./deploy.ts",
     "clean": "rimraf scrypt.index.json && rimraf dist && rimraf artifacts",
-    "compile": "npx scrypt-cli compile",
+    "compile": "npx scrypt-cli@latest compile",
     "pretest": "npm run build && npm run compile",
     "test": "mocha",
     "testnet": "mocha --config=.mocharc-testnet.json",

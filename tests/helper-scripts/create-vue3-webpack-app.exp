@@ -1,0 +1,38 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+
+spawn npx @vue/cli create dapp-vue3-webpack
+match_max 100000
+
+expect "Please pick a preset:"
+send -- "\[B\[B\r"
+
+expect "Check the features needed for your project:"
+send -- "\[B \r"
+
+expect "Choose a version of Vue.js that you want to start the project with"
+send -- "\r"
+
+expect "Use class-style component syntax?"
+send -- "\r"
+
+expect "Use Babel alongside TypeScript"
+send -- "\r"
+
+expect "Pick a linter / formatter config:"
+send -- "\r"
+
+expect "Pick additional lint features:"
+send -- "\r"
+
+expect "Where do you prefer placing config for Babel, ESLint, etc.?"
+send -- "\r"
+
+expect "Save this as a preset for future projects?"
+send -- "\r"
+
+expect "Pick the package manager to use when installing dependencies:"
+send -- "\[B\r"
+
+expect eof

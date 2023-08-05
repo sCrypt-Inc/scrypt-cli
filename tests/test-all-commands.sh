@@ -63,6 +63,9 @@ npm t
 npm run genprivkey
 cd ..
 
+chmod +x ../tests/helper-scripts/*.exp
+npm i -g @vue/cli
+
 echo "testing init React ..."
 rm -rf dapp-react
 npx create-react-app@latest dapp-react --template typescript
@@ -76,6 +79,8 @@ npm i
 npm i -D ../../
 npx scrypt-cli init --force
 npx scrypt-cli compile
+cp ../../tests/replaced-files/react-index.tsx src/index.tsx
+cat src/index.tsx
 CI=true npm t
 cd ..
 
@@ -92,8 +97,95 @@ npm i
 npm i -D ../../
 npx scrypt-cli init --force
 npx scrypt-cli compile
+cp ../../tests/replaced-files/next-page.tsx src/app/page.tsx
+cat src/app/page.tsx
 npm run build
 cd ..
+
+echo "testing init Angular ..."
+rm -rf dapp-angular
+npx @angular/cli new dapp-angular
+echo "Skip"
+
+echo "testing init Svelte ..."
+rm -rf dapp-svelte
+../tests/helper-scripts/create-svelte-app.exp
+cd dapp-svelte
+git init
+git config user.email "ci@scrypt.io"
+git config user.name "scrypt"
+git add .
+git commit -am "Initial commit"
+npm i
+npm i -D ../../
+npx scrypt-cli init --force
+npx scrypt-cli compile
+cp ../../tests/replaced-files/svelte-page.svelte src/routes/+page.svelte
+cat src/routes/+page.svelte
+npm run build
+cd ..
+
+echo "testing Vue 3.x bundled with Vite"
+rm -rf dapp-vue3-vite
+../tests/helper-scripts/create-vue3-vite-app.exp
+cd dapp-vue3-vite
+git init
+git config user.email "ci@scrypt.io"
+git config user.name "scrypt"
+git add .
+git commit -am "Initial commit"
+npm i
+npm i -D ../../
+npx scrypt-cli init --force
+npx scrypt-cli compile
+cp ../../tests/replaced-files/vue3-vite-main.ts src/main.ts
+cat src/main.ts
+npm run build
+cd ..
+
+echo "testing Vue 2.x bundled with Vite"
+rm -rf dapp-vue2-vite
+../tests/helper-scripts/create-vue2-vite-app.exp
+echo "Skip"
+
+echo "testing Vue 3.x bundled with Webpack"
+rm -rf dapp-vue3-webpack ~/.vuerc
+echo "{ \"useTaobaoRegistry\": true }" > ~/.vuerc
+../tests/helper-scripts/create-vue3-webpack-app.exp
+cd dapp-vue3-webpack
+git init
+git config user.email "ci@scrypt.io"
+git config user.name "scrypt"
+git add .
+git commit -am "Initial commit"
+npm i
+npm i -D ../../
+npx scrypt-cli init --force
+npx scrypt-cli compile
+cp ../../tests/replaced-files/vue3-webpack-main.ts src/main.ts
+cat src/main.ts
+npm run build
+cd ..
+
+rm -rf dapp-vue2-webpack ~/.vuerc
+echo "{ \"useTaobaoRegistry\": true }" > ~/.vuerc
+../tests/helper-scripts/create-vue2-webpack-app.exp
+cd dapp-vue2-webpack
+git init
+git config user.email "ci@scrypt.io"
+git config user.name "scrypt"
+git add .
+git commit -am "Initial commit"
+npm i
+npm i -D ../../
+npx scrypt-cli init --force
+npx scrypt-cli compile
+cp ../../tests/replaced-files/vue2-webpack-main.ts src/main.ts
+cat src/main.ts
+npm run build
+cd ..
+
+ls -la
 
 cd ..
 rm -rf test-commands

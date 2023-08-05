@@ -1,0 +1,32 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+
+spawn npm create vue@2
+match_max 100000
+
+expect "Project name:"
+send -- "dapp-vue2-vite\r"
+
+expect "Add TypeScript?"
+send -- "\[C\r"
+
+expect "Add JSX Support?"
+send -- "\r"
+
+expect "Add Vue Router for Single Page Application development?"
+send -- "\r"
+
+expect "Add Pinia for state management?"
+send -- "\r"
+
+expect "Add Vitest for Unit Testing?"
+send -- "\r"
+
+expect "Add Cypress for both Unit and End-to-End testing?"
+send -- "\r"
+
+expect "Add ESLint for code quality?"
+send -- "\r"
+
+expect eof

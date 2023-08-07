@@ -34,6 +34,7 @@
     "gittar": "^0.1.1",
     "hjson": "^3.2.2",
     "json5": "^2.2.2",
+    "lodash": "^4.17.21",
     "ora": "^5.4.1",
     "scrypt-ts-transpiler": "^1.2.0",
     "scryptlib": "^2.1.23",

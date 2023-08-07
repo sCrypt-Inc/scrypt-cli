@@ -1,61 +1,32 @@
 const fs = require('fs-extra');
 const path = require('path');
-const json5 = require('json5');
+const _ = require('lodash');
 const { exit } = require('process');
 const { green, red } = require('chalk');
 const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec } = require('./helpers');
 const { compileContract } = require('scryptlib');
-
+const { IndexerReader, INDEX_FILE_NAME } = require('scrypt-ts-transpiler/dist/indexerReader');
 
 async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
-
-  let tsconfigPath = path.resolve("tsconfig.json");
-
-  if (tsconfig) {
-    tsconfigPath = path.isAbsolute(tsconfig) ? tsconfig : path.resolve(tsconfig);
-
-    if (!fs.existsSync(tsconfigPath)) {
-      console.log(red(`ERROR: tsconfig '${tsconfig}' not found`));
-      exit(-1);
-    }
-  }
 
 
   const tsconfigScryptTSPath = path.resolve("tsconfig-scryptTS.json");
 
-  const result = await shExec(`git ls-files ${tsconfigScryptTSPath}`);
-  if (result === tsconfigScryptTSPath) {
-    await stepCmd(`Git remove '${tsconfigScryptTSPath}' file`, `git rm -f ${tsconfigScryptTSPath}`)
-    await stepCmd("Git commit", `git commit -am "remove ${tsconfigScryptTSPath} file."`)
+  if (!fs.existsSync(tsconfigScryptTSPath)) {
+    writefile(tsconfigScryptTSPath, readConfig('tsconfig.json'))
   }
+
 
   // Check TS config
   let outDir = "artifacts";
-  const config = JSON.parse(readConfig('tsconfig.json'));
-  if (fs.existsSync(tsconfigPath)) {
+  const config = readfile(tsconfigScryptTSPath, true);
 
-    try {
-
-      const configOverrides = readfile(tsconfigPath);
-      Object.assign(config, configOverrides)
-      Object.assign(config.compilerOptions, {
-        noEmit: true
-      })
-
-    } catch (error) {
-      console.log(red(`ERROR: invalid tsconfig '${tsconfig}'`));
-      exit(-1);
-    }
-  }
+  Object.assign(config.compilerOptions, {
+    noEmit: true
+  })
 
 
   config.compilerOptions.plugins = [];
-
-  config.compilerOptions.plugins.push({
-    transform: require.resolve("scrypt-ts-transpiler"),
-    transformProgram: true,
-    outDir
-  });
 
   if (include) {
     config.include = include.split(',')
@@ -66,17 +37,31 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
     config.exclude = exclude.split(',')
   }
 
+  let clonedConfig = _.cloneDeep(config);
+
+  config.compilerOptions.plugins.push({
+    transform: require.resolve("scrypt-ts-transpiler"),
+    transformProgram: true,
+    outDir
+  });
+
+
   writefile(tsconfigScryptTSPath, JSON.stringify(config, null, 2));
 
   process.on('exit', () => {
-    try {
-      if (fs.existsSync(tsconfigScryptTSPath)) {
-        fs.removeSync(tsconfigScryptTSPath)
-      }
-    } catch (error) {
-
+    if (clonedConfig == ! null) {
+      writefile(tsconfigScryptTSPath, JSON.stringify(clonedConfig, null, 2));
+      clonedConfig = null
     }
   })
+
+  process.on('SIGINT', function () {
+    if (clonedConfig == ! null) {
+      writefile(tsconfigScryptTSPath, JSON.stringify(clonedConfig, null, 2));
+      clonedConfig = null
+    }
+    process.exit();
+  });
 
   let ts_patch_path = require.resolve("typescript").split(path.sep);
 
@@ -98,7 +83,8 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   }
 
   try {
-    fs.removeSync(tsconfigScryptTSPath)
+    writefile(tsconfigScryptTSPath, JSON.stringify(clonedConfig, null, 2));
+    clonedConfig = null
   } catch (error) {
 
   }
@@ -129,36 +115,54 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   }
 
   if (!noArtifact) {
-    const distFiles = await readdirRecursive(outDir);
-    for (const f of distFiles) {
-      fAbs = path.resolve(f);
-      if (path.extname(fAbs) == '.scrypt') {
-        try {
-          const outDir = path.join(currentPath, path.dirname(f));
 
-          const result = compileContract(f, {
-            out: outDir,
-            artifact: true
-          });
+    const files = [];
+    if (fs.existsSync(path.resolve(INDEX_FILE_NAME))) {
+      const indexr = new IndexerReader(path.resolve(INDEX_FILE_NAME));
+      indexr.symbolPaths.forEach((value, key) => {
+        const scryptFile = indexr.getFullPath(key);
+        if(path.relative(scryptFile, outDir) === '..') {
+          files.push(scryptFile)
+        }
+      })
 
-          if (result.errors.length > 0) {
-            const resStr = `\nCompilation failed.\n`;
-            console.log(red(resStr));
-            console.log(red(`ERROR: Failed to compile ${f}`));
-            exit(-1);
-          }
+    } else {
+      const distFiles = await readdirRecursive(outDir);
+      for (const f of distFiles) {
+        const fAbs = path.resolve(f);
+        if (path.extname(fAbs) == '.scrypt') {
+          files.push(fAbs)
+        }
+      };
+    }
 
-          const artifactPath = path.join(outDir, `${path.basename(f, '.scrypt')}.json`);
 
-          console.log(green(`Compiled successfully, artifact file: ${artifactPath}`));
-        } catch (e) {
+    for (const f of files) {
+
+      try {
+        const outDir = path.dirname(f)
+        const result = compileContract(f, {
+          out: outDir,
+          artifact: true
+        });
+
+        if (result.errors.length > 0) {
           const resStr = `\nCompilation failed.\n`;
           console.log(red(resStr));
-          console.log(red(`ERROR: ${e.message}`));
+          console.log(red(`ERROR: Failed to compile ${f}`));
           exit(-1);
         }
+
+        const artifactPath = path.join(outDir, `${path.basename(f, '.scrypt')}.json`);
+
+        console.log(green(`Compiled successfully, artifact file: ${artifactPath}`));
+      } catch (e) {
+        const resStr = `\nCompilation failed.\n`;
+        console.log(red(resStr));
+        console.log(red(`ERROR: ${e.message}`));
+        exit(-1);
       }
-    };
+    }
   }
 
 

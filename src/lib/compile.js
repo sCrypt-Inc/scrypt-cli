@@ -6,7 +6,7 @@ const { green, red } = require('chalk');
 const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec } = require('./helpers');
 const { compileContract } = require('scryptlib');
 const ts = require('typescript');
-const { IndexerReader, INDEX_FILE_NAME } = require('scrypt-ts-transpiler/dist/indexerReader');
+const { IndexerReader, INDEX_FILE_NAME } = require('scrypt-ts-transpiler');
 
 function containsDeprecatedOptions(options) {
   return "out" in options

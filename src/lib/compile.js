@@ -6,7 +6,7 @@ const { green, red } = require('chalk');
 const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec } = require('./helpers');
 const { compileContract } = require('scryptlib');
 const ts = require('typescript');
-const { IndexerReader, INDEX_FILE_NAME } = require('scrypt-ts-transpiler');
+const { IndexerReader, INDEX_FILE_NAME } = require('scrypt-ts-transpiler/dist/indexerReader');
 
 function containsDeprecatedOptions(options) {
   return "out" in options
@@ -89,14 +89,14 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   writefile(tsconfigScryptTSPath, JSON.stringify(config, null, 2));
 
   process.on('exit', () => {
-    if (clonedConfig == ! null) {
+    if (clonedConfig ==! null) {
       writefile(tsconfigScryptTSPath, JSON.stringify(clonedConfig, null, 2));
       clonedConfig = null
     }
   })
 
   process.on('SIGINT', function () {
-    if (clonedConfig == ! null) {
+    if (clonedConfig ==! null) {
       writefile(tsconfigScryptTSPath, JSON.stringify(clonedConfig, null, 2));
       clonedConfig = null
     }

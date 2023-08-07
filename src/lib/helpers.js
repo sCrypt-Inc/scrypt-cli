@@ -54,16 +54,20 @@ async function step(str, fn) {
  * @param {string} cmd - Shell command to execute.
  * @returns {Promise<string>}
  */
-async function stepCmd(step, cmd) {
+async function stepCmd(step, cmd, exit = true) {
   const spin = ora({ text: `${step}...\n`, discardStdin: true }).start();
   try {
     const result = await shExec(cmd);
     spin.succeed(green(step));
     return result;
   } catch (err) {
-    console.log(err);
+    console.log('  ' + red(err));
     spin.fail(step);
-    exit(-1);
+    if(exit) {
+      exit(-1);
+    }
+
+    return err instanceof Error ? err : new Error(`${step} fail`);
   }
 }
 

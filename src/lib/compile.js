@@ -5,28 +5,64 @@ const { exit } = require('process');
 const { green, red } = require('chalk');
 const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec } = require('./helpers');
 const { compileContract } = require('scryptlib');
+const ts = require('typescript');
 const { IndexerReader, INDEX_FILE_NAME } = require('scrypt-ts-transpiler/dist/indexerReader');
+
+function containsDeprecatedOptions(options) {
+  return "out" in options
+    || "noImplicitUseStrict" in options
+    || "keyofStringsOnly" in options
+    || "suppressExcessPropertyErrors" in options
+    || "suppressImplicitAnyIndexErrors" in options
+    || "noStrictGenericChecks" in options
+    || "charset" in options
+    || "importsNotUsedAsValues" in options
+    || "preserveValueImports" in options
+}
 
 async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
 
-
   const tsconfigScryptTSPath = path.resolve("tsconfig-scryptTS.json");
+  const tsconfigPath = path.resolve("tsconfig.json");
 
   if (!fs.existsSync(tsconfigScryptTSPath)) {
-    writefile(tsconfigScryptTSPath, readConfig('tsconfig.json'))
-  }
+    if (!fs.existsSync(tsconfigPath)) {
+      writefile(tsconfigScryptTSPath, readConfig('tsconfig.json'))
+    } else {
 
+      const parsedCommandLine = ts.getParsedCommandLineOfConfigFile(tsconfigPath, {}, ts.sys);
+
+      if (!parsedCommandLine) {
+        console.log(red(`ERROR: invalid tsconfig.json`));
+        exit(-1);
+      }
+
+      if(parsedCommandLine.errors[0]) {
+        console.log(red(`ERROR: invalid tsconfig.json`));
+        exit(-1);
+      }
+
+      const override = containsDeprecatedOptions(parsedCommandLine.options) ?
+        {
+          noEmit: true,
+          experimentalDecorators: true,
+          ignoreDeprecations: "5.0"
+        } : {
+          noEmit: true,
+          experimentalDecorators: true,
+        };
+
+      writefile(tsconfigScryptTSPath, {
+        extends: "./tsconfig.json",
+        include: ["src/contracts/**/*.ts"],
+        compilerOptions: override
+      })
+    }
+  }
 
   // Check TS config
   let outDir = "artifacts";
   const config = readfile(tsconfigScryptTSPath, true);
-
-  Object.assign(config.compilerOptions, {
-    noEmit: true
-  })
-
-
-  config.compilerOptions.plugins = [];
 
   if (include) {
     config.include = include.split(',')
@@ -38,6 +74,10 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   }
 
   let clonedConfig = _.cloneDeep(config);
+
+  Object.assign(config.compilerOptions, {
+    plugins: []
+  })
 
   config.compilerOptions.plugins.push({
     transform: require.resolve("scrypt-ts-transpiler"),
@@ -76,12 +116,22 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   if (watch) {
     await shExec(`node ${tsc} --watch --p ${tsconfigScryptTSPath}`)
   } else {
-    await stepCmd(
+    const result = await stepCmd(
       'Building TS',
-      `node ${tsc} --p ${tsconfigScryptTSPath}`
-    );
-  }
+      `node ${tsc} --p ${tsconfigScryptTSPath}`, false);
 
+    if (result instanceof Error) {
+      console.log(red(`ERROR: Building TS failed!`));
+      console.log(`Please modify your code or \`tsconfig-scryptTS.json\` according to the error message output during BUILDING.`);
+      try {
+        writefile(tsconfigScryptTSPath, JSON.stringify(clonedConfig, null, 2));
+        clonedConfig = null
+      } catch (error) {
+
+      }
+      exit(-1);
+    }
+  }
   try {
     writefile(tsconfigScryptTSPath, JSON.stringify(clonedConfig, null, 2));
     clonedConfig = null
@@ -95,7 +145,6 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   // TODO: This is a hacky approach but works for now. Is there a more elegant solution?
 
 
-  var currentPath = process.cwd();
   if (!fs.existsSync(outDir)) {
     console.log(red(`ERROR: outDir '${outDir}' not exists`));
     exit(-1);
@@ -121,7 +170,7 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
       const indexr = new IndexerReader(path.resolve(INDEX_FILE_NAME));
       indexr.symbolPaths.forEach((value, key) => {
         const scryptFile = indexr.getFullPath(key);
-        if(path.relative(scryptFile, outDir) === '..') {
+        if (path.relative(scryptFile, outDir) === '..') {
           files.push(scryptFile)
         }
       })

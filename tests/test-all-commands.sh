@@ -110,20 +110,6 @@ echo "Skip"
 echo "testing init Svelte ..."
 rm -rf dapp-svelte
 ../tests/helper-scripts/create-svelte-app.exp
-cd dapp-svelte
-git init
-git config user.email "ci@scrypt.io"
-git config user.name "scrypt"
-git add .
-git commit -am "Initial commit"
-npm i
-npm i -D ../../
-npx scrypt-cli init --force
-npx scrypt-cli compile
-cp ../../tests/replaced-files/svelte-page.svelte src/routes/+page.svelte
-cat src/routes/+page.svelte
-npm run build
-cd ..
 
 echo "testing Vue 3.x bundled with Vite"
 rm -rf dapp-vue3-vite

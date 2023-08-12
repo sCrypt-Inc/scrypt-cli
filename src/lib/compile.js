@@ -170,7 +170,8 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
       const indexr = new IndexerReader(path.resolve(INDEX_FILE_NAME));
       indexr.symbolPaths.forEach((value, key) => {
         const scryptFile = indexr.getFullPath(key);
-        if (path.relative(scryptFile, outDir) === '..') {
+        const relativePath = path.relative(scryptFile, outDir);
+        if (relativePath.startsWith('..') && relativePath.endsWith('..')) {
           files.push(scryptFile)
         }
       })

@@ -2,12 +2,12 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 
-import { Counter } from './contracts/counter'
-import artifact from '../artifacts/counter.json'
+import { DappAngular } from './contracts/dappAngular'
+import artifact from '../artifacts/dappAngular.json'
 
 import { Scrypt, bsv } from 'scrypt-ts'
 
-Counter.loadArtifact(artifact)
+DappAngular.loadArtifact(artifact)
 
 Scrypt.init({
   apiKey: 'testnet_3OJHoUTWnhTtVGck0T6ZpV2Cx3lcLw0UchOfl4aPtfA8D10Kf',

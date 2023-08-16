@@ -46,10 +46,16 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
         {
           noEmit: true,
           experimentalDecorators: true,
+          target: "ESNext",
+          moduleResolution: "NodeNext",
+          esModuleInterop: true,
           ignoreDeprecations: "5.0"
         } : {
           noEmit: true,
           experimentalDecorators: true,
+          target: "ESNext",
+          moduleResolution: "NodeNext",
+          esModuleInterop: true,
         };
 
       writefile(tsconfigScryptTSPath, {

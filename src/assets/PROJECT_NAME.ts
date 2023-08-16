@@ -4,9 +4,10 @@ import {
     SmartContract,
     hash256,
     assert,
-    ByteString,
     SigHash
 } from 'scrypt-ts'
+
+import type {ByteString} from 'scrypt-ts';
 
 export class PROJECT_NAME extends SmartContract {
     @prop(true)

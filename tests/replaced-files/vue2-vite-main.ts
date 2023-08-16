@@ -3,12 +3,12 @@ import App from './App.vue'
 
 import './assets/main.css'
 
-import { Counter } from './contracts/counter'
-import artifact from '../artifacts/counter.json'
+import { DappVue2Vite } from './contracts/dappVue2Vite'
+import artifact from '../artifacts/dappVue2Vite.json'
 
 import { Scrypt, bsv } from 'scrypt-ts'
 
-Counter.loadArtifact(artifact)
+DappVue2Vite.loadArtifact(artifact)
 
 Scrypt.init({
   apiKey: 'testnet_3OJHoUTWnhTtVGck0T6ZpV2Cx3lcLw0UchOfl4aPtfA8D10Kf',

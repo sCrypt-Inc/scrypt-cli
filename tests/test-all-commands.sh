@@ -104,6 +104,7 @@ cd ..
 echo "testing init Angular ..."
 rm -rf dapp-angular
 npx @angular/cli new dapp-angular
+cd dapp-angular
 git init
 git add .
 git commit -am "Initial commit"

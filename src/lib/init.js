@@ -213,6 +213,10 @@ function configTSconfig({
                 writefile(appConfig, tsConfigAppJSON)
             }
                 break;
+            case isVueViteProject: {
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+            }
+                break;
             case isVueCliProject: {
                 tsConfigJSON.compilerOptions.experimentalDecorators = true;
                 tsConfigJSON.compilerOptions.resolveJsonModule = true;

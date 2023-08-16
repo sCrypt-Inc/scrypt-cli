@@ -6,9 +6,12 @@
   import {
     Scrypt,
     bsv,
-    ContractCalledEvent,
     SensiletSigner,
     ScryptProvider,
+  } from "scrypt-ts";
+
+  import type {
+    ContractCalledEvent,
   } from "scrypt-ts";
 
   const contractId = {

@@ -229,7 +229,6 @@ function configTSconfig({
                 break;
             case isSvelteProject: {
                 tsConfigJSON.compilerOptions.experimentalDecorators = true;
-                tsConfigJSON.compilerOptions.resolveJsonModule = true;
             }
                 break;
             case isAngularProject: {

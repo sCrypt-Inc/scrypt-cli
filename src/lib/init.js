@@ -99,7 +99,7 @@ async function configAngular(projectName) {
 
 
     // override src/index.html
-    writeAsset('src/index.html')
+    writeAsset('src/index.html', "index.html")
     replaceInFile('src/index.html', PROJECT_NAME_TEMPLATE, camelCaseCapitalized(projectName));
 }
 
@@ -142,30 +142,27 @@ function configTsNodeConfig({
     isAngularProject
 }, tsVersion = 5) {
 
-    fileName = 'tsconfig.json'
+    let fileName = 'tsconfig.json'
     // update tsconfig.json
-    tsConfigPath = path.join('.', fileName)
+    let tsConfigPath = path.join('.', fileName)
 
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
 
-        tsConfigJSON["ts-node"] = {
-            "compilerOptions": {
-                "lib": ["es2020"],
-                "module": "CommonJS",
-                "target": "es2020",
-                "strict": true,
-                "esModuleInterop": true,
-                "skipLibCheck": true,
-                "moduleResolution": "node",
-                "experimentalDecorators": true,
+        switch (true) {
+            case isSvelteProject: {
+                tsConfigJSON["ts-node"]['esm'] = true
+                tsConfigJSON["ts-node"]['experimentalSpecifierResolution'] = 'node'
             }
-        }
+            break;
 
-        if (isSvelteProject) {
-            tsConfigJSON["ts-node"]['compilerOptions']['module'] = 'es2020'
-            tsConfigJSON["ts-node"]['esm'] = true
-            tsConfigJSON["ts-node"]['experimentalSpecifierResolution'] = 'node'
+            default: {
+                tsConfigJSON["ts-node"] = {
+                    "compilerOptions": {
+                        "module": "CommonJS",
+                    }
+                }
+            }
         }
 
         writefile(tsConfigPath, tsConfigJSON)
@@ -234,6 +231,8 @@ function configTSconfig({
             case isAngularProject: {
                 tsConfigJSON.compilerOptions.resolveJsonModule = true;
                 tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
+                tsConfigJSON.compilerOptions.noPropertyAccessFromIndexSignature = false;
+                tsConfigJSON.compilerOptions.skipLibCheck = true;
             }
                 break;
 

@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+git config user.email "ci@scrypt.io"
+git config user.name "scrypt"
+
 rm -rf test-commands
 mkdir -p test-commands
 
@@ -71,8 +74,6 @@ rm -rf dapp-react
 npx create-react-app@latest dapp-react --template typescript
 cd dapp-react
 git init
-git config user.email "ci@scrypt.io"
-git config user.name "scrypt"
 git add .
 git commit -am "Initial commit"
 npm i
@@ -89,8 +90,6 @@ rm -rf dapp-next
 npx create-next-app dapp-next --typescript --use-npm --eslint --tailwind --src-dir --app --import-alias "@/*"
 cd dapp-next
 git init
-git config user.email "ci@scrypt.io"
-git config user.name "scrypt"
 git add .
 git commit -am "Initial commit"
 npm i
@@ -102,10 +101,19 @@ cat src/app/page.tsx
 npm run build
 cd ..
 
-echo "testing init Angular ..."
-rm -rf dapp-angular
-npx @angular/cli new dapp-angular
-echo "Skip"
+# echo "testing init Angular ..."
+# rm -rf dapp-angular
+# npx @angular/cli new dapp-angular
+# git init
+# git add .
+# git commit -am "Initial commit"
+# npm i
+# npm i -D ../../
+# npx scrypt-cli init --force
+# npx scrypt-cli compile
+# cp ../../tests/replaced-files/next-page.tsx src/app/page.tsx
+
+
 
 echo "testing init Svelte ..."
 rm -rf dapp-svelte

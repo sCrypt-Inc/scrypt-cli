@@ -186,7 +186,7 @@ function configTSconfig({
     isSvelteProject,
     isAngularProject
 }, tsVersion = 5) {
-    fileName = isVue3ViteProject ? 'tsconfig.app.json' : 'tsconfig.json'
+    let fileName = 'tsconfig.json'
     // update tsconfig.json
     let tsConfigPath = path.join('.', fileName)
 
@@ -196,26 +196,46 @@ function configTSconfig({
         if (!tsConfigJSON.compilerOptions) {
             tsConfigJSON.compilerOptions = {}
         }
-        tsConfigJSON.compilerOptions.target = "ES2020";
-        tsConfigJSON.compilerOptions.experimentalDecorators = true;
-        tsConfigJSON.compilerOptions.resolveJsonModule = true;
-        tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
-        tsConfigJSON.compilerOptions.noImplicitAny = false;
-        tsConfigJSON.compilerOptions.preserveValueImports = false;
-        tsConfigJSON.compilerOptions.noPropertyAccessFromIndexSignature = false;
 
-        if (tsVersion === 5) {
-            tsConfigJSON.compilerOptions.verbatimModuleSyntax = false;
+        switch (true) {
+            case isReactProject: {
+                tsConfigJSON.compilerOptions.target = "ESNext";
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+            }
+                break;
+
+            case isVue3ViteProject: {
+                tsConfigJSON.compilerOptions.moduleResolution = "Node";
+                // update tsconfig.app.json
+                const appConfig = 'tsconfig.app.json'
+                let tsConfigAppJSON = readfile(appConfig);
+                tsConfigAppJSON.compilerOptions.experimentalDecorators = true;
+                writefile(appConfig, tsConfigAppJSON)
+            }
+                break;
+            case isVueCliProject: {
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+                tsConfigJSON.compilerOptions.resolveJsonModule = true;
+            }
+                break;
+            case isNextProject: {
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+                tsConfigJSON.compilerOptions.target = "ESNext";
+            }
+                break;
+            case isSvelteProject: {
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+                tsConfigJSON.compilerOptions.resolveJsonModule = true;
+            }
+                break;
+            case isAngularProject: {
+                tsConfigJSON.compilerOptions.resolveJsonModule = true;
+                tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
+            }
+                break;
+
         }
 
-        if (isVueViteProject || isVueCliProject) {
-            if (!tsConfigJSON.exclude) {
-                tsConfigJSON.exclude = []
-            }
-            if (tsConfigJSON.exclude.indexOf('src/**/*.test.*') === -1) {
-                tsConfigJSON.exclude.push('src/**/*.test.*')
-            }
-        }
 
         writefile(tsConfigPath, tsConfigJSON)
 

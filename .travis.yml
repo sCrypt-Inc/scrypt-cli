@@ -39,7 +39,7 @@ jobs:
 
 script:
   - npm t
-  # - npm run test-templates
+  - npm run test-templates
   - npm run test-all-commands
-  # - npm run test-lib-import
+  - npm run test-lib-import
   # - sh tests/test-npx.sh

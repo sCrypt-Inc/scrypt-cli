@@ -111,7 +111,10 @@ npm i
 npm i -D ../../
 npx scrypt-cli init --force
 npx scrypt-cli compile
-cp ../../tests/replaced-files/next-page.tsx src/app/page.tsx
+cp ../../tests/replaced-files/angular-main.ts src/main.ts
+cat src/main.ts
+npm run build
+cd ..
 
 
 

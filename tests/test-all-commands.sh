@@ -133,6 +133,7 @@ npx scrypt-cli compile
 cp ../../tests/replaced-files/svelte-page.svelte src/routes/+page.svelte
 cat src/routes/+page.svelte
 npm run build
+cd ..
 
 echo "testing Vue 3.x bundled with Vite"
 rm -rf dapp-vue3-vite

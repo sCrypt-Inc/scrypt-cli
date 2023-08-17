@@ -151,6 +151,7 @@ function configTsNodeConfig({
 
         switch (true) {
             case isSvelteProject: {
+                tsConfigJSON["ts-node"] = {};
                 tsConfigJSON["ts-node"]['esm'] = true
                 tsConfigJSON["ts-node"]['experimentalSpecifierResolution'] = 'node'
             }
@@ -167,7 +168,6 @@ function configTsNodeConfig({
 
         writefile(tsConfigPath, tsConfigJSON)
 
-        console.log(green(`${fileName} updated`));
     } else {
         console.log(red(`${fileName} not found, only supports typescript project!`));
         exit(-1);
@@ -241,7 +241,6 @@ function configTSconfig({
 
         writefile(tsConfigPath, tsConfigJSON)
 
-        console.log(green(`${fileName} updated`));
     } else {
         console.log(red(`${fileName} not found, only supports typescript project!`));
         exit(-1);

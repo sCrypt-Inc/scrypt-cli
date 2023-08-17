@@ -47,14 +47,12 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
           noEmit: true,
           experimentalDecorators: true,
           target: "ESNext",
-          moduleResolution: "NodeNext",
           esModuleInterop: true,
           ignoreDeprecations: "5.0"
         } : {
           noEmit: true,
           experimentalDecorators: true,
           target: "ESNext",
-          moduleResolution: "NodeNext",
           esModuleInterop: true,
         };
 
@@ -120,11 +118,11 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   // Run tsc which in turn also transpiles to sCrypt
 
   if (watch) {
-    await shExec(`node ${tsc} --watch --p ${tsconfigScryptTSPath}`)
+    await shExec(`node "${tsc}" --watch --p "${tsconfigScryptTSPath}"`)
   } else {
     const result = await stepCmd(
       'Building TS',
-      `node ${tsc} --p ${tsconfigScryptTSPath}`, false);
+      `node "${tsc}" --p "${tsconfigScryptTSPath}"`, false);
 
     if (result instanceof Error) {
       console.log(red(`ERROR: Building TS failed!`));

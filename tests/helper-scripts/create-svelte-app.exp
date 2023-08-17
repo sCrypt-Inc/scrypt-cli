@@ -1,0 +1,23 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+
+spawn npm create svelte@latest dapp-svelte
+match_max 100000
+
+expect "Which Svelte app template?"
+send -- "\[B"
+
+expect "Skeleton project"
+send -- "\r"
+
+expect "Add type checking with TypeScript?"
+send -- "\[B"
+
+expect "Yes, using TypeScript syntax"
+send -- "\r"
+
+expect "Select additional options (use arrow keys/space bar)"
+send -- "\r"
+
+expect eof

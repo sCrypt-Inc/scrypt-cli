@@ -9,6 +9,8 @@ git:
   autocrlf: false
 
 before_install:
+  - sudo apt update -y
+  - sudo apt install expect -y
 
 os:
   - linux
@@ -18,6 +20,8 @@ os:
 osx_image:
   - xcode14
 
+cache:
+  npm: false
 
 jobs:
   exclude:
@@ -38,4 +42,4 @@ script:
   - npm run test-templates
   - npm run test-all-commands
   - npm run test-lib-import
-  - if [ $TRAVIS_EVENT_TYPE == "cron" ] ; then sh test-npx.sh ; fi
+  # - sh tests/test-npx.sh

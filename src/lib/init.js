@@ -99,7 +99,7 @@ async function configAngular(projectName) {
 
 
     // override src/index.html
-    writeAsset('src/index.html')
+    writeAsset('src/index.html', "index.html")
     replaceInFile('src/index.html', PROJECT_NAME_TEMPLATE, camelCaseCapitalized(projectName));
 }
 
@@ -142,35 +142,32 @@ function configTsNodeConfig({
     isAngularProject
 }, tsVersion = 5) {
 
-    fileName = 'tsconfig.json'
+    let fileName = 'tsconfig.json'
     // update tsconfig.json
-    tsConfigPath = path.join('.', fileName)
+    let tsConfigPath = path.join('.', fileName)
 
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
 
-        tsConfigJSON["ts-node"] = {
-            "compilerOptions": {
-                "lib": ["es2020"],
-                "module": "CommonJS",
-                "target": "es2020",
-                "strict": true,
-                "esModuleInterop": true,
-                "skipLibCheck": true,
-                "moduleResolution": "node",
-                "experimentalDecorators": true,
+        switch (true) {
+            case isSvelteProject: {
+                tsConfigJSON["ts-node"] = {};
+                tsConfigJSON["ts-node"]['esm'] = true
+                tsConfigJSON["ts-node"]['experimentalSpecifierResolution'] = 'node'
             }
-        }
+            break;
 
-        if (isSvelteProject) {
-            tsConfigJSON["ts-node"]['compilerOptions']['module'] = 'es2020'
-            tsConfigJSON["ts-node"]['esm'] = true
-            tsConfigJSON["ts-node"]['experimentalSpecifierResolution'] = 'node'
+            default: {
+                tsConfigJSON["ts-node"] = {
+                    "compilerOptions": {
+                        "module": "CommonJS",
+                    }
+                }
+            }
         }
 
         writefile(tsConfigPath, tsConfigJSON)
 
-        console.log(green(`${fileName} updated`));
     } else {
         console.log(red(`${fileName} not found, only supports typescript project!`));
         exit(-1);
@@ -186,7 +183,7 @@ function configTSconfig({
     isSvelteProject,
     isAngularProject
 }, tsVersion = 5) {
-    fileName = isVue3ViteProject ? 'tsconfig.app.json' : 'tsconfig.json'
+    let fileName = 'tsconfig.json'
     // update tsconfig.json
     let tsConfigPath = path.join('.', fileName)
 
@@ -196,30 +193,54 @@ function configTSconfig({
         if (!tsConfigJSON.compilerOptions) {
             tsConfigJSON.compilerOptions = {}
         }
-        tsConfigJSON.compilerOptions.target = "ES2020";
-        tsConfigJSON.compilerOptions.experimentalDecorators = true;
-        tsConfigJSON.compilerOptions.resolveJsonModule = true;
-        tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
-        tsConfigJSON.compilerOptions.noImplicitAny = false;
-        tsConfigJSON.compilerOptions.preserveValueImports = false;
-        tsConfigJSON.compilerOptions.noPropertyAccessFromIndexSignature = false;
 
-        if (tsVersion === 5) {
-            tsConfigJSON.compilerOptions.verbatimModuleSyntax = false;
+        switch (true) {
+            case isReactProject: {
+                tsConfigJSON.compilerOptions.target = "ESNext";
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+            }
+                break;
+
+            case isVue3ViteProject: {
+                tsConfigJSON.compilerOptions.moduleResolution = "Node";
+                // update tsconfig.app.json
+                const appConfig = 'tsconfig.app.json'
+                let tsConfigAppJSON = readfile(appConfig);
+                tsConfigAppJSON.compilerOptions.experimentalDecorators = true;
+                writefile(appConfig, tsConfigAppJSON)
+            }
+                break;
+            case isVueViteProject: {
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+            }
+                break;
+            case isVueCliProject: {
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+                tsConfigJSON.compilerOptions.resolveJsonModule = true;
+            }
+                break;
+            case isNextProject: {
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+                tsConfigJSON.compilerOptions.target = "ESNext";
+            }
+                break;
+            case isSvelteProject: {
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+            }
+                break;
+            case isAngularProject: {
+                tsConfigJSON.compilerOptions.resolveJsonModule = true;
+                tsConfigJSON.compilerOptions.allowSyntheticDefaultImports = true;
+                tsConfigJSON.compilerOptions.noPropertyAccessFromIndexSignature = false;
+                tsConfigJSON.compilerOptions.skipLibCheck = true;
+            }
+                break;
+
         }
 
-        if (isVueViteProject || isVueCliProject) {
-            if (!tsConfigJSON.exclude) {
-                tsConfigJSON.exclude = []
-            }
-            if (tsConfigJSON.exclude.indexOf('src/**/*.test.*') === -1) {
-                tsConfigJSON.exclude.push('src/**/*.test.*')
-            }
-        }
 
         writefile(tsConfigPath, tsConfigJSON)
 
-        console.log(green(`${fileName} updated`));
     } else {
         console.log(red(`${fileName} not found, only supports typescript project!`));
         exit(-1);

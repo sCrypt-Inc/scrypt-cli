@@ -108,7 +108,7 @@ async function fetchProjectTemplate(projectName) {
   const spin = ora({ text: `${step}...`, discardStdin: true }).start();
 
   try {
-    const src = 'github:sCrypt-Inc/scrypt-cli#refactor_test';
+    const src = 'github:sCrypt-Inc/scrypt-cli#master';
     await gittar.fetch(src, { force: true });
 
     // Note: Extract will overwrite any existing dir's contents. Ensure

@@ -170,7 +170,7 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   if (!noArtifact) {
 
     const files = [];
-    if (fs.existsSync(path.resolve(INDEX_FILE_NAME))) {
+    if (false) {
       const indexr = new IndexerReader(path.resolve(INDEX_FILE_NAME));
       indexr.symbolPaths.forEach((value, key) => {
         const scryptFile = indexr.getFullPath(key);
@@ -179,7 +179,6 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
           files.push(scryptFile)
         }
       })
-
     } else {
       const distFiles = await readdirRecursive(outDir);
       for (const f of distFiles) {

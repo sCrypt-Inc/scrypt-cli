@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import { PROJECT_NAME } from '../../src/contracts/PROJECT_NAME'
-import { getDummySigner, getDummyUTXO } from '../utils/txHelper'
+import { PROJECT_NAME } from '../src/contracts/PROJECT_NAME'
+import { getDefaultSigner } from './utils/txHelper'
 import { MethodCallOptions } from 'scrypt-ts'
 
 describe('Test SmartContract `PROJECT_NAME`', () => {
@@ -12,7 +12,10 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
         // create a genesis instance
         const counter = new PROJECT_NAME(0n)
         // construct a transaction for deployment
-        await counter.connect(getDummySigner())
+        await counter.connect(getDefaultSigner())
+
+        const deployTx = await counter.deploy(1)
+        console.log('PROJECT_NAME contract deployed: ', deployTx.id)
 
         let prevInstance = counter
 
@@ -25,7 +28,6 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
             // 3. construct a transaction for contract call
             const { tx: callTx, atInputIndex } =
                 await prevInstance.methods.incrementOnChain({
-                    fromUTXO: getDummyUTXO(1),
                     next: {
                         instance: newPROJECT_NAME,
                         balance: 1,
@@ -36,7 +38,7 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
             const result = callTx.verifyScript(atInputIndex)
 
             expect(result.success, result.error).to.be.true
-
+            console.log('PROJECT_NAME contract called: ', callTx.id)
             // prepare for the next iteration
             prevInstance = newPROJECT_NAME
         }

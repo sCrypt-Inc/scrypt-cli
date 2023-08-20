@@ -186,31 +186,23 @@ async function setProjectName(dir, name) {
     replaceInFile(ftestContractNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
-  const importTemplateTests = `from '../../src/contracts/${PROJECT_NAME_TEMPLATE}'`
+  const importTemplateTests = `from '../src/contracts/${PROJECT_NAME_TEMPLATE}'`
   const importReplacementTests = importTemplateTests.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
 
-  const importLibTemplateTests = `from '../../src/contracts/test${PROJECT_NAME_TEMPLATE}'`
+  const importLibTemplateTests = `from '../src/contracts/test${PROJECT_NAME_TEMPLATE}'`
   const importLibReplacementTests = importLibTemplateTests.replace(`test${PROJECT_NAME_TEMPLATE}`, `test${camelCase(name)}`)
 
 
-  let dirTestsLocal = path.join(dir, 'tests', 'local')
-  let fTestLocal = path.join(dirTestsLocal, PROJECT_NAME_TEMPLATE + '.test.ts')
-  let fTestLocalNew = fTestLocal.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
-  if (fs.existsSync(fTestLocal)) {
-    sh.mv(fTestLocal, fTestLocalNew)
-    replaceInFile(fTestLocalNew, importTemplateTests, importReplacementTests);
-    replaceInFile(fTestLocalNew, importLibTemplateTests, importLibReplacementTests);
-    replaceInFile(fTestLocalNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
+  let dirTests = path.join(dir, 'tests')
+  let fTest = path.join(dirTests, PROJECT_NAME_TEMPLATE + '.test.ts')
+  let fTestNew = fTest.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
+  if (fs.existsSync(fTest)) {
+    sh.mv(fTest, fTestNew)
+    replaceInFile(fTestNew, importTemplateTests, importReplacementTests);
+    replaceInFile(fTestNew, importLibTemplateTests, importLibReplacementTests);
+    replaceInFile(fTestNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
   }
 
-  let dirTestsTestnet = path.join(dir, 'tests', 'testnet')
-  let fTestTestnet = path.join(dirTestsTestnet, PROJECT_NAME_TEMPLATE + '.ts')
-  let fTestTestnetNew = fTestTestnet.replace(PROJECT_NAME_TEMPLATE, camelCase(name))
-  if (fs.existsSync(fTestTestnet)) {
-    sh.mv(fTestTestnet, fTestTestnetNew)
-    replaceInFile(fTestTestnetNew, importTemplateTests, importReplacementTests);
-    replaceInFile(fTestTestnetNew, PROJECT_NAME_TEMPLATE, camelCaseCapitalized(name));
-  }
 
   const importTemplateDeployScript = `from './src/contracts/${PROJECT_NAME_TEMPLATE}'`
   const importReplacementDeployScript = importTemplateDeployScript.replace(PROJECT_NAME_TEMPLATE, camelCase(name))

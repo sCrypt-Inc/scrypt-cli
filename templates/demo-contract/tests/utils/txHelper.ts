@@ -1,55 +1,46 @@
-import { randomBytes } from 'crypto'
-import {
-    DummyProvider,
-    DefaultProvider,
-    TestWallet,
-    UTXO,
-    bsv,
-} from 'scrypt-ts'
+import { DummyProvider, DefaultProvider, TestWallet, bsv } from 'scrypt-ts'
 import { myPrivateKey } from './privateKey'
 
-export const inputSatoshis = 10000
+import * as dotenv from 'dotenv'
 
-export const inputIndex = 0
+// Load the .env file
+dotenv.config()
 
-export const dummyUTXO = {
-    txId: randomBytes(32).toString('hex'),
-    outputIndex: 0,
-    script: '', // placeholder
-    satoshis: inputSatoshis,
+const wallets: Record<string, TestWallet> = {
+    testnet: new TestWallet(
+        myPrivateKey,
+        new DefaultProvider({
+            network: bsv.Networks.testnet,
+        })
+    ),
+    local: new TestWallet(myPrivateKey, new DummyProvider()),
+    mainnet: new TestWallet(
+        myPrivateKey,
+        new DefaultProvider({
+            network: bsv.Networks.mainnet,
+        })
+    ),
 }
-
-export function getDummySigner(
-    privateKey?: bsv.PrivateKey | bsv.PrivateKey[]
-): TestWallet {
-    if (global.dummySigner === undefined) {
-        global.dummySigner = new TestWallet(myPrivateKey, new DummyProvider())
-    }
-    if (privateKey !== undefined) {
-        global.dummySigner.addPrivateKey(privateKey)
-    }
-    return global.dummySigner
-}
-
-export function getDummyUTXO(satoshis: number = inputSatoshis): UTXO {
-    return Object.assign({}, dummyUTXO, { satoshis })
-}
-
 export function getDefaultSigner(
     privateKey?: bsv.PrivateKey | bsv.PrivateKey[]
 ): TestWallet {
-    if (global.testnetSigner === undefined) {
-        global.testnetSigner = new TestWallet(
-            myPrivateKey,
-            new DefaultProvider({
-                network: bsv.Networks.testnet,
-            })
-        )
+    const network = process.env.NETWORK || 'local'
+
+    const wallet = wallets[network]
+
+    if (privateKey) {
+        wallet.addPrivateKey(privateKey)
     }
-    if (privateKey !== undefined) {
-        global.testnetSigner.addPrivateKey(privateKey)
+
+    return wallet
+}
+
+export function resetDefaultSigner() {
+    const network = process.env.NETWORK || 'local'
+    const wallet = wallets[network]
+    if (wallet['_utxoManagers']) {
+        wallet['_utxoManagers'].clear()
     }
-    return global.testnetSigner
 }
 
 export const sleep = async (seconds: number) => {

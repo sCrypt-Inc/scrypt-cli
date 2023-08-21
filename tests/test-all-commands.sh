@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-git config user.email "ci@scrypt.io"
-git config user.name "scrypt"
+git config  --global user.email "ci@scrypt.io"
+git config  --global user.name "scrypt"
 
 rm -rf test-commands
 mkdir -p test-commands

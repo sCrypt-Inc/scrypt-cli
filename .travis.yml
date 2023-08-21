@@ -8,9 +8,12 @@ node_js:
 git:
   autocrlf: false
 
-before_install:
-  - sudo apt update -y
-  - sudo apt install expect -y
+
+addons:
+  apt:
+    packages: expect
+  homebrew:
+    packages: expect
 
 os:
   - linux

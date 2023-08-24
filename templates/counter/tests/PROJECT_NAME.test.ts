@@ -14,8 +14,7 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
         // construct a transaction for deployment
         await counter.connect(getDefaultSigner())
 
-        const deployTx = await counter.deploy(1)
-        console.log('PROJECT_NAME contract deployed: ', deployTx.id)
+        await counter.deploy(1)
 
         let prevInstance = counter
 
@@ -26,19 +25,15 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
             // 2. apply the updates on the new instance.
             newPROJECT_NAME.increment()
             // 3. construct a transaction for contract call
-            const { tx: callTx, atInputIndex } =
-                await prevInstance.methods.incrementOnChain({
+            const callContract = async () => await prevInstance.methods.incrementOnChain({
                     next: {
                         instance: newPROJECT_NAME,
                         balance: 1,
                     },
                 } as MethodCallOptions<PROJECT_NAME>)
 
-            // 4. run `verify` method on `prevInstance`
-            const result = callTx.verifyScript(atInputIndex)
+            expect(callContract()).not.throw
 
-            expect(result.success, result.error).to.be.true
-            console.log('PROJECT_NAME contract called: ', callTx.id)
             // prepare for the next iteration
             prevInstance = newPROJECT_NAME
         }

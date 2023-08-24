@@ -35,14 +35,6 @@ export function getDefaultSigner(
     return wallet
 }
 
-export function resetDefaultSigner() {
-    const network = process.env.NETWORK || 'local'
-    const wallet = wallets[network]
-    if (wallet['_utxoManagers']) {
-        wallet['_utxoManagers'].clear()
-    }
-}
-
 export const sleep = async (seconds: number) => {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -52,7 +44,7 @@ export const sleep = async (seconds: number) => {
 }
 
 export function randomPrivateKey() {
-    const privateKey = bsv.PrivateKey.fromRandom('testnet')
+    const privateKey = bsv.PrivateKey.fromRandom(bsv.Networks.testnet)
     const publicKey = bsv.PublicKey.fromPrivateKey(privateKey)
     const publicKeyHash = bsv.crypto.Hash.sha256ripemd160(publicKey.toBuffer())
     const address = publicKey.toAddress()

@@ -1,7 +1,9 @@
-import { expect } from 'chai'
+import { expect, use } from 'chai'
 import { PROJECT_NAME } from '../src/contracts/PROJECT_NAME'
 import { TestPROJECT_NAME } from '../src/contracts/testPROJECT_NAME'
 import { getDefaultSigner } from './utils/txHelper'
+import chaiAsPromised from 'chai-as-promised'
+use(chaiAsPromised)
 
 // Test lib directly:
 describe('Test SmartContractLib `PROJECT_NAME`', () => {
@@ -27,8 +29,9 @@ describe('Test SmartContractLib `Lib`', () => {
 
         await testLib.deploy(1)
 
-        const callContract = async () =>  await testLib.methods.unlock1(3n)
-        expect(callContract()).not.throw
+        const callContract = async () => testLib.methods.unlock1(3n)
+
+        return expect(callContract()).not.be.rejected
     })
 
     it('should pass integration test successfully.', async () => {
@@ -38,8 +41,8 @@ describe('Test SmartContractLib `Lib`', () => {
 
         await testLib.deploy(1)
 
-        const callContract = async () =>  await testLib.methods.unlock2(3n)
-        expect(callContract()).not.throw
+        const callContract = async () => testLib.methods.unlock2(3n)
 
+        return expect(callContract()).not.be.rejected
     })
 })

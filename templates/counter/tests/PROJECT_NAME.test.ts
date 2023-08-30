@@ -1,7 +1,9 @@
-import { expect } from 'chai'
+import { expect, use } from 'chai'
 import { PROJECT_NAME } from '../src/contracts/PROJECT_NAME'
 import { getDefaultSigner } from './utils/txHelper'
 import { MethodCallOptions } from 'scrypt-ts'
+import chaiAsPromised from 'chai-as-promised'
+use(chaiAsPromised)
 
 describe('Test SmartContract `PROJECT_NAME`', () => {
     before(async () => {
@@ -25,14 +27,14 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
             // 2. apply the updates on the new instance.
             newPROJECT_NAME.increment()
             // 3. construct a transaction for contract call
-            const callContract = async () => await prevInstance.methods.incrementOnChain({
+            const callContract = async () => prevInstance.methods.incrementOnChain({
                     next: {
                         instance: newPROJECT_NAME,
                         balance: 1,
                     },
                 } as MethodCallOptions<PROJECT_NAME>)
 
-            expect(callContract()).not.throw
+            await expect(callContract()).not.be.rejected
 
             // prepare for the next iteration
             prevInstance = newPROJECT_NAME

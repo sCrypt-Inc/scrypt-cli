@@ -1,5 +1,5 @@
 import { expect, use } from 'chai'
-import { MethodCallOptions, sha256, toByteString } from 'scrypt-ts'
+import { sha256, toByteString } from 'scrypt-ts'
 import { PROJECT_NAME } from '../src/contracts/PROJECT_NAME'
 import { getDefaultSigner } from './utils/txHelper'
 import chaiAsPromised from 'chai-as-promised'
@@ -21,13 +21,13 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
             toByteString('hello world', true)
         )
 
-        expect(callContract()).not.throw
+        return expect(callContract()).not.be.rejected
     })
 
     it('should throw with wrong message.', async () => {
         await instance.deploy(1)
 
-        const callContract = async () => await instance.methods.unlock(toByteString('wrong message', true))
-        expect(callContract()).to.be.rejectedWith(/Hash does not match/)
+        const callContract = async () => instance.methods.unlock(toByteString('wrong message', true))
+        return expect(callContract()).to.be.rejectedWith(/Hash does not match/)
     })
 })

@@ -1,7 +1,9 @@
-import { expect } from 'chai'
+import { expect, use } from 'chai'
 import { PROJECT_NAME } from '../src/contracts/PROJECT_NAME'
 import { TestPROJECT_NAME } from '../src/contracts/testPROJECT_NAME'
 import { getDefaultSigner } from './utils/txHelper'
+import chaiAsPromised from 'chai-as-promised'
+use(chaiAsPromised)
 
 // Test lib directly:
 describe('Test SmartContractLib `PROJECT_NAME`', () => {
@@ -25,16 +27,11 @@ describe('Test SmartContractLib `Lib`', () => {
 
         await testLib.connect(getDefaultSigner())
 
-        const deployTx = await testLib.deploy(1)
-        console.log('TestPROJECT_NAME contract deployed: ', deployTx.id)
+        await testLib.deploy(1)
 
-        const { tx: callTx, atInputIndex } = await testLib.methods.unlock1(3n)
+        const callContract = async () => testLib.methods.unlock1(3n)
 
-        // 4. run `verify` method on `prevInstance`
-        const result = callTx.verifyScript(atInputIndex)
-
-        expect(result.success, result.error).to.be.true
-        console.log('PROJECT_NAME contract called: ', callTx.id)
+        return expect(callContract()).not.be.rejected
     })
 
     it('should pass integration test successfully.', async () => {
@@ -42,15 +39,10 @@ describe('Test SmartContractLib `Lib`', () => {
 
         await testLib.connect(getDefaultSigner())
 
-        const deployTx = await testLib.deploy(1)
-        console.log('TestPROJECT_NAME contract deployed: ', deployTx.id)
+        await testLib.deploy(1)
 
-        const { tx: callTx, atInputIndex } = await testLib.methods.unlock2(3n)
+        const callContract = async () => testLib.methods.unlock2(3n)
 
-        // 4. run `verify` method on `prevInstance`
-        const result = callTx.verifyScript(atInputIndex)
-
-        expect(result.success, result.error).to.be.true
-        console.log('PROJECT_NAME contract called: ', callTx.id)
+        return expect(callContract()).not.be.rejected
     })
 })

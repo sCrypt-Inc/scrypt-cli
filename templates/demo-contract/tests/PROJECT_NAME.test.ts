@@ -1,5 +1,5 @@
 import { expect, use } from 'chai'
-import { MethodCallOptions, sha256, toByteString } from 'scrypt-ts'
+import { sha256, toByteString } from 'scrypt-ts'
 import { PROJECT_NAME } from '../src/contracts/PROJECT_NAME'
 import { getDefaultSigner } from './utils/txHelper'
 import chaiAsPromised from 'chai-as-promised'
@@ -15,23 +15,19 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
     })
 
     it('should pass the public method unit test successfully.', async () => {
-        const deployTx = await instance.deploy(1)
-        console.log('PROJECT_NAME contract deployed: ', deployTx.id)
+        await instance.deploy(1)
 
-        const { tx: callTx, atInputIndex } = await instance.methods.unlock(
+        const callContract = async () => instance.methods.unlock(
             toByteString('hello world', true)
         )
 
-        const result = callTx.verifyScript(atInputIndex)
-        expect(result.success, result.error).to.eq(true)
+        return expect(callContract()).not.be.rejected
     })
 
     it('should throw with wrong message.', async () => {
-        const deployTx = await instance.deploy(1)
-        console.log('PROJECT_NAME contract deployed: ', deployTx.id)
+        await instance.deploy(1)
 
-        return expect(
-            instance.methods.unlock(toByteString('wrong message', true))
-        ).to.be.rejectedWith(/Hash does not match/)
+        const callContract = async () => instance.methods.unlock(toByteString('wrong message', true))
+        return expect(callContract()).to.be.rejectedWith(/Hash does not match/)
     })
 })

@@ -34,7 +34,7 @@ async function configNext() {
     // install dependencies
     await stepCmd(
         'Installing devDependencies...',
-        'npm i -D dotenv@10.0.0'
+        'npm i -D dotenv'
     );
 
     // override next.config.js
@@ -56,7 +56,7 @@ async function configVueVite(vueVersion) {
     // install dev dependencies
     await stepCmd(
         'Installing dependencies...',
-        'npm i -D dotenv@10.0.0 vite-plugin-node-polyfills'
+        'npm i -D dotenv vite-plugin-node-polyfills'
     )
 
     // override vite.config.ts
@@ -67,7 +67,7 @@ async function configAngular(projectName) {
     // install dependencies
     await stepCmd(
         'Installing devDependencies...',
-        'npm i -D dotenv@10.0.0 @angular-builders/custom-webpack node-polyfill-webpack-plugin'
+        'npm i -D dotenv @angular-builders/custom-webpack node-polyfill-webpack-plugin'
     );
 
     // create webpack.config.js
@@ -107,7 +107,7 @@ async function configSvelte(projectName) {
     // install dev dependencies
     await stepCmd(
         'Installing dependencies...',
-        'npm i -D dotenv@10.0.0 vite-plugin-node-polyfills'
+        'npm i -D dotenv vite-plugin-node-polyfills'
     )
 
     // override vite.config.ts

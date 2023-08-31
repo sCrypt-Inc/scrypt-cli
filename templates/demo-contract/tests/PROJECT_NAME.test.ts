@@ -17,17 +17,17 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
     it('should pass the public method unit test successfully.', async () => {
         await instance.deploy(1)
 
-        const callContract = async () => instance.methods.unlock(
+        const call = async () => instance.methods.unlock(
             toByteString('hello world', true)
         )
 
-        return expect(callContract()).not.be.rejected
+        await expect(call()).not.to.be.rejected
     })
 
     it('should throw with wrong message.', async () => {
         await instance.deploy(1)
 
-        const callContract = async () => instance.methods.unlock(toByteString('wrong message', true))
-        return expect(callContract()).to.be.rejectedWith(/Hash does not match/)
+        const call = async () => instance.methods.unlock(toByteString('wrong message', true))
+        await expect(call()).to.be.rejectedWith(/Hash does not match/)
     })
 })

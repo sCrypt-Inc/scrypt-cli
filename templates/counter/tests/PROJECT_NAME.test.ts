@@ -27,14 +27,15 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
             // 2. apply the updates on the new instance.
             newPROJECT_NAME.increment()
             // 3. construct a transaction for contract call
-            const callContract = async () => prevInstance.methods.incrementOnChain({
+            const call = async () =>
+                prevInstance.methods.incrementOnChain({
                     next: {
                         instance: newPROJECT_NAME,
                         balance: 1,
                     },
                 } as MethodCallOptions<PROJECT_NAME>)
 
-            await expect(callContract()).not.be.rejected
+            await expect(call()).not.to.be.rejected
 
             // prepare for the next iteration
             prevInstance = newPROJECT_NAME

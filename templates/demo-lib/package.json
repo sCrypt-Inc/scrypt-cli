@@ -12,6 +12,7 @@
     "compile": "npx scrypt-cli@latest compile",
     "pretest": "npm run build && npm run compile",
     "test": "cross-env NETWORK=local mocha",
+    "pretest:testnet": "npm run build && npm run compile",
     "test:testnet": "cross-env NETWORK=testnet mocha --no-timeouts",
     "genprivkey": "npx ts-node tests/utils/privateKey.ts",
     "lint": "eslint . --ext .js,.ts --fix && prettier --write --ignore-unknown \"**/*\"",

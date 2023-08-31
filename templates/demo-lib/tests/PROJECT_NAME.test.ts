@@ -29,9 +29,9 @@ describe('Test SmartContractLib `Lib`', () => {
 
         await testLib.deploy(1)
 
-        const callContract = async () => testLib.methods.unlock1(3n)
+        const call = async () => testLib.methods.unlock1(3n)
 
-        return expect(callContract()).not.be.rejected
+        await expect(call()).not.to.be.rejected
     })
 
     it('should pass integration test successfully.', async () => {
@@ -41,8 +41,8 @@ describe('Test SmartContractLib `Lib`', () => {
 
         await testLib.deploy(1)
 
-        const callContract = async () => testLib.methods.unlock2(3n)
+        const call = async () => testLib.methods.unlock2(3n)
 
-        return expect(callContract()).not.be.rejected
+        await expect(call()).not.to.be.rejected
     })
 })

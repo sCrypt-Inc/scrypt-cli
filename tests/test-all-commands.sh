@@ -22,7 +22,7 @@ cd hello-world
 
 npm i
 npm i -D ../../
-npm run compile
+npx scrypt-cli compile
 npm t
 npm run genprivkey
 cd ..
@@ -35,7 +35,7 @@ cd stateful-counter
 
 npm i
 npm i -D ../../
-npm run compile
+npx scrypt-cli compile
 npm t
 npm run genprivkey
 cd ..
@@ -48,7 +48,7 @@ cd my-lib
 
 npm i
 npm i -D ../../
-npm run compile
+npx scrypt-cli compile
 npm t
 npm run genprivkey
 cd ..
@@ -61,7 +61,7 @@ cd hello-world-asm
 echo '{"HelloWorldAsm": {"unlock": "op_1 op_1 op_equalverify"}}' > .asm/asm.json
 npm i
 npm i -D ../../
-npm run compile
+npx scrypt-cli compile
 npm t
 npm run genprivkey
 cd ..

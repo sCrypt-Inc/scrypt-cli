@@ -4,7 +4,9 @@ set -e
 cd templates/
 
 for d in */ ; do
-    cd $d
+    d=$(basename $d)
+    cp -r $d "${d}_copy"
+    cd "${d}_copy"
     rm -rf node_modules/ package-lock.json
     git init  # Init git repo because of husky so "npm i" passes
     npm i
@@ -16,4 +18,5 @@ for d in */ ; do
     rm -rf node_modules/ package-lock.json
     rm -rf .git/
     cd ../
+    rm -rf "${d}_copy"
 done

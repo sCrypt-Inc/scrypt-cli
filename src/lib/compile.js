@@ -37,7 +37,7 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
         exit(-1);
       }
 
-      if(parsedCommandLine.errors[0]) {
+      if (parsedCommandLine.errors[0]) {
         console.log(red(`ERROR: invalid tsconfig.json`));
         exit(-1);
       }
@@ -170,24 +170,19 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   if (!noArtifact) {
 
     const files = [];
-    if (false) {
-      const indexr = new IndexerReader(path.resolve(INDEX_FILE_NAME));
-      indexr.symbolPaths.forEach((value, key) => {
-        const scryptFile = indexr.getFullPath(key);
-        const relativePath = path.relative(scryptFile, outDir);
-        if (relativePath.startsWith('..') && relativePath.endsWith('..')) {
-          files.push(scryptFile)
-        }
-      })
-    } else {
-      const distFiles = await readdirRecursive(outDir);
-      for (const f of distFiles) {
-        const fAbs = path.resolve(f);
-        if (path.extname(fAbs) == '.scrypt') {
-          files.push(fAbs)
-        }
-      };
-    }
+    const distFiles = await readdirRecursive(outDir);
+    for (const f of distFiles) {
+      const relativePath = path.relative(outDir, f);
+      if(relativePath.startsWith("node_modules" + path.sep)) {
+        //ignore scrypt files in node_modules directory
+        continue;
+      }
+
+      const fAbs = path.resolve(f);
+      if (path.extname(fAbs) == '.scrypt') {
+        files.push(fAbs)
+      }
+    };
 
 
     for (const f of files) {

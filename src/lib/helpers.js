@@ -2,13 +2,24 @@ const ora = require('ora');
 const util = require('util');
 const sh = require('shelljs');
 const fs = require('fs');
+const glob = require('glob');
 const { green, red, yellow } = require('chalk');
 const { readdir } = require('fs/promises');
 const { join, basename, dirname, extname, sep } = require('path');
 const { exit, cwd } = require('process');
 const hjson = require('hjson')
 
-const shExec = util.promisify(sh.exec);
+function shExec(command) {
+    return new Promise((resolve, reject) => {
+        sh.exec(command, { silent: true }, (code, stdout, stderr) => {
+            if (code !== 0) {
+                reject(new Error(`Command failed with exit code ${code}: ${stderr}`));
+            } else {
+                resolve(stdout);
+            }
+        });
+    });
+}
 const isWindows = process.platform === 'win32';
 
 
@@ -61,7 +72,7 @@ async function stepCmd(step, cmd, exitOnError = true) {
     spin.succeed(green(step));
     return result;
   } catch (err) {
-    console.log('  ' + red(err));
+    console.log('  ' + red(err.stack));
     spin.fail(step);
     if(exitOnError) {
       exit(-1);
@@ -169,6 +180,23 @@ function camelCaseCapitalized(str) {
   return a.substring(0, 1).toUpperCase() + a.substring(1);
 }
 
+function resolvePaths(patterns, options = {}) {
+  try {
+    let res = []
+    for (const pattern of patterns) {
+      const files = glob.sync(pattern, options);
+      res = res.concat(files)
+    }
+    return res;
+  } catch (err) {
+    throw new Error(`Error resolving paths: ${err.message}`);
+  }
+}
+
+function extractBaseNames(input) {
+    return input.map(filePath => basename(filePath, extname(filePath)));
+}
+
 module.exports = {
   step,
   stepCmd,
@@ -185,5 +213,7 @@ module.exports = {
   titleCase,
   kebabCase,
   camelCase,
-  camelCaseCapitalized
+  camelCaseCapitalized,
+  resolvePaths,
+  extractBaseNames
 };

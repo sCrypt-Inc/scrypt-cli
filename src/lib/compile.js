@@ -3,10 +3,11 @@ const path = require('path');
 const _ = require('lodash');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec } = require('./helpers');
+const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec, resolvePaths, extractBaseNames } = require('./helpers');
 const { compileContract } = require('scryptlib');
 const ts = require('typescript');
 const { IndexerReader, INDEX_FILE_NAME } = require('scrypt-ts-transpiler/dist/indexerReader');
+const { options } = require('yargs');
 
 function containsDeprecatedOptions(options) {
   return "out" in options
@@ -23,45 +24,43 @@ function containsDeprecatedOptions(options) {
 async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
 
   const tsconfigScryptTSPath = path.resolve("tsconfig-scryptTS.json");
-  const tsconfigPath = path.resolve("tsconfig.json");
+  const tsconfigPath = tsconfig ? tsconfig : path.resolve("tsconfig.json");
 
-  if (!fs.existsSync(tsconfigScryptTSPath)) {
-    if (!fs.existsSync(tsconfigPath)) {
-      writefile(tsconfigScryptTSPath, readConfig('tsconfig.json'))
-    } else {
+  if (!fs.existsSync(tsconfigPath)) {
+    writefile(tsconfigScryptTSPath, readConfig('tsconfig.json'))
+  } else {
 
-      const parsedCommandLine = ts.getParsedCommandLineOfConfigFile(tsconfigPath, {}, ts.sys);
+    const parsedCommandLine = ts.getParsedCommandLineOfConfigFile(tsconfigPath, {}, ts.sys);
 
-      if (!parsedCommandLine) {
-        console.log(red(`ERROR: invalid tsconfig.json`));
-        exit(-1);
-      }
-
-      if (parsedCommandLine.errors[0]) {
-        console.log(red(`ERROR: invalid tsconfig.json`));
-        exit(-1);
-      }
-
-      const override = containsDeprecatedOptions(parsedCommandLine.options) ?
-        {
-          noEmit: true,
-          experimentalDecorators: true,
-          target: "ESNext",
-          esModuleInterop: true,
-          ignoreDeprecations: "5.0"
-        } : {
-          noEmit: true,
-          experimentalDecorators: true,
-          target: "ESNext",
-          esModuleInterop: true,
-        };
-
-      writefile(tsconfigScryptTSPath, {
-        extends: "./tsconfig.json",
-        include: ["src/contracts/**/*.ts"],
-        compilerOptions: override
-      })
+    if (!parsedCommandLine) {
+      console.log(red(`ERROR: invalid tsconfig.json`));
+      exit(-1);
     }
+
+    if (parsedCommandLine.errors[0]) {
+      console.log(red(`ERROR: invalid tsconfig.json`));
+      exit(-1);
+    }
+
+    const override = containsDeprecatedOptions(parsedCommandLine.options) ?
+      {
+        noEmit: true,
+        experimentalDecorators: true,
+        target: "ESNext",
+        esModuleInterop: true,
+        ignoreDeprecations: "5.0"
+      } : {
+        noEmit: true,
+        experimentalDecorators: true,
+        target: "ESNext",
+        esModuleInterop: true,
+      };
+
+    writefile(tsconfigScryptTSPath, {
+      extends: "./tsconfig.json",
+      include: ["src/contracts/**/*.ts"],
+      compilerOptions: override
+    })
   }
 
   // Check TS config
@@ -71,7 +70,6 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   if (include) {
     config.include = include.split(',')
   }
-
 
   if (exclude) {
     config.exclude = exclude.split(',')
@@ -93,14 +91,14 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   writefile(tsconfigScryptTSPath, JSON.stringify(config, null, 2));
 
   process.on('exit', () => {
-    if (clonedConfig ==! null) {
+    if (clonedConfig == ! null) {
       writefile(tsconfigScryptTSPath, JSON.stringify(clonedConfig, null, 2));
       clonedConfig = null
     }
   })
 
   process.on('SIGINT', function () {
-    if (clonedConfig ==! null) {
+    if (clonedConfig == ! null) {
       writefile(tsconfigScryptTSPath, JSON.stringify(clonedConfig, null, 2));
       clonedConfig = null
     }
@@ -116,13 +114,12 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   const tsc = ts_patch_path.join(path.sep)
 
   // Run tsc which in turn also transpiles to sCrypt
-
   if (watch) {
     await shExec(`node "${tsc}" --watch --p "${tsconfigScryptTSPath}"`)
   } else {
     const result = await stepCmd(
       'Building TS',
-      `node "${tsc}" --p "${tsconfigScryptTSPath}"`, false);
+      `node "${tsc}" --p "${tsconfigScryptTSPath}" --listFiles`, false);
 
     if (result instanceof Error) {
       console.log(red(`ERROR: Building TS failed!`));
@@ -143,17 +140,10 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
 
   }
 
-  // Recursively iterate over dist/ dir and find all classes extending 
-  // SmartContract class. For each found class, all it's compile() function.
-  // This will generate the artifact file of the contract.
-  // TODO: This is a hacky approach but works for now. Is there a more elegant solution?
-
-
   if (!fs.existsSync(outDir)) {
     console.log(red(`ERROR: outDir '${outDir}' not exists`));
     exit(-1);
   }
-
 
   if (asm) {
     if (!fs.existsSync(".asm/apply_asm.js")) {
@@ -168,25 +158,30 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   }
 
   if (!noArtifact) {
+    // Compile only what was transpiled using TSC
+    const include = extractBaseNames(resolvePaths(config.include ? config.include : []))
+    const exclude = extractBaseNames(resolvePaths(config.exclude ? config.exclude : []))
+    const toCompile = include.filter(el => !exclude.includes(el))
 
     const files = [];
     const distFiles = await readdirRecursive(outDir);
     for (const f of distFiles) {
       const relativePath = path.relative(outDir, f);
-      if(relativePath.startsWith("node_modules" + path.sep)) {
-        //ignore scrypt files in node_modules directory
+      if (relativePath.startsWith("node_modules" + path.sep)) {
+        // Ignore scrypt files in node_modules directory
         continue;
       }
 
       const fAbs = path.resolve(f);
-      if (path.extname(fAbs) == '.scrypt') {
+      const extName = path.extname(fAbs)
+      const name = extractBaseNames([fAbs])[0]
+      if (extName == '.scrypt' && toCompile.includes(name)) {
         files.push(fAbs)
       }
     };
 
 
     for (const f of files) {
-
       try {
         const outDir = path.dirname(f)
         const result = compileContract(f, {

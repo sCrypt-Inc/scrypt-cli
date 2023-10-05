@@ -23,44 +23,46 @@ function containsDeprecatedOptions(options) {
 
 async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
 
-  const tsconfigScryptTSPath = path.resolve("tsconfig-scryptTS.json");
-  const tsconfigPath = tsconfig ? tsconfig : path.resolve("tsconfig.json");
+  const tsconfigScryptTSPath = path.resolve(tsconfig ? tsconfig : "tsconfig-scryptTS.json");
+  const tsconfigPath = path.resolve("tsconfig.json");
 
-  if (!fs.existsSync(tsconfigPath)) {
-    writefile(tsconfigScryptTSPath, readConfig('tsconfig.json'))
-  } else {
+  if (!fs.existsSync(tsconfigScryptTSPath)) {
+    if (!fs.existsSync(tsconfigPath)) {
+      writefile(tsconfigScryptTSPath, readConfig('tsconfig.json'))
+    } else {
 
-    const parsedCommandLine = ts.getParsedCommandLineOfConfigFile(tsconfigPath, {}, ts.sys);
+      const parsedCommandLine = ts.getParsedCommandLineOfConfigFile(tsconfigPath, {}, ts.sys);
 
-    if (!parsedCommandLine) {
-      console.log(red(`ERROR: invalid tsconfig.json`));
-      exit(-1);
+      if (!parsedCommandLine) {
+        console.log(red(`ERROR: invalid tsconfig.json`));
+        exit(-1);
+      }
+
+      if (parsedCommandLine.errors[0]) {
+        console.log(red(`ERROR: invalid tsconfig.json`));
+        exit(-1);
+      }
+
+      const override = containsDeprecatedOptions(parsedCommandLine.options) ?
+        {
+          noEmit: true,
+          experimentalDecorators: true,
+          target: "ESNext",
+          esModuleInterop: true,
+          ignoreDeprecations: "5.0"
+        } : {
+          noEmit: true,
+          experimentalDecorators: true,
+          target: "ESNext",
+          esModuleInterop: true,
+        };
+
+      writefile(tsconfigScryptTSPath, {
+        extends: "./tsconfig.json",
+        include: ["src/contracts/**/*.ts"],
+        compilerOptions: override
+      })
     }
-
-    if (parsedCommandLine.errors[0]) {
-      console.log(red(`ERROR: invalid tsconfig.json`));
-      exit(-1);
-    }
-
-    const override = containsDeprecatedOptions(parsedCommandLine.options) ?
-      {
-        noEmit: true,
-        experimentalDecorators: true,
-        target: "ESNext",
-        esModuleInterop: true,
-        ignoreDeprecations: "5.0"
-      } : {
-        noEmit: true,
-        experimentalDecorators: true,
-        target: "ESNext",
-        esModuleInterop: true,
-      };
-
-    writefile(tsconfigScryptTSPath, {
-      extends: "./tsconfig.json",
-      include: ["src/contracts/**/*.ts"],
-      compilerOptions: override
-    })
   }
 
   // Check TS config

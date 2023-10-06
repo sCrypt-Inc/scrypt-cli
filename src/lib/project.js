@@ -257,6 +257,7 @@ async function configurePackageJson(dir, asm, minimal = false) {
     packageJson.devDependencies['@typescript-eslint/eslint-plugin'] = undefined;
     packageJson.devDependencies['@typescript-eslint/parser'] = undefined;
     packageJson.devDependencies['eslint'] = undefined;
+    packageJson.devDependencies['prettier'] = undefined;
     packageJson.devDependencies['eslint-config-prettier'] = undefined;
     packageJson.devDependencies['husky'] = undefined;
     packageJson.devDependencies['lint-staged'] = undefined;

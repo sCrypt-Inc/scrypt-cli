@@ -72,9 +72,19 @@ yargs(hideBin(process.argv))
           required: false,
           type: 'boolean'
         })
+        .option('minimal', {
+          description: 'Include only minimal dependencies and configs.',
+          required: false,
+          type: 'boolean'
+        })
+        .alias('min', 'minimal')
         .positional('name', { demand: true, string: true, hidden: true });
     },
     async (argv) => {
+      if (argv.stateful && argv.library) {
+        red('Flags "--state" and "--lib" cannot be used together.')
+      }
+
       if (argv.stateful) {
         await project(ProjectType.StatefulContract, argv)
       } else if (argv.library) {

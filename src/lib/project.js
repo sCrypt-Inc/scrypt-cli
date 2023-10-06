@@ -5,7 +5,7 @@ const sh = require('shelljs');
 const gittar = require('gittar');
 const { green, red } = require('chalk');
 const { exit } = require('process');
-const { stepCmd, replaceInFile, camelCase, camelCaseCapitalized, kebabCase, titleCase, readAsset, writefile } = require("./helpers");
+const { stepCmd, replaceInFile, camelCase, camelCaseCapitalized, kebabCase, titleCase, writefile, deletefile } = require("./helpers");
 const { createAsmDir } = require("./common")
 
 const ProjectType = {
@@ -26,7 +26,7 @@ const PROJECT_FILENAME_TEMPLATE = 'PROJECT_FILENAME'
  * @param {string} argv.name - The user's desired project name.
  * @return {Promise<void>}
  */
-async function project(projType, { asm, name }) {
+async function project(projType, { asm, name, minimal }) {
   if (name.search(/[^-0-9a-zA-Z]/g) != -1) {
     console.error(red(`Invalid project name format`));
     exit(-1);
@@ -85,15 +85,22 @@ async function project(projType, { asm, name }) {
   //);
   //
 
-  await configurePackageJson('.', asm)
+  await configurePackageJson('.', asm, minimal);
 
   if (asm) {
     await createAsmDir();
   }
+  
+  if (minimal) {
+    await minifyProject('.');
+  }
 
-  const resStr = `\nProject ${name} was successfully created!\n` +
-    `\nAdd your Git repo URL and you're good to go:` +
+  let resStr = `\nProject ${name} was successfully created!`;
+  
+  if (!minimal) {
+    resStr += `\n\nAdd your Git repo URL and you're good to go:` +
     `\ncd ${name} && git remote add origin <your-repo-url>`;
+  }
 
   console.log(green(resStr));
   exit(0);
@@ -226,9 +233,12 @@ async function setProjectName(dir, name) {
 
 /**
  * Apply modifications to package.json if needed.
+ * @param {string} dir - Path to the dir containing target files to be changed.
+ * @param {string} asm - Configure for ASM optimizations.
+ * @param {string} minimal - Use minimal config. Defaults to false.
  * @returns {Promise<boolean>} - True if successful; false if not.
  */
-async function configurePackageJson(dir, asm) {
+async function configurePackageJson(dir, asm, minimal = false) {
   const step = 'Configure package.json ';
   const spin = ora(`${step}...`).start();
 
@@ -239,9 +249,46 @@ async function configurePackageJson(dir, asm) {
     packageJson.scripts['compile'] += ' --asm'
   }
 
+  if (minimal) {
+    packageJson.scripts['lint'] = undefined
+    packageJson.scripts['lint-check'] = undefined
+    packageJson.scripts['prepare'] = undefined
+    packageJson['lint-staged'] = undefined
+    packageJson.devDependencies['@typescript-eslint/eslint-plugin'] = undefined;
+    packageJson.devDependencies['@typescript-eslint/parser'] = undefined;
+    packageJson.devDependencies['eslint'] = undefined;
+    packageJson.devDependencies['eslint-config-prettier'] = undefined;
+    packageJson.devDependencies['husky'] = undefined;
+    packageJson.devDependencies['lint-staged'] = undefined;
+  }
+
   writefile(packageJsonPath, packageJson)
 
   spin.succeed(green(step));
+}
+
+
+/**
+ * De-clutter project of non-critical files.
+ * @param {string} dir Directory to minify.
+ */
+async function minifyProject(dir) {
+    // List of files/directories to delete
+    const itemsToDelete = [
+        '.git/',
+        '.eslintignore',
+        '.eslintrc',
+        '.husky/',
+        '.prettierignore',
+        '.prettierrc',
+        '.travis.yml',
+        '.vscode/'
+    ];
+
+    for (const item of itemsToDelete) {
+        const itemPath = path.join(dir, item);
+        deletefile(itemPath);
+    }
 }
 
 module.exports = {

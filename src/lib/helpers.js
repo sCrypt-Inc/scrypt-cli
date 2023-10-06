@@ -121,6 +121,26 @@ function writefile(file, content) {
   }
 }
 
+/**
+ * Helper function to delete a file or directory.
+ * @param {string} itemPath Path to the file or directory to delete.
+ */
+function deletefile(itemPath) {
+    try {
+        // Check if the item is a directory or file
+        if (fs.statSync(itemPath).isDirectory()) {
+            fs.rmdirSync(itemPath, { recursive: true });
+        } else {
+            fs.unlinkSync(itemPath);
+        }
+    } catch (error) {
+        // If the error is about the item not existing, just continue
+        // For other errors, throw the error for further handling
+        if (error.code !== 'ENOENT') {
+            throw error;
+        }
+    }
+}
 
 /**
  * Helper to change file extension in a path
@@ -205,6 +225,7 @@ module.exports = {
   replaceInFile,
   readfile,
   writefile,
+  deletefile,
   changeExtension,
   readConfig: readAsset,
   readAsset,

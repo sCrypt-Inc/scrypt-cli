@@ -66,6 +66,17 @@ npm t
 npm run genprivkey
 cd ..
 
+echo "testing create project --min hello-world-min"
+rm -rf hello-world-min
+node ../src/bin/index.js project --min hello-world-min
+cd hello-world-min
+npm i
+npm i -D ../../
+npx scrypt-cli compile
+npm t
+npm run genprivkey
+cd ..
+
 chmod +x ../tests/helper-scripts/*.exp
 npm i -g @vue/cli
 

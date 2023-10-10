@@ -12,8 +12,8 @@ npm run build
 npm run test
 ```
 
-## Run Bitcoin Testnet Tests
+## Run Tests on the Bitcoin Testnet
 
 ```sh
-npm run testnet
+npm run test:testnet
 ```

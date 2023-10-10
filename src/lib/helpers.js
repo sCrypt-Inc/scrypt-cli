@@ -9,6 +9,10 @@ const { join, basename, dirname, extname, sep } = require('path');
 const { exit, cwd } = require('process');
 const hjson = require('hjson')
 
+
+
+const shExecWithOutput = util.promisify(sh.exec);
+
 function shExec(command) {
     return new Promise((resolve, reject) => {
         sh.exec(command, { silent: true }, (code, stdout, stderr) => {
@@ -221,6 +225,7 @@ module.exports = {
   step,
   stepCmd,
   shExec,
+  shExecWithOutput,
   readdirRecursive,
   replaceInFile,
   readfile,

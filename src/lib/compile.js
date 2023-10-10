@@ -3,7 +3,7 @@ const path = require('path');
 const _ = require('lodash');
 const { exit } = require('process');
 const { green, red } = require('chalk');
-const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec, resolvePaths, extractBaseNames } = require('./helpers');
+const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExecWithOutput, resolvePaths, extractBaseNames } = require('./helpers');
 const { compileContract } = require('scryptlib');
 const ts = require('typescript');
 const { IndexerReader, INDEX_FILE_NAME } = require('scrypt-ts-transpiler/dist/indexerReader');
@@ -117,7 +117,7 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
 
   // Run tsc which in turn also transpiles to sCrypt
   if (watch) {
-    await shExec(`node "${tsc}" --watch --p "${tsconfigScryptTSPath}"`)
+    await shExecWithOutput(`node "${tsc}" --watch --p "${tsconfigScryptTSPath}"`)
   } else {
     const result = await stepCmd(
       'Building TS',

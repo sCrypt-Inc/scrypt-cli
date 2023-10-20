@@ -4,10 +4,9 @@ const _ = require('lodash');
 const { exit } = require('process');
 const { green, red } = require('chalk');
 const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExecWithOutput, resolvePaths, extractBaseNames } = require('./helpers');
-const { compileContract } = require('scryptlib');
+const { compileContract, findCompiler } = require('scryptlib');
 const ts = require('typescript');
-const { IndexerReader, INDEX_FILE_NAME } = require('scrypt-ts-transpiler/dist/indexerReader');
-const { options } = require('yargs');
+const { safeCompilerVersion, getBinary } = require('scryptlib/util/getBinary');
 
 function containsDeprecatedOptions(options) {
   return "out" in options
@@ -22,6 +21,13 @@ function containsDeprecatedOptions(options) {
 }
 
 async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
+  const scryptc = findCompiler();
+
+  if(!scryptc || safeCompilerVersion(scryptc) === "0.0.0") {
+    // no scryptc found, auto download scryptc
+    await getBinary()
+  }
+
 
   const tsconfigScryptTSPath = path.resolve(tsconfig ? tsconfig : "tsconfig-scryptTS.json");
   const tsconfigPath = path.resolve("tsconfig.json");

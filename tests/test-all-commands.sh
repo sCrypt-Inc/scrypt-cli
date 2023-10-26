@@ -1,8 +1,14 @@
 #!/bin/sh
 set -e
 
-git config  --global user.email "ci@scrypt.io"
-git config  --global user.name "scrypt"
+if [ -n "$TRAVIS" ] || [ -n "$GITHUB_ACTIONS" ]; then
+    echo "config git ..."
+    git config  --global user.email "ci@scrypt.io"
+    git config  --global user.name "scrypt"
+else 
+    echo "skip git config"
+fi
+
 
 rm -rf test-commands
 mkdir -p test-commands

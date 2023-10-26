@@ -123,11 +123,11 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
 
   // Run tsc which in turn also transpiles to sCrypt
   if (watch) {
-    await shExecWithOutput(`node "${tsc}" --watch --p "${tsconfigScryptTSPath}"`)
+    await shExec(`node "${tsc}" --watch --p "${tsconfigScryptTSPath}"`)
   } else {
     const result = await stepCmd(
       'Building TS',
-      `node "${tsc}" --p "${tsconfigScryptTSPath}" --listFiles`, false);
+      `node "${tsc}" --p "${tsconfigScryptTSPath}"`, false);
 
     if (result instanceof Error) {
       console.log(red(`ERROR: Building TS failed!`));

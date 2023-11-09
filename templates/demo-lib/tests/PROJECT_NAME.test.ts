@@ -5,7 +5,7 @@ import { getDefaultSigner } from './utils/txHelper'
 import chaiAsPromised from 'chai-as-promised'
 use(chaiAsPromised)
 
-// Test lib directly:
+// Test library directly:
 describe('Test SmartContractLib `PROJECT_NAME`', () => {
     it('static function call', () => {
         expect(PROJECT_NAME.add(1n, 2n)).to.eq(3n)
@@ -17,9 +17,10 @@ describe('Test SmartContractLib `PROJECT_NAME`', () => {
     })
 })
 
+// Test library from a smart contract.
 describe('Test SmartContractLib `Lib`', () => {
     before(async () => {
-        await TestPROJECT_NAME.compile()
+        await TestPROJECT_NAME.loadArtifact()
     })
 
     it('should pass integration test successfully.', async () => {

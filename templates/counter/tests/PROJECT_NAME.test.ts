@@ -7,37 +7,42 @@ use(chaiAsPromised)
 
 describe('Test SmartContract `PROJECT_NAME`', () => {
     before(async () => {
-        await PROJECT_NAME.compile()
+        await PROJECT_NAME.loadArtifact()
     })
 
     it('should pass the public method unit test successfully.', async () => {
-        // create a genesis instance
+        // Create an initial instance of the counter smart contract.
         const counter = new PROJECT_NAME(0n)
-        // construct a transaction for deployment
         await counter.connect(getDefaultSigner())
 
-        await counter.deploy(1)
+        // Deploy the instance.
+        const deployTx = await counter.deploy(1)
+        console.log(`Deployed contract ${PROJECT_NAME}: ${deployTx.id}`)
 
         let prevInstance = counter
 
-        // multiple calls
+        // Perform multiple contract calls:
         for (let i = 0; i < 3; i++) {
-            // 1. build a new contract instance
+            // 1. Build a new contract instance.
             const newPROJECT_NAME = prevInstance.next()
-            // 2. apply the updates on the new instance.
+
+            // 2. Apply updates on the new instance in accordance to the contracts requirements.
             newPROJECT_NAME.increment()
-            // 3. construct a transaction for contract call
-            const call = async () =>
-                prevInstance.methods.incrementOnChain({
+
+            // 3. Perform the contract call.
+            const call = async () => {
+                const callRes = await prevInstance.methods.incrementOnChain({
                     next: {
                         instance: newPROJECT_NAME,
                         balance: 1,
                     },
                 } as MethodCallOptions<PROJECT_NAME>)
-
+                
+                console.log(`Called "incrementOnChain" method: ${callRes.tx.id}`)
+            }
             await expect(call()).not.to.be.rejected
 
-            // prepare for the next iteration
+            // Set new instance as the current one.
             prevInstance = newPROJECT_NAME
         }
     })

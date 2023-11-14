@@ -30,11 +30,7 @@ jobs:
   exclude:
     - osx_image: xcode14
       node_js: 16
-    # Only test on linux for regular test jobs
-    - if: branch != master
-      node_js: 18
-    - if: branch != master
-      node_js: 19
+
 
 script:
   - npm t

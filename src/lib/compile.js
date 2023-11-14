@@ -20,8 +20,8 @@ function containsDeprecatedOptions(options) {
     || "preserveValueImports" in options
 }
 
-async function compile({ include, scryptc, exclude, tsconfig, watch, noArtifact, asm }) {
-  const scryptcPath = scryptc || findCompiler();
+async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
+  const scryptcPath = findCompiler();
   if(!scryptcPath || safeCompilerVersion(scryptcPath) === "0.0.0") {
     // no scryptc found, auto download scryptc
     await getBinary()

@@ -124,11 +124,6 @@ yargs(hideBin(process.argv))
         description: 'Apply asm optimization before compiling scrypt file.',
         required: false,
         type: 'boolean'
-      })
-      .option('scryptc', {
-        description: 'Specify sCrypt compiler path.',
-        required: false,
-        type: 'string'
       });
 
   }, (argv) => compile(argv))

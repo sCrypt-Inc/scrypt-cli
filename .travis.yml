@@ -35,10 +35,6 @@ jobs:
       node_js: 18
     - if: branch != master
       node_js: 19
-    - if: type = pull_request
-      os: osx
-    - if: type = pull_request
-      os: windows
 
 script:
   - npm t

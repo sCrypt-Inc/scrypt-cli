@@ -17,7 +17,7 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
 
     it('should pass the public method unit test successfully.', async () => {
         const deployTx = await instance.deploy(1)
-        console.log(`Deployed contract ${PROJECT_NAME}: ${deployTx.id}`)
+        console.log(`Deployed contract "PROJECT_NAME": ${deployTx.id}`)
 
         const call = async () => {
             const callRes = await instance.methods.unlock(

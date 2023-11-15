@@ -17,7 +17,7 @@ describe('Test SmartContract `PROJECT_NAME`', () => {
 
         // Deploy the instance.
         const deployTx = await counter.deploy(1)
-        console.log(`Deployed contract ${PROJECT_NAME}: ${deployTx.id}`)
+        console.log(`Deployed contract "PROJECT_NAME": ${deployTx.id}`)
 
         let prevInstance = counter
 

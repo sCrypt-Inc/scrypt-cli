@@ -19,8 +19,6 @@ os:
   - osx
   - windows
 
-osx_image:
-  - xcode12
 
 cache:
   npm: false

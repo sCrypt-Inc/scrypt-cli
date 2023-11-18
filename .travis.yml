@@ -1,8 +1,5 @@
 dist: focal
 language: node_js
-node_js: 
-  - 16
-  - 18
 
 git:
   autocrlf: false
@@ -14,15 +11,18 @@ addons:
   homebrew:
     packages: expect
 
-os:
-  - linux
-  - osx
-  - windows
 
+jobs:
+  include:
+    - os: osx
+      node_js: 16
+    - os: linux
+      node_js: 18
+    - os: windows
+      node_js: 20
 
 cache:
   npm: false
-
 
 
 

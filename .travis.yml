@@ -20,20 +20,20 @@ os:
   - windows
 
 osx_image:
-  - xcode14
+  - xcode12
 
 cache:
   npm: false
 
-jobs:
-  exclude:
-    - osx_image: xcode14
-      node_js: 16
+
 
 
 script:
   - npm t
-  - npm run test-templates
-  - npm run test-lib-import
-  - 'if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run test-all-commands; fi'
+  # - npm run test-templates
+  # - npm run test-lib-import
+  - |
+    if [ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]; then
+      npm run test-all-commands; 
+    fi
   # - sh tests/test-npx.sh

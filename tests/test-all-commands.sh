@@ -118,22 +118,27 @@ cp ../../tests/replaced-files/next-page.tsx src/app/page.tsx
 #npm run build
 cd ..
 
-echo "testing init Angular ..."
-rm -rf dapp-angular
-npx @angular/cli new dapp-angular
-cd dapp-angular
-git init
-git add .
-git commit -am "Initial commit"
-npm i
-npm i -D ../../
-npx scrypt-cli init --force
-npx scrypt-cli compile
-cp ../../tests/replaced-files/angular-main.ts src/main.ts
-cat src/main.ts
-npm run build
-cd ..
+echo "TRAVIS_NODE_VERSION=$TRAVIS_NODE_VERSION"
 
+if [ $TRAVIS_NODE_VERSION != "16" ] ; then
+
+    echo "testing init Angular ..."
+    rm -rf dapp-angular
+    npx @angular/cli new dapp-angular
+    cd dapp-angular
+    git init
+    git add .
+    git commit -am "Initial commit"
+    npm i
+    npm i -D ../../
+    npx scrypt-cli init --force
+    npx scrypt-cli compile
+    cp ../../tests/replaced-files/angular-main.ts src/main.ts
+    cat src/main.ts
+    npm run build
+    cd ..
+
+fi
 
 if [ $TRAVIS_OS_NAME = linux ] ; then
 

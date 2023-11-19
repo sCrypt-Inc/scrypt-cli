@@ -80,15 +80,19 @@ async function configAngular(projectName) {
     const angularJSON = readfile(angularJSONFilePath);
 
     angularJSON.projects[projectName].architect.build.builder = '@angular-builders/custom-webpack:browser'
+    angularJSON.projects[projectName].architect.build.options.main = 'src/main.ts'
     angularJSON.projects[projectName].architect.build.options.customWebpackConfig = {
         path: webpackConfigFileName,
-        "replaceDuplicatePlugins": true
+        mergeRules: {
+            "externals": "replace"
+        }
     }
+    
     angularJSON.projects[projectName].architect.build.configurations.production.budgets[0].maximumError = '10mb'
 
     angularJSON.projects[projectName].architect.serve.builder = '@angular-builders/custom-webpack:dev-server'
     angularJSON.projects[projectName].architect.serve.options = {
-        browserTarget: `${projectName}:build`
+        buildTarget: `${projectName}:build`
     }
 
     angularJSON.projects[projectName].architect["extract-i18n"].builder = '@angular-builders/custom-webpack:extract-i18n'

@@ -28,8 +28,8 @@ cache:
 
 script:
   - npm t
-  # - npm run test-templates
-  # - npm run test-lib-import
+  - npm run test-templates
+  - npm run test-lib-import
   - |
     echo "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
     echo "TRAVIS_BRANCH=$TRAVIS_BRANCH"

@@ -124,7 +124,7 @@ if [ $TRAVIS_NODE_VERSION != "16" ] ; then
 
     echo "testing init Angular ..."
     rm -rf dapp-angular
-    npx @angular/cli new dapp-angular
+    npx @angular/cli@16 new dapp-angular
     cd dapp-angular
     git init
     git add .

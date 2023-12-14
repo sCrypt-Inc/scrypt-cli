@@ -12,14 +12,15 @@ addons:
     packages: expect
 
 
-jobs:
-  include:
-    - os: osx
-      node_js: 16
-    - os: linux
-      node_js: 18
-    - os: windows
-      node_js: 20
+os: 
+  - osx
+  - linux
+  - windows
+
+nodejs:
+  - 16
+  - 18
+  - 20
 
 cache:
   npm: false
@@ -33,5 +34,13 @@ script:
   - |
     echo "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
     echo "TRAVIS_BRANCH=$TRAVIS_BRANCH"
-  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then npm run test-all-commands; fi
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+      echo "# master"; 
+      npm run test-all-commands; 
+    else
+      if [ "$TRAVIS_OS" == "linux" ]; then
+        echo "# no master, just run on linux"; 
+        npm run test-all-commands; 
+      fi
+    fi
   # - sh tests/test-npx.sh

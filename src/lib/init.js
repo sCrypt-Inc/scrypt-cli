@@ -12,7 +12,7 @@ async function configReactScriptsV5() {
     // Install devDependencies
     await stepCmd(
         'Installing devDependencies...',
-        'npm i -D react-app-rewired node-polyfill-webpack-plugin ts-node'
+        'npm i -D react-app-rewired node-polyfill-webpack-plugin'
     );
 
     // reload packageJSON
@@ -111,7 +111,7 @@ async function configSvelte(projectName) {
     // install dev dependencies
     await stepCmd(
         'Installing dependencies...',
-        'npm i -D dotenv vite-plugin-node-polyfills'
+        'npm i -D dotenv vite-plugin-node-polyfills  ts-node'
     )
 
     // override vite.config.ts

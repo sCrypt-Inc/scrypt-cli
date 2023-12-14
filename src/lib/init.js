@@ -56,7 +56,7 @@ async function configVueVite(vueVersion) {
     // install dev dependencies
     await stepCmd(
         'Installing dependencies...',
-        'npm i -D dotenv vite-plugin-node-polyfills'
+        'npm i -D dotenv vite-plugin-node-polyfills ts-node'
     )
 
     // override vite.config.ts

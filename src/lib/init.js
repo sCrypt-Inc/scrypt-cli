@@ -130,7 +130,9 @@ async function configPackageScripts() {
     packageJSON.scripts["build:contract"] = "npx scrypt-cli compile";
     packageJSON.scripts["deploy:contract"] = "npx ts-node ./scripts/deploy.ts";
     packageJSON.scripts["verify:contract"] = `npx scrypt-cli verify $(cat .scriptHash) ./src/contracts/${camelCase(packageJSON.name)}.ts`;
-    packageJSON.scripts["genprivkey"] = "npx ts-node ./scripts/privateKey.ts";
+
+    const esm = packageJSON.type === 'module'
+    packageJSON.scripts["genprivkey"] = `npx ts-node ${esm ? "--esm " : ""}./scripts/privateKey.ts`;
     // update packageJSON
     writefile(packageJSONFilePath, packageJSON);
 }

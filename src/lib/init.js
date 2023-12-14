@@ -196,6 +196,7 @@ function configTSconfig({
                 const appConfig = 'tsconfig.app.json'
                 let tsConfigAppJSON = readfile(appConfig);
                 tsConfigAppJSON.compilerOptions.experimentalDecorators = true;
+                tsConfigAppJSON.include.push("artifacts/*.json");
                 writefile(appConfig, tsConfigAppJSON)
             }
                 break;

@@ -56,7 +56,7 @@ async function configVueVite(vueVersion) {
     // install dev dependencies
     await stepCmd(
         'Installing dependencies...',
-        'npm i -D dotenv vite-plugin-node-polyfills ts-node'
+        'npm i -D dotenv vite-plugin-node-polyfills'
     )
 
     // override vite.config.ts
@@ -111,7 +111,7 @@ async function configSvelte(projectName) {
     // install dev dependencies
     await stepCmd(
         'Installing dependencies...',
-        'npm i -D dotenv vite-plugin-node-polyfills  ts-node'
+        'npm i -D dotenv vite-plugin-node-polyfills'
     )
 
     // override vite.config.ts
@@ -128,11 +128,9 @@ async function configPackageScripts() {
 
     packageJSON.scripts["pretest"] = "npx scrypt-cli compile";
     packageJSON.scripts["build:contract"] = "npx scrypt-cli compile";
-    packageJSON.scripts["deploy:contract"] = "npx ts-node ./scripts/deploy.ts";
+    packageJSON.scripts["deploy:contract"] = "npx tsx ./scripts/deploy.ts";
     packageJSON.scripts["verify:contract"] = `npx scrypt-cli verify $(cat .scriptHash) ./src/contracts/${camelCase(packageJSON.name)}.ts`;
-
-    const esm = packageJSON.type === 'module'
-    packageJSON.scripts["genprivkey"] =  esm ? "node --loader ts-node/esm ./scripts/privateKey.ts" : "npx ts-node ./scripts/privateKey.ts";
+    packageJSON.scripts["genprivkey"] = "npx tsx ./scripts/privateKey.ts";
     // update packageJSON
     writefile(packageJSONFilePath, packageJSON);
 }
@@ -155,22 +153,7 @@ function configTsNodeConfig({
     if (existsSync(tsConfigPath)) {
         let tsConfigJSON = readfile(tsConfigPath);
 
-        switch (true) {
-            case isSvelteProject: {
-                tsConfigJSON["ts-node"] = {};
-                tsConfigJSON["ts-node"]['esm'] = true
-                tsConfigJSON["ts-node"]['experimentalSpecifierResolution'] = 'node'
-            }
-            break;
 
-            default: {
-                tsConfigJSON["ts-node"] = {
-                    "compilerOptions": {
-                        "module": "CommonJS",
-                    }
-                }
-            }
-        }
 
         writefile(tsConfigPath, tsConfigJSON)
 

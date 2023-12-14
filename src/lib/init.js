@@ -12,7 +12,7 @@ async function configReactScriptsV5() {
     // Install devDependencies
     await stepCmd(
         'Installing devDependencies...',
-        'npm i -D react-app-rewired node-polyfill-webpack-plugin'
+        'npm i -D react-app-rewired node-polyfill-webpack-plugin ts-node'
     );
 
     // reload packageJSON

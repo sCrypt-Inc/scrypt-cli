@@ -17,6 +17,8 @@ os:
   - linux
   - windows
 
+osx_image: xcode14
+
 nodejs:
   - 16
   - 18
@@ -38,7 +40,7 @@ script:
       echo "# master"; 
       npm run test-all-commands; 
     else
-      if [ "$TRAVIS_OS" == "linux" ]; then
+      if [ "$TRAVIS_OS_NAME" == "linux" ]; then
         echo "# no master, just run on linux"; 
         npm run test-all-commands; 
       fi

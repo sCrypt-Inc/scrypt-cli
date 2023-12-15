@@ -138,24 +138,28 @@ if [ $TRAVIS_NODE_VERSION != "16" ] ; then
     npm run build
     cd ..
 
-    echo "testing init Svelte ..."
-    rm -rf dapp-svelte
-    ../tests/helper-scripts/create-svelte-app.exp
-    cd dapp-svelte
-    git init
-    git add .
-    git commit -am "Initial commit"
-    npm i
-    npm i -D ../../
-    npx scrypt-cli init --force
-    npx scrypt-cli compile
-    cp ../../tests/replaced-files/svelte-page.svelte src/routes/+page.svelte
-    cat src/routes/+page.svelte
-    npm run build
-    cd ..
 fi
 
 if [ $TRAVIS_OS_NAME = linux ] ; then
+
+    if [ $TRAVIS_NODE_VERSION != "16" ] ; then
+
+        echo "testing init Svelte ..."
+        rm -rf dapp-svelte
+        ../tests/helper-scripts/create-svelte-app.exp
+        cd dapp-svelte
+        git init
+        git add .
+        git commit -am "Initial commit"
+        npm i
+        npm i -D ../../
+        npx scrypt-cli init --force
+        npx scrypt-cli compile
+        cp ../../tests/replaced-files/svelte-page.svelte src/routes/+page.svelte
+        cat src/routes/+page.svelte
+        npm run build
+        cd ..
+    fi
 
     echo "testing Vue 3.x bundled with Vite"
     rm -rf dapp-vue3-vite

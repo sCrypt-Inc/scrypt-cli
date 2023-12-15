@@ -13,9 +13,9 @@ addons:
 
 
 os: 
-  - osx
+
   - linux
-  - windows
+
 
 osx_image: xcode14
 

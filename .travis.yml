@@ -12,8 +12,6 @@ addons:
     packages: expect
 
 
-osx_image: xcode14
-
 nodejs:
   - 16
   - 18

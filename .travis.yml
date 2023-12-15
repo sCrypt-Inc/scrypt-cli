@@ -33,11 +33,13 @@ jobs:
         - osx
       nodejs:
         - 18
+      osx_image: xcode14
     - if: branch = master AND type = push
       os: 
         - osx
       nodejs:
         - 20
+      osx_image: xcode14
     - if: branch = master AND type = push
       os: 
         - windows

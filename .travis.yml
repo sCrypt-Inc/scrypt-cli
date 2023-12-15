@@ -50,7 +50,7 @@ jobs:
         - 18
     - if: branch = master AND type = push
       os: 
-        - osx
+        - windows
       nodejs:
         - 20
 script:

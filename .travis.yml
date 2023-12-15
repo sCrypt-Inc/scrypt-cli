@@ -12,11 +12,6 @@ addons:
     packages: expect
 
 
-os: 
-
-  - linux
-
-
 osx_image: xcode14
 
 nodejs:
@@ -27,6 +22,18 @@ nodejs:
 cache:
   npm: false
 
+jobs:
+  include:
+    - # require the branch name to be master (note for PRs this is the base branch name)
+      if: branch = master AND type = push
+      os: 
+        - osx
+        - linux
+        - windows
+    - # non master branch or pr
+      if: branch != master OR type = pull_request
+      os: 
+        - linux
 
 
 script:
@@ -38,11 +45,9 @@ script:
     echo "TRAVIS_BRANCH=$TRAVIS_BRANCH"
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
       echo "# master"; 
-      npm run test-all-commands; 
     else
       if [ "$TRAVIS_OS_NAME" == "linux" ]; then
         echo "# no master, just run on linux"; 
-        npm run test-all-commands; 
       fi
     fi
   # - sh tests/test-npx.sh

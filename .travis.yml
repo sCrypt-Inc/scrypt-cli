@@ -28,18 +28,31 @@ jobs:
         - osx
       nodejs:
         - 16
+    - if: branch = master AND type = push
+      os: 
+        - osx
+      nodejs:
         - 18
+    - if: branch = master AND type = push
+      os: 
+        - osx
+      nodejs:
         - 20
-    # - if: branch = master AND type = push
-    #   os: 
-    #     - osx
-    #   nodejs:
-    #     - 18
-    # - if: branch = master AND type = push
-    #   os: 
-    #     - osx
-    #   nodejs:
-    #     - 20
+    - if: branch = master AND type = push
+      os: 
+        - windows
+      nodejs:
+        - 16
+    - if: branch = master AND type = push
+      os: 
+        - windows
+      nodejs:
+        - 18
+    - if: branch = master AND type = push
+      os: 
+        - osx
+      nodejs:
+        - 20
 script:
   - npm t
   # - npm run test-templates

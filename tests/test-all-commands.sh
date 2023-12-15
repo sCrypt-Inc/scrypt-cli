@@ -138,10 +138,6 @@ if [ $TRAVIS_NODE_VERSION != "16" ] ; then
     npm run build
     cd ..
 
-fi
-
-if [ $TRAVIS_OS_NAME = linux ] ; then
-
     echo "testing init Svelte ..."
     rm -rf dapp-svelte
     ../tests/helper-scripts/create-svelte-app.exp
@@ -157,6 +153,9 @@ if [ $TRAVIS_OS_NAME = linux ] ; then
     cat src/routes/+page.svelte
     npm run build
     cd ..
+fi
+
+if [ $TRAVIS_OS_NAME = linux ] ; then
 
     echo "testing Vue 3.x bundled with Vite"
     rm -rf dapp-vue3-vite

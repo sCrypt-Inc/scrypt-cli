@@ -12,34 +12,34 @@ addons:
     packages: expect
 
 
-nodejs:
-  - 16
-  - 18
-  - 20
+# nodejs:
+#   - 16
+#   - 18
+#   - 20
 
 cache:
   npm: false
 
 jobs:
   include:
-    - # require the branch name to be master (note for PRs this is the base branch name)
-      if: branch = master AND type = push
-      os: 
-        - osx
-      nodejs:
-        - 16
+    # - # require the branch name to be master (note for PRs this is the base branch name)
+      # if: branch = master AND type = push
+      # os: 
+      #   - osx
+      # nodejs:
+      #   - 16
     - if: branch = master AND type = push
       os: 
         - osx
       nodejs:
         - 18
-      osx_image: xcode12
+      osx_image: xcode11.6
     - if: branch = master AND type = push
       os: 
         - osx
       nodejs:
         - 20
-      osx_image: xcode12
+      osx_image: xcode11.6
     - if: branch = master AND type = push
       os: 
         - windows

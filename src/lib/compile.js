@@ -166,8 +166,8 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
 
   if (!noArtifact) {
     // Compile only what was transpiled using TSC
-    const include = extractBaseNames(resolvePaths(config.include ? config.include : []))
-    const exclude = extractBaseNames(resolvePaths(config.exclude ? config.exclude : []))
+    const include = extractBaseNames(resolvePaths(Array.isArray(config.include) ? config.include : []))
+    const exclude = extractBaseNames(resolvePaths(Array.isArray(config.exclude) ? config.exclude : []))
     const toCompile = include.filter(el => !exclude.includes(el))
 
     const files = [];
@@ -180,13 +180,35 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
       }
 
       const fAbs = path.resolve(f);
-      const extName = path.extname(fAbs)
-      const name = extractBaseNames([fAbs])[0]
-      if (extName == '.scrypt' && toCompile.includes(name)) {
-        files.push(fAbs)
+
+      if (fAbs.endsWith(".transformer.json")) {
+        try {
+		      const name = path.basename(fAbs, '.transformer.json')
+
+          if(!toCompile.includes(name)) {
+            // Ignore files not included
+            continue;
+          }
+
+          const transformerResult = readfile(fAbs, true);
+          const {scryptfile, success} = transformerResult;
+		      const scryptfilePath = path.join(path.dirname(fAbs), scryptfile);
+          if(success) {
+            if(fs.existsSync(scryptfilePath)) {
+              files.push(scryptfilePath)
+            } else {
+              const resStr = `\nTranslation succeed but scrypt file not found! ${fAbs}\n`;
+              console.log(red(resStr));
+            }
+          } else if(success === false) {
+            const resStr = `\nTranslation failed! See errors in: ${fAbs}\n`;
+            console.log(red(resStr));
+          }
+        } catch (error) {
+          console.log(red(`ERROR: ${error.message}, transformer file: ${fAbs}`));
+        }
       }
     };
-
 
     for (const f of files) {
       try {

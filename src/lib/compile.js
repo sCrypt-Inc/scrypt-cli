@@ -164,6 +164,9 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
     );
   }
 
+  let successCount = 0;
+  let failedCount = 0;
+
   if (!noArtifact) {
     // Compile only what was transpiled using TSC
     const include = extractBaseNames(resolvePaths(Array.isArray(config.include) ? config.include : []))
@@ -179,7 +182,7 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
         continue;
       }
 
-      const fAbs = path.resolve(f);
+      const fAbs = path.resolve(f);      
 
       if (fAbs.endsWith(".transformer.json")) {
         try {
@@ -197,10 +200,12 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
             if(fs.existsSync(scryptfilePath)) {
               files.push(scryptfilePath)
             } else {
+              failedCount++;
               const resStr = `\nTranslation succeed but scrypt file not found! ${fAbs}\n`;
               console.log(red(resStr));
             }
           } else if(success === false) {
+            failedCount++;
             const resStr = `\nTranslation failed! See errors in: ${fAbs}\n`;
             console.log(red(resStr));
           }
@@ -219,11 +224,12 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
         });
 
         if (result.errors.length > 0) {
-          const resStr = `\nCompilation failed.\n`;
-          console.log(red(resStr));
+          failedCount++;
           console.log(red(`ERROR: Failed to compile ${f}`));
-          exit(-1);
+          continue;
         }
+
+        successCount++;
 
         const artifactPath = path.join(outDir, `${path.basename(f, '.scrypt')}.json`);
 
@@ -237,9 +243,17 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
     }
   }
 
-
-  const resStr = `\nProject was successfully compiled!\n`;
+  const resStr = `\nProject compilation completed!`;
   console.log(green(resStr));
+
+  if(successCount > 0) {
+    console.log(green(`\n${successCount} passing`));
+  }
+
+  if(failedCount > 0) {
+    console.log(red(`\n${failedCount} failing`));
+  }
+
   exit(0);
 }
 

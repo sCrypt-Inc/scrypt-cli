@@ -207,7 +207,7 @@ function resolvePaths(patterns, options = {}) {
   try {
     let res = []
     for (const pattern of patterns) {
-      const files = glob.sync(pattern, options);
+      const files = glob.sync(pattern.replaceAll(sep, "/"), options);
       res = res.concat(files)
     }
     return res;

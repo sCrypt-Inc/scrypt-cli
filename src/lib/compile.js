@@ -195,7 +195,8 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
 
           const transformerResult = readfile(fAbs, true);
           const {scryptfile, success} = transformerResult;
-		      const scryptfilePath = path.join(path.dirname(fAbs), scryptfile);
+		      const scryptfilePath = path.join(path.dirname(fAbs), path.basename(scryptfile));
+
           if(success) {
             if(fs.existsSync(scryptfilePath)) {
               files.push(scryptfilePath)
@@ -210,6 +211,7 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
             console.log(red(resStr));
           }
         } catch (error) {
+		      failedCount ++;
           console.log(red(`ERROR: ${error.message}, transformer file: ${fAbs}`));
         }
       }
@@ -246,13 +248,10 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
   const resStr = `\nProject compilation completed!`;
   console.log(green(resStr));
 
-  if(successCount > 0) {
-    console.log(green(`\n${successCount} passing`));
-  }
+  console.log(green(`\n${successCount} passing`));
+  
+  console.log(red(`\n${failedCount} failing`));
 
-  if(failedCount > 0) {
-    console.log(red(`\n${failedCount} failing`));
-  }
 
   exit(0);
 }

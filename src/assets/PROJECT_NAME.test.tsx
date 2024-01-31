@@ -5,8 +5,7 @@ import artifact from "../../artifacts/PROJECT_FILENAME.json";
 
 describe('Test SmartContract `PROJECT_NAME`', () => {
     beforeAll(async () => {
-        PROJECT_NAME.loadArtifact(artifact);
-        await PROJECT_NAME.compile();
+        await PROJECT_NAME.loadArtifact(artifact);
     });
 
     it('should pass the public method unit test successfully.', async () => {

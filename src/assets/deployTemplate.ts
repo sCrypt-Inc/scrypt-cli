@@ -12,7 +12,7 @@ function getScriptHash(scriptPubKeyHex: string) {
 }
 
 async function main() {
-    await PROJECT_NAME.compile()
+    await PROJECT_NAME.loadArtifact()
 
     // Prepare signer. 
     // See https://scrypt.io/docs/how-to-deploy-and-call-a-contract/#prepare-a-signer-and-provider

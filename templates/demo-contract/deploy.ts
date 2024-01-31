@@ -27,7 +27,7 @@ const signer = new TestWallet(
 )
 
 async function main() {
-    await PROJECT_NAME.compile()
+    await PROJECT_NAME.loadArtifact()
 
     // TODO: Adjust the amount of satoshis locked in the smart contract:
     const amount = 1

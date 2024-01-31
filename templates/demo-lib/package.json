@@ -9,7 +9,7 @@
     "prebuild": "npm run clean",
     "build": "tsc",
     "clean": "rimraf scrypt.index.json && rimraf dist && rimraf artifacts",
-    "compile": "npx scrypt-cli@latest compile",
+    "compile": "npx scrypt-cli compile",
     "pretest": "npm run build && npm run compile",
     "test": "npm run test:mocha",
     "test:mocha": "cross-env NETWORK=local mocha",
@@ -51,7 +51,8 @@
     "prettier": "^2.8.2",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.3.3",
+    "scrypt-cli": "^0.1.68"
   },
   "license": "MIT"
 }

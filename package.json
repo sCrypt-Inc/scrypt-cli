@@ -7,6 +7,7 @@
     "scrypt-cli": "./src/bin/index.js"
   },
   "scripts": {
+    "watch": "npx scrypt-cli compile --watch",
     "coverage": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage",
     "format": "prettier --write --ignore-unknown **/*",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --silent",

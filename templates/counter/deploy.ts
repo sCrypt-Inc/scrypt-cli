@@ -6,6 +6,10 @@ import * as dotenv from 'dotenv'
 // Load the .env file
 dotenv.config()
 
+if(!process.env.PRIVATE_KEY) {
+    throw new Error("No \"PRIVATE_KEY\" found in .env, Please run \"npm run genprivkey\" to generate a private key")
+}
+
 // Read the private key from the .env file.
 // The default private key inside the .env file is meant to be used for the Bitcoin testnet.
 // See https://scrypt.io/docs/bitcoin-basics/bsv/#private-keys

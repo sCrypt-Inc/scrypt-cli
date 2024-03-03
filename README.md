@@ -55,9 +55,19 @@ npx scrypt-cli init
 npx scrypt-cli compile
 ```
 
+
 This will search current project for classes extending `SmartContract` and compile them. This will produce a [contract artifact file](https://github.com/sCrypt-Inc/scryptlib#contract-description-file) for each compiled class. The files will be stored under the `artifacts` directory. 
 
 The command needs to run in the root directory of the project.
+
+
+### Compile sCrypt Smart Contract under Watch
+
+```sh
+npx scrypt-cli compile --watch
+```
+"npx scrypt-cli compile --watch" syntax to initiate a watch mode. This mode likely allows users to observe real-time updates and notifications regarding any errors specific to sCrypt, which are distinct from TypeScript errors.
+
 
 ### Deploy sCrypt smart contracts
 

@@ -66,15 +66,15 @@ The command needs to run in the root directory of the project.
 ```sh
 npx scrypt-cli compile --watch
 ```
-"npx scrypt-cli compile --watch" syntax to initiate a watch mode. This mode likely allows users to observe real-time updates and notifications regarding any errors specific to sCrypt, which are distinct from TypeScript errors.
-Also watch is to automatically compile after any changes is made to any of the SmartContracts source files in the project
+Initiate smart contract compilation in watch mode. This mode allows you to observe real-time updates and notifications regarding any errors specific to the smart contract compilation phase, which are distinct from TypeScript errors. During watch mode, smart contracts get automatically compiled after a change is made to any of the smart contract source files.
 
 ### Compile using the --asm option
 
 ```sh
 npx scrypt-cli compile --asm
 ```
-The "--asm" is to apply inline assembly optimizations. And when --asm option is enabled meaning you are going to use inline assembly format of script.
+The `--asm` option is used to apply inline assembly optimizations. These are defined under the `.asm/` directory in the root of the project (auto genereted when using `--asm` option with the `project` command).
+Read more in [the docs](https://docs.scrypt.io/advanced/inline-asm).
 
 ### Deploy sCrypt smart contracts
 

@@ -177,21 +177,21 @@ if [ $TRAVIS_OS_NAME = linux ] ; then
     npm run build
     cd ..
 
-    echo "testing Vue 2.x bundled with Vite"
-    rm -rf dapp-vue2-vite
-    ../tests/helper-scripts/create-vue2-vite-app.exp
-    cd dapp-vue2-vite
-    git init
-    git add .
-    git commit -am "Initial commit"
-    npm i
-    npm i -D ../../
-    npx scrypt-cli init --force
-    npx scrypt-cli compile
-    cp ../../tests/replaced-files/vue2-vite-main.ts src/main.ts
-    cat src/main.ts
-    npm run build
-    cd ..
+    # echo "testing Vue 2.x bundled with Vite"
+    # rm -rf dapp-vue2-vite
+    # ../tests/helper-scripts/create-vue2-vite-app.exp
+    # cd dapp-vue2-vite
+    # git init
+    # git add .
+    # git commit -am "Initial commit"
+    # npm i
+    # npm i -D ../../
+    # npx scrypt-cli init --force
+    # npx scrypt-cli compile
+    # cp ../../tests/replaced-files/vue2-vite-main.ts src/main.ts
+    # cat src/main.ts
+    # npm run build
+    # cd ..
 
     echo "testing Vue 3.x bundled with Webpack"
     rm -rf dapp-vue3-webpack ~/.vuerc

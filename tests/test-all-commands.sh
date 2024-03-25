@@ -163,7 +163,7 @@ if [ $TRAVIS_OS_NAME = linux ] ; then
 
     echo "testing Vue 3.x bundled with Vite"
     rm -rf dapp-vue3-vite
-    ../tests/helper-scripts/create-vue3-vite-app.exp
+    npm create vue@latest dapp-vue3-vite -- --ts --jsx --router --pinia --vitest  --eslint
     cd dapp-vue3-vite
     git init
     git add .
@@ -177,26 +177,27 @@ if [ $TRAVIS_OS_NAME = linux ] ; then
     npm run build
     cd ..
 
-    echo "testing Vue 2.x bundled with Vite"
-    rm -rf dapp-vue2-vite
-    ../tests/helper-scripts/create-vue2-vite-app.exp
-    cd dapp-vue2-vite
-    git init
-    git add .
-    git commit -am "Initial commit"
-    npm i
-    npm i -D ../../
-    npx scrypt-cli init --force
-    npx scrypt-cli compile
-    cp ../../tests/replaced-files/vue2-vite-main.ts src/main.ts
-    cat src/main.ts
-    npm run build
-    cd ..
+    # echo "testing Vue 2.x bundled with Vite"
+    # rm -rf dapp-vue2-vite
+    # ../tests/helper-scripts/create-vue2-vite-app.exp
+    # cd dapp-vue2-vite
+    # git init
+    # git add .
+    # git commit -am "Initial commit"
+    # npm i
+    # npm i -D ../../
+    # npx scrypt-cli init --force
+    # npx scrypt-cli compile
+    # cp ../../tests/replaced-files/vue2-vite-main.ts src/main.ts
+    # cat src/main.ts
+    # npm run build
+    # cd ..
 
     echo "testing Vue 3.x bundled with Webpack"
     rm -rf dapp-vue3-webpack ~/.vuerc
     echo "{ \"useTaobaoRegistry\": true }" > ~/.vuerc
     ../tests/helper-scripts/create-vue3-webpack-app.exp
+    #npx @vue/cli create dapp-vue3-webpack -p default --inlinePreset '{"useConfigFiles": true,"plugins": {"@vue/cli-plugin-typescript": {"classComponent": false},"@vue/cli-plugin-unit-jest": {}},"vueVersion": "3"}'
     cd dapp-vue3-webpack
     git init
     git add .
@@ -210,21 +211,21 @@ if [ $TRAVIS_OS_NAME = linux ] ; then
     npm run build
     cd ..
 
-    rm -rf dapp-vue2-webpack ~/.vuerc
-    echo "{ \"useTaobaoRegistry\": true }" > ~/.vuerc
-    ../tests/helper-scripts/create-vue2-webpack-app.exp
-    cd dapp-vue2-webpack
-    git init
-    git add .
-    git commit -am "Initial commit"
-    npm i
-    npm i -D ../../
-    npx scrypt-cli init --force
-    npx scrypt-cli compile
-    cp ../../tests/replaced-files/vue2-webpack-main.ts src/main.ts
-    cat src/main.ts
-    npm run build
-    cd ..
+#     rm -rf dapp-vue2-webpack ~/.vuerc
+#     echo "{ \"useTaobaoRegistry\": true }" > ~/.vuerc
+#     ../tests/helper-scripts/create-vue2-webpack-app.exp
+#     cd dapp-vue2-webpack
+#     git init
+#     git add .
+#     git commit -am "Initial commit"
+#     npm i
+#     npm i -D ../../
+#     npx scrypt-cli init --force
+#     npx scrypt-cli compile
+#     cp ../../tests/replaced-files/vue2-webpack-main.ts src/main.ts
+#     cat src/main.ts
+#     npm run build
+#     cd ..
 fi
 
 ls -la

@@ -377,7 +377,13 @@ async function init({ force }) {
         exit(-1)
     }
 
-    const tsVersion = majorVersion(Object.assign({}, packageJSON?.dependencies, packageJSON?.devDependencies)["typescript"])
+    const tsStr = Object.assign({}, packageJSON?.dependencies, packageJSON?.devDependencies)["typescript"];
+    if(!tsStr) {
+        console.log(red('Not typescript found'));
+        exit(-1) 
+    }
+
+    const tsVersion = majorVersion(tsStr)
     configTSconfig({
         isVue3ViteProject,
         isReactProject,

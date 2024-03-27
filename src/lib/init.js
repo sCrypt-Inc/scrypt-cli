@@ -409,6 +409,7 @@ async function init({ force }) {
     configTSconfig({
         isVue3ViteProject,
         isReactProject,
+        isReactViteProject,
         isNextProject,
         isVueCliProject,
         isVueViteProject,

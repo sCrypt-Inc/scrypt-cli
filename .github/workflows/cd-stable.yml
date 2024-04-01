@@ -1,11 +1,16 @@
-name: Publish Package to npmjs
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Publish to NPM
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Prepare git
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v3
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v3

@@ -1,0 +1,8 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+
+spawn npm create vite@latest dapp-react-vite -- --template react-ts
+match_max 100000
+
+expect eof

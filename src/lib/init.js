@@ -41,6 +41,17 @@ async function configNext() {
     writeAsset('./next.config.js')
 }
 
+async function configReactVite() {
+    // install dev dependencies
+    await stepCmd(
+        'Installing dependencies...',
+        'npm i -D dotenv vite-plugin-node-polyfills'
+    )
+
+    // override vite.config.ts
+    writeAsset('./vite.config.ts', `react.vite.config.ts`)
+}
+
 async function configVueCli() {
     // install dependencies
     await stepCmd(
@@ -140,6 +151,7 @@ function configTsNodeConfig({
     isVue3ViteProject,
     isReactProject,
     isNextProject,
+    isReactViteProject,
     isVueCliProject,
     isVueViteProject,
     isSvelteProject,
@@ -167,6 +179,7 @@ function configTSconfig({
     isVue3ViteProject,
     isReactProject,
     isNextProject,
+    isReactViteProject,
     isVueCliProject,
     isVueViteProject,
     isSvelteProject,
@@ -184,12 +197,24 @@ function configTSconfig({
         }
 
         switch (true) {
+            // react & nextjs
             case isReactProject: {
                 tsConfigJSON.compilerOptions.target = "ESNext";
                 tsConfigJSON.compilerOptions.experimentalDecorators = true;
             }
                 break;
+            case isReactViteProject: {
+                tsConfigJSON.compilerOptions.target = "ESNext";
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+            }
+                break;
+            case isNextProject: {
+                tsConfigJSON.compilerOptions.experimentalDecorators = true;
+                tsConfigJSON.compilerOptions.target = "ESNext";
+            }
+                break;
 
+            // vue
             case isVue3ViteProject: {
                 tsConfigJSON.compilerOptions.moduleResolution = "Node";
                 // update tsconfig.app.json
@@ -209,11 +234,8 @@ function configTSconfig({
                 tsConfigJSON.compilerOptions.resolveJsonModule = true;
             }
                 break;
-            case isNextProject: {
-                tsConfigJSON.compilerOptions.experimentalDecorators = true;
-                tsConfigJSON.compilerOptions.target = "ESNext";
-            }
-                break;
+
+            // others
             case isSvelteProject: {
                 tsConfigJSON.compilerOptions.experimentalDecorators = true;
             }
@@ -227,7 +249,6 @@ function configTSconfig({
                 break;
 
         }
-
 
         writefile(tsConfigPath, tsConfigJSON)
 
@@ -313,6 +334,10 @@ function scriptIncludes(scripts, includes) {
     return true
 }
 
+function dependencyIncludes(dependencies, packageName) {
+    return !!dependencies[packageName]
+}
+
 function majorVersion(dependency) {
     return parseInt(/(\d+)/.exec(dependency || '')[0])
 }
@@ -339,6 +364,7 @@ async function init({ force }) {
 
 
     const isReactProject = scriptIncludes(packageJSON.scripts, { start: 'react-scripts', build: 'react-scripts' })
+    const isReactViteProject = scriptIncludes(packageJSON.scripts, { dev: 'vite' }) && dependencyIncludes(packageJSON.dependencies, 'react')
     const isNextProject = scriptIncludes(packageJSON.scripts, { start: 'next', build: 'next' })
 
     const isVueCliProject = scriptIncludes(packageJSON.scripts, { serve: 'vue-cli-service', build: 'vue-cli-service' })
@@ -361,6 +387,8 @@ async function init({ force }) {
         }
     } else if (isNextProject) {
         await configNext();
+    } else if (isReactViteProject) {
+        await configReactVite();
     } else if (isVueCliProject) {
         await configVueCli();
     } else if (isVueViteProject) {
@@ -387,6 +415,7 @@ async function init({ force }) {
     configTSconfig({
         isVue3ViteProject,
         isReactProject,
+        isReactViteProject,
         isNextProject,
         isVueCliProject,
         isVueViteProject,

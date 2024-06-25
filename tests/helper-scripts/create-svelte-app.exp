@@ -12,7 +12,7 @@ expect "Skeleton project"
 send -- "\r"
 
 expect "Add type checking with TypeScript?"
-send -- "\[B"
+send -- "\r"
 
 expect "Yes, using TypeScript syntax"
 send -- "\r"

@@ -112,21 +112,21 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
     process.exit();
   });
 
-  let ts_patch_path = require.resolve("typescript").split(path.sep);
+  let ts_patch_path = require.resolve("ts-patch").split(path.sep);
 
-  ts_patch_path = ts_patch_path.slice(0, ts_patch_path.length - 2);
+  ts_patch_path = ts_patch_path.slice(0, ts_patch_path.length - 1);
   ts_patch_path.push("bin")
-  ts_patch_path.push("tsc")
+  ts_patch_path.push("tspc")
 
-  const tsc = ts_patch_path.join(path.sep)
+  const tspc = ts_patch_path.join(path.sep)
 
   // Run tsc which in turn also transpiles to sCrypt
   if (watch) {
-    await shExec(`node "${tsc}" --watch --p "${tsconfigScryptTSPath}"`)
+    await shExec(`node "${tspc}" --watch --p "${tsconfigScryptTSPath}"`)
   } else {
     const result = await stepCmd(
       'Building TS',
-      `node "${tsc}" --p "${tsconfigScryptTSPath}"`, false);
+      `node "${tspc}" --p "${tsconfigScryptTSPath}"`, false);
 
     if (result instanceof Error) {
       console.log(red(`ERROR: Building TS failed!`));

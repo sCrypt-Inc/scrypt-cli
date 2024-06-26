@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "description": "A demo sCrypt stateful smart contract.",
   "author": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc",

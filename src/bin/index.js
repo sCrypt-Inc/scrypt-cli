@@ -14,6 +14,7 @@ const { showVersion } = require('yargs');
 
 const _g = chalk.green;
 const _r = chalk.reset;
+const _y = chalk.yellow;
 const _red = chalk.red;
 
 // Check for minimum required Node.js version
@@ -167,7 +168,7 @@ yargs(hideBin(process.argv))
       }).alias('force', 'f')
   }, (argv) => {
     
-    console.log(yellow(`This cmd has been deprecated!`));
+    console.log(_y(`Note: this cmd has been deprecated!`));
     console.log("See how to integrate a frontend here:")
     console.log("https://docs.scrypt.io/how-to-integrate-a-frontend/")
   })

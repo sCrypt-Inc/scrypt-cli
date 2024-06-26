@@ -8,13 +8,13 @@ const { compile } = require('../lib/compile');
 const { verify } = require('../lib/verify');
 const { deploy } = require('../lib/deploy');
 const { system } = require('../lib/system');
-const { init } = require('../lib/init');
 const chalk = require('chalk');
 const { showVersion } = require('yargs');
 
 
 const _g = chalk.green;
 const _r = chalk.reset;
+const _y = chalk.yellow;
 const _red = chalk.red;
 
 // Check for minimum required Node.js version
@@ -159,14 +159,19 @@ yargs(hideBin(process.argv))
       await verify(argv)
     })
   .command(['system', 'sys', 's'], 'Show system info', {}, () => system())
-  .command(['init'], 'Initialize sCrypt in an existing project', (y) => {
+  .command(['init'], 'Initialize sCrypt in an existing project ', (y) => {
     return y.option('f', {
         description: 'Force init will ignore git status, default false',
         required: false,
         type: 'boolean',
         default: false
       }).alias('force', 'f')
-  }, (argv) => init(argv))
+  }, (argv) => {
+    
+    console.log(_y(`Note: this cmd has been deprecated!`));
+    console.log("See how to integrate a frontend here:")
+    console.log("https://docs.scrypt.io/how-to-integrate-a-frontend/")
+  })
   .command(['version'], 'show version', {}, () => showVersion())
   .alias('h', 'help')
   .alias('v', 'version')

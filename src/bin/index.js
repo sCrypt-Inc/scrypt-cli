@@ -8,6 +8,7 @@ const { compile } = require('../lib/compile');
 const { verify } = require('../lib/verify');
 const { deploy } = require('../lib/deploy');
 const { system } = require('../lib/system');
+const { init } = require('../lib/init');
 const chalk = require('chalk');
 const { showVersion } = require('yargs');
 
@@ -168,9 +169,11 @@ yargs(hideBin(process.argv))
       }).alias('force', 'f')
   }, (argv) => {
     
-    console.log(_y(`Note: the "init" command has been deprecated!`));
-    console.log("See how to integrate a frontend here:")
-    console.log("https://docs.scrypt.io/how-to-integrate-a-frontend/")
+    // console.log(_y(`Note: the "init" command has been deprecated!`));
+    // console.log("See how to integrate a frontend here:")
+    // console.log("https://docs.scrypt.io/how-to-integrate-a-frontend/")
+    init(argv)
+
   })
   .command(['version'], 'show version', {}, () => showVersion())
   .alias('h', 'help')

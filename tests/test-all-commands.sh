@@ -84,6 +84,26 @@ npm run genprivkey
 cd ..
 
 
+chmod +x ../tests/helper-scripts/*.exp
+npm i -g @vue/cli
+
+
+echo "testing init React ..."
+rm -rf dapp-react
+npx create-react-app@latest dapp-react --template typescript
+cd dapp-react
+git init
+git add .
+git commit -am "Initial commit"
+npm i
+npm i -D ../../
+npx scrypt-cli init --force
+npx scrypt-cli compile
+cp ../../tests/replaced-files/react-index.tsx src/index.tsx
+cat src/index.tsx
+CI=true npm t
+cd ..
+
 ls -la
 
 cd ..

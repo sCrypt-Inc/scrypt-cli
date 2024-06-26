@@ -78,19 +78,14 @@ jobs:
         - 18
 script:
   - npm t
-  # - npm run test-templates
-  # - npm run test-lib-import
+  - npm run test-templates
+  - npm run test-lib-import
   - npm run test-all-commands
-  # - |
-  #   echo "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
-  #   echo "TRAVIS_BRANCH=$TRAVIS_BRANCH"
-  # - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-  #     echo "# master"; 
-  #     npm t;
-  #   else
-  #     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-  #       echo "# no master, just run on linux"; 
-  #       npm t;
-  #     fi
-  #   fi
-  # - sh tests/test-npx.sh
+  - |
+    echo "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+    echo "TRAVIS_BRANCH=$TRAVIS_BRANCH"
+    echo "TRAVIS_EVENT_TYPE=$TRAVIS_EVENT_TYPE"
+  - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+      echo "# cron job"; 
+      sh tests/test-npx.sh
+    fi

@@ -85,7 +85,7 @@ script:
     echo "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
     echo "TRAVIS_BRANCH=$TRAVIS_BRANCH"
     echo "TRAVIS_EVENT_TYPE=$TRAVIS_EVENT_TYPE"
-  - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+    if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
       echo "# cron job"; 
       sh tests/test-npx.sh
     fi

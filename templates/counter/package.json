@@ -52,7 +52,7 @@
     "prettier": "^2.8.2",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
-    "typescript": "^5.3.3",
+    "typescript": "~5.3.3",
     "scrypt-cli": "^0.1.68"
   },
   "license": "MIT"

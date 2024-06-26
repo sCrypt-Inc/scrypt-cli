@@ -17,3 +17,9 @@ tests/
 *.md
 .prettierrc
 .prettierignore
+
+deploy.ts
+tsconfig-scryptTS.json
+artifacts/**/*.scrypt
+artifacts/**/*.scrypt.map
+artifacts/**/*.transformer.json

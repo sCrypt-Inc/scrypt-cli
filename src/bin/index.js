@@ -168,7 +168,7 @@ yargs(hideBin(process.argv))
       }).alias('force', 'f')
   }, (argv) => {
     
-    console.log(_y(`Note: this cmd has been deprecated!`));
+    console.log(_y(`Note: the "init" command has been deprecated!`));
     console.log("See how to integrate a frontend here:")
     console.log("https://docs.scrypt.io/how-to-integrate-a-frontend/")
   })

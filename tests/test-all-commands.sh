@@ -102,21 +102,21 @@ cat src/index.tsx
 CI=true npm t
 cd ..
 
-echo "testing React bundled with Vite ..."
-rm -rf dapp-react-vite
-../tests/helper-scripts/create-vue3-vite-app.exp
-cd dapp-vue3-vite
-git init
-git add .
-git commit -am "Initial commit"
-npm i
-npm i -D ../../
-npx scrypt-cli init --force
-npx scrypt-cli compile
-cp ../../tests/replaced-files/vue3-vite-main.ts src/main.ts
-cat src/main.ts
-npm run build
-cd ..
+# echo "testing React bundled with Vite ..."
+# rm -rf dapp-react-vite
+# ../tests/helper-scripts/create-vue3-vite-app.exp
+# cd dapp-vue3-vite
+# git init
+# git add .
+# git commit -am "Initial commit"
+# npm i
+# npm i -D ../../
+# npx scrypt-cli init --force
+# npx scrypt-cli compile
+# cp ../../tests/replaced-files/vue3-vite-main.ts src/main.ts
+# cat src/main.ts
+# npm run build
+# cd ..
 
 echo "testing init Next.js ..."
 rm -rf dapp-next

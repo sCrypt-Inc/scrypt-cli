@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "description": "A demo sCrypt smart contract.",
   "author": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc",
@@ -17,7 +19,8 @@
     "genprivkey": "npx ts-node tests/utils/privateKey.ts",
     "lint": "eslint . --ext .js,.ts --fix && prettier --write --ignore-unknown \"**/*\"",
     "lint-check": "eslint . --ext .js,.ts && prettier --check --ignore-unknown \"**/*\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "prepublishOnly": "npm run build && npm run compile"
   },
   "lint-staged": {
     "**/*": [

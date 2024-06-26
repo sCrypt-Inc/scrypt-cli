@@ -37,17 +37,6 @@ Lastly, you can create an sCrypt library project with the following option:
 npx scrypt-cli p --lib my-lib
 ```
 
-### Install sCrypt in an existing front-end project
-
-Currently only supports projects created by [Create React App](https://create-react-app.dev/)
-
-```sh
-npx create-react-app my-app --template typescript
-cd my-app
-git init && git add . && git commit -m "Initial commit." 
-npx scrypt-cli init
-```
-
 
 ### Compile sCrypt smart contracts
 

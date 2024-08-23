@@ -38,7 +38,7 @@
     "lodash": "^4.17.21",
     "ora": "^5.4.1",
     "scrypt-ts-transpiler": "^1.2.25",
-    "scryptlib": "^2.1.41",
+    "scryptlib": "^2.2.0",
     "semver": "^7.3.8",
     "shelljs": "^0.8.5",
     "table": "^6.8.0",

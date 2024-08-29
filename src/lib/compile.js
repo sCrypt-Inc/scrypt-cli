@@ -222,7 +222,8 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
         const outDir = path.dirname(f)
         const result = compileContract(f, {
           out: outDir,
-          artifact: true
+          artifact: true,
+          optimize: true,
         });
 
         if (result.errors.length > 0) {

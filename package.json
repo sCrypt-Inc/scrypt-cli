@@ -1,6 +1,6 @@
 {
   "name": "scrypt-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "CLI tool for creating and managing sCrypt projects.",
   "bin": {
     "scrypt": "./src/bin/index.js",
@@ -37,7 +37,7 @@
     "json5": "^2.2.2",
     "lodash": "^4.17.21",
     "ora": "^5.4.1",
-    "scrypt-ts-transpiler": "^1.2.26",
+    "scrypt-ts-transpiler": "^1.2.28",
     "scryptlib": "~2.2.1",
     "semver": "^7.3.8",
     "shelljs": "^0.8.5",

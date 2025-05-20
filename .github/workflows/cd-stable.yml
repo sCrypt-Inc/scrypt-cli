@@ -18,6 +18,10 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
+      - run: npm t
+      - run: npm run test-templates
+      - run: npm run test-lib-import
+      - run: npm run test-all-commands
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -4,7 +4,7 @@ const _ = require('lodash');
 const { exit } = require('process');
 const { green, red } = require('chalk');
 const { stepCmd, readdirRecursive, readConfig, writefile, readfile, shExec, resolvePaths, extractBaseNames } = require('./helpers');
-const { compileContract, findCompiler } = require('scryptlib');
+const { compileContract, compileContractAsync, findCompiler } = require('scryptlib');
 const ts = require('typescript');
 const { safeCompilerVersion, getBinary } = require('scryptlib/util/getBinary');
 
@@ -220,11 +220,20 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
     for (const f of files) {
       try {
         const outDir = path.dirname(f)
-        const result = compileContract(f, {
+        
+        // Use async version to prevent hanging
+        const compilePromise = compileContractAsync(f, {
           out: outDir,
           artifact: true,
           optimize: true,
         });
+        
+        // Add timeout handling
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error(`Compilation timeout for ${f}`)), 60000); // 60 second timeout
+        });
+        
+        const result = await Promise.race([compilePromise, timeoutPromise]);
 
         if (result.errors.length > 0) {
           failedCount++;
@@ -238,10 +247,17 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
 
         console.log(green(`Compiled successfully, artifact file: ${artifactPath}`));
       } catch (e) {
-        const resStr = `\nCompilation failed.\n`;
-        console.log(red(resStr));
-        console.log(red(`ERROR: ${e.message}`));
-        exit(-1);
+        failedCount++;
+        if (e.message.includes('timeout')) {
+          console.log(red(`ERROR: Compilation timed out for ${f}`));
+          console.log(red(`This may indicate an issue with the BitGoldToken contract causing the compiler to hang.`));
+        } else {
+          const resStr = `\nCompilation failed for ${f}.\n`;
+          console.log(red(resStr));
+          console.log(red(`ERROR: ${e.message}`));
+        }
+        // Don't exit immediately, continue with other files
+        continue;
       }
     }
   }

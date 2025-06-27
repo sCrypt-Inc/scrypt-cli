@@ -250,7 +250,7 @@ async function compile({ include, exclude, tsconfig, watch, noArtifact, asm }) {
         failedCount++;
         if (e.message.includes('timeout')) {
           console.log(red(`ERROR: Compilation timed out for ${f}`));
-          console.log(red(`This may indicate an issue with the BitGoldToken contract causing the compiler to hang.`));
+          console.log(red(`This may indicate an issue with the contract causing the compiler to hang.`));
         } else {
           const resStr = `\nCompilation failed for ${f}.\n`;
           console.log(red(resStr));
